@@ -14,7 +14,7 @@ resources:
   - name: perf-test-repo
     type: git
     source:
-      uri: https://github.tools.sap/cloudfoundry/landscape-cf-perf-test.git
+      uri: https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline.git
       username: ((github-serviceuser-username))
       password: ((github-serviceuser-token))
       branch: master # required for "put"
@@ -34,7 +34,7 @@ resources:
   - name: ops-files
     type: git
     source:
-      uri: https://github.tools.sap/cloudfoundry/landscape-cf-perf-test.git
+      uri: https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline.git
       username: ((github-serviceuser-username))
       password: ((github-serviceuser-token))
   - name: cf-performance-tests
