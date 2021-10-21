@@ -240,7 +240,6 @@ jobs:
           params:
             file: updated-bbl-state/bbl-state.tgz
 
-
   - name: bosh-deploy
     serial: true
     plan:
@@ -384,6 +383,46 @@ jobs:
           put: slack-notification
           params:
             alert_type: failed
+
+  - name: bosh-clean-up
+    serial: true
+    plan:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        params:
+          unpack: true
+        passed:
+          - bosh-deploy
+        trigger: true
+      - task: bosh-clean-up
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: cloudfoundry/cf-deployment-concourse-tasks
+            version:
+              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+
+          inputs:
+            - name: bbl-state
+            - name: cf-deployment-concourse-tasks  # - This repo
+
+          run:
+            path: cf-deployment-concourse-tasks/bosh-cleanup/task
+
+          params:
+            BBL_STATE_DIR: bbl-state
+            # - Path to the directory containing the `bbl-state.json` file
+            # - The path is relative to the `bbl-state` input
+            # - If blank or '.', uses `bbl-state` input as the location for bbl state
+            # - If the specified path does not exist, it will be created
+            # - This input and parameter will be ignored if toolsmiths-env is provided
+
+            CLEAN_ALL: true
+            # - Optional
+            # - Boolean determines whether to use `--all` parameter to
+            # - `bosh clean-up`
 
   - name: run-performance-tests
     serial: true
