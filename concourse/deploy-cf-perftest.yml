@@ -65,7 +65,7 @@ resources:
   - name: slack-notification
     type: slack-alert
     source:
-      url: https://hooks.slack.com/services/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
+      url: ((slack-notification-url))
 
 jobs:
   - name: bbl-up
