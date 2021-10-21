@@ -44,6 +44,8 @@ read -s GITHUB_TOKEN
 read -s AWS_KEY_ID
 read -s AWS_KEY_SECRET
 
+read -s SLACK_URL
+
 fly -t <target> set-pipeline -p deploy-cf-performance-test \
 -v bbl-state-bucket-access-key-id=$BBL_STATE_BUCKET_KEY_ID \
 -v bbl-state-bucket-access-key-secret=$BBL_KEY_SECRET \
@@ -52,6 +54,7 @@ fly -t <target> set-pipeline -p deploy-cf-performance-test \
 -v github-serviceuser-email=$GITHUB_EMAIL \
 -v aws-access-key-id=$AWS_KEY_ID \
 -v aws-access-key-secret=$AWS_KEY_SECRET \
+-v slack-notification-url=$SLACK_URL \
 -c ./concourse/deploy-cf-perftest.yml
 
 fly -t <target name> set-pipeline -p destroy-cf-performance-test
