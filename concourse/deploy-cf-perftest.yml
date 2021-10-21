@@ -391,6 +391,7 @@ jobs:
       - get: bbl-state
         params:
           unpack: true
+      - get: cf-deployment
         passed:
           - bosh-deploy
         trigger: true
