@@ -136,6 +136,10 @@ https://github.com/cloudfoundry/cf-deployment/blob/main/operations/use-postgres.
 
 ### Deployment of CF
 
+Clone the desired version of cf-deployment into this project's root:
+```
+git clone https://github.com/cloudfoundry/cf-deployment.git
+```
 Now we are ready to deploy CF. Execute the [deploy_cf.sh](deploy_cf.sh) script. It generates the manifest using a few ops and vars files and then triggers the BOSH deployment. When the deployment has finished, you should be able to access the CF API:
 ```
 curl -k https://api.cf.cfperftest.<your domain>/v2/info
