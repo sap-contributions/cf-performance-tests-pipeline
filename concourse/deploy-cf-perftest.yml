@@ -17,12 +17,12 @@ resources:
       uri: https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline.git
       username: ((github-serviceuser-username))
       password: ((github-serviceuser-token))
-      branch: master # required for "put"
+      branch: main # required for "put"
   - name: bbl-state
     type: s3
     source:
       region_name: eu-central-1
-      bucket: cf-perf-test-state
+      bucket: ((bbl-state-bucket-name))
       versioned_file: bbl-state.tar.gz
       access_key_id: ((bbl-state-bucket-access-key-id))
       secret_access_key: ((bbl-state-bucket-access-key-secret))
@@ -50,7 +50,7 @@ resources:
     type: s3
     source:
       region_name: eu-central-1
-      bucket: cf-perf-test-state
+      bucket: ((bbl-state-bucket-name))
       versioned_file: integration_config.json
       access_key_id: ((bbl-state-bucket-access-key-id))
       secret_access_key: ((bbl-state-bucket-access-key-secret))
@@ -58,7 +58,7 @@ resources:
     type: s3
     source:
       region_name: eu-central-1
-      bucket: cf-perf-test-state
+      bucket: ((bbl-state-bucket-name))
       versioned_file: lb_certificate.tar.gz
       access_key_id: ((bbl-state-bucket-access-key-id))
       secret_access_key: ((bbl-state-bucket-access-key-secret))
@@ -87,7 +87,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
           inputs:
             - name: cf-deployment-concourse-tasks  # - This repo
             - name: bbl-state  # - The S3 bucket containing bbl state
@@ -190,7 +190,7 @@ jobs:
             # - Can be either the key content or a path to the key
             # - If a path is provided, path is relative to the BBL_STATE_DIR
 
-            LB_DOMAIN: cf.cfperftest.bndl.sapcloud.io
+            LB_DOMAIN: ((system-domain))
             # - Required if `SKIP_LB_CREATION` is false
             # - The domain which bbl will register
 
@@ -261,7 +261,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
 
           inputs:
             - name: bbl-state  # - The repo containing the Director's bbl state dir
@@ -285,7 +285,7 @@ jobs:
             # - Filepath to the manifest file within the cf-deployment resource
             # - The path is relative to root of the `cf-deployment` input
 
-            SYSTEM_DOMAIN: cf.cfperftest.bndl.sapcloud.io
+            SYSTEM_DOMAIN: ((system-domain))
             # - Required unless toolsmiths-env optional input is provided
             # - CF system base domain e.g. `my-cf.com`
 
@@ -403,7 +403,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
 
           inputs:
             - name: bbl-state
@@ -413,7 +413,7 @@ jobs:
             path: cf-deployment-concourse-tasks/bosh-cleanup/task
 
           params:
-            BBL_STATE_DIR: bbl-state
+            BBL_STATE_DIR: state
             # - Path to the directory containing the `bbl-state.json` file
             # - The path is relative to the `bbl-state` input
             # - If blank or '.', uses `bbl-state` input as the location for bbl state
@@ -448,7 +448,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
           inputs:
             - name: perf-test-repo
             - name: cf-performance-tests
@@ -524,7 +524,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:74c7c1be79082896a1f05a28aeed8a5f9fe30038d9e6b349779ccae8e26a5925
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
           inputs:
             - name: cf-deployment-concourse-tasks
             - name: cf-acceptance-tests
