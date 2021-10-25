@@ -1,0 +1,108 @@
+- type: replace
+  path: /releases/-
+  value:
+    name: "haproxy"
+    version: "11.3.0"
+    url: "https://bosh.io/d/github.com/cloudfoundry-community/haproxy-boshrelease?v=11.3.0"
+    sha1: "4a52fa172480eae811043d27c49a17a1c54296e1"
+- type: replace
+  path: /releases/-
+  value:
+    name: "cloud-controller"
+    version: "0.0.19"
+    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.19/cloudgontroller-boshrelease-0.0.19.tgz
+    sha1: "TODO - not yet released"
+- type: replace
+  path: /instance_groups/-
+  value:
+    name: cc-api
+    stemcell: default
+    vm_type: small
+    networks:
+      - name: default
+    azs:
+      - z1
+      - z2
+    instances: 1
+    jobs:
+      - name: cloud-controller
+        release: cloud-controller
+        consumes:
+          cloud_controller_db:
+            from: cloud_controller_db
+        properties:
+          name: CloudGontroller
+          build: custom
+          version: 0
+          support_address: help@sap.com
+          description: CloudGontroller at SAP BTP
+          uaa:
+            internal_url: uaa.service.cf.internal
+            tls_port: 8443
+            ca_cert: |
+              ((uaa_ssl.ca))
+      - name: haproxy
+        release: haproxy
+        # Block implicit links
+        consumes:
+          http_backend: nil
+          tcp_backend: nil
+          tcp_router: nil
+        properties:
+          ha_proxy:
+            disable_http: true
+            ssl_pem:
+              - private_key: |
+                  ((cc_public_tls.private_key))
+                cert_chain: |
+                  ((cc_public_tls.certificate))
+                  ((cc_public_tls.ca))
+            backend_servers:
+              - cloud-controller-ng.service.cf.internal
+            backend_port: 9024
+            backend_ssl: verify
+            backend_ca_file:
+              ((cc_public_tls.ca))
+            resolvers:
+              - bosh_dns: 169.254.0.2
+            routed_backend_servers:
+              "/v3/info":
+                servers: [localhost]
+                port: 8282
+              "/v3/buildpacks AND method GET":
+                servers: [localhost]
+                port: 8282
+              "/v3/security_groups/ AND method GET":
+                servers: [localhost]
+                port: 8282
+              "/docs":
+                servers: [localhost]
+                port: 8282
+              "/healthz":
+                servers: [localhost]
+                port: 8282
+      - name: route_registrar
+        release: routing
+        properties:
+          nats:
+            tls:
+              client_cert: ((nats_client_cert.certificate))
+              client_key: ((nats_client_cert.private_key))
+              enabled: true
+          route_registrar:
+            routes:
+              - health_check:
+                  name: cc-api-health-check
+                  script_path: "/var/vcap/jobs/cloud-controller/bin/route-registrar-health-check.sh"
+                  timeout: 6s
+                name: api
+                tls_port: 443
+                registration_interval: 10s
+                server_cert_domain_san: api.((system_domain))
+                tags:
+                  component: CloudController
+                uris:
+                  - api.((system_domain))/v3/info
+                  - api.((system_domain))/v3/buildpacks
+                  - api.((system_domain))/v3/security_groups
+                  - api.((system_domain))/docs

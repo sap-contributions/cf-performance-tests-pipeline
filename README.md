@@ -41,6 +41,8 @@ read -s BBL_STATE_BUCKET_KEY_SECRET
 
 # "cf-perf-test-state" or "go-perf-test-state"
 BBL_STATE_BUCKET_NAME=<bucket name>
+# "" for default CF deployment or " operations/deploy-gontroller.yml" for CF with new Go cloud controller
+ADDITIONAL_OPS_FILES=""
 
 # find those in vault
 read -s GITHUB_USER
@@ -57,6 +59,7 @@ read -s SLACK_URL
 # pipeline name: "deploy-cf-performance-test" or "deploy-go-performance-test"
 fly -t <target> set-pipeline -p <pipeline name> \
 -v system-domain=$SYSTEM_DOMAIN \
+-v additional-ops-files="$ADDITIONAL_OPS_FILES" \
 -v bbl-state-bucket-access-key-id=$BBL_STATE_BUCKET_KEY_ID \
 -v bbl-state-bucket-access-key-secret=$BBL_STATE_BUCKET_KEY_SECRET \
 -v bbl-state-bucket-name=$BBL_STATE_BUCKET_NAME \
