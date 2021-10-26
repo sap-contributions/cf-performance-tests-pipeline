@@ -11,7 +11,7 @@
     name: "cloud-controller"
     version: "0.0.19"
     url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.19/cloudgontroller-boshrelease-0.0.19.tgz
-    sha1: "TODO - not yet released"
+    sha1: "8fdf5dba11c28a8fd790f5b729abdaf7b2bb0c85"
 - type: replace
   path: /instance_groups/-
   value:
@@ -36,6 +36,9 @@
           version: 0
           support_address: help@sap.com
           description: CloudGontroller at SAP BTP
+          db:
+            max_connections: 20
+            min_connections: 10
           uaa:
             internal_url: uaa.service.cf.internal
             tls_port: 8443
@@ -67,19 +70,19 @@
               - bosh_dns: 169.254.0.2
             routed_backend_servers:
               "/v3/info":
-                servers: [localhost]
+                servers: [127.0.0.1]
                 port: 8282
               "/v3/buildpacks AND method GET":
-                servers: [localhost]
+                servers: [127.0.0.1]
                 port: 8282
               "/v3/security_groups/ AND method GET":
-                servers: [localhost]
+                servers: [127.0.0.1]
                 port: 8282
               "/docs":
-                servers: [localhost]
+                servers: [127.0.0.1]
                 port: 8282
               "/healthz":
-                servers: [localhost]
+                servers: [127.0.0.1]
                 port: 8282
       - name: route_registrar
         release: routing
