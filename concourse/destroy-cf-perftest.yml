@@ -8,7 +8,7 @@ resources:
     type: s3
     source:
       region_name: eu-central-1
-      bucket: cf-perf-test-state
+      bucket: ((bbl-state-bucket-name))
       versioned_file: bbl-state.tar.gz
       access_key_id: ((bbl-state-bucket-access-key-id))
       secret_access_key: ((bbl-state-bucket-access-key-secret))
