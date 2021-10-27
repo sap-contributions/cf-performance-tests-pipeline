@@ -4,6 +4,6 @@ resource "aws_security_group_rule" "internal_security_group_rule_ssh" {
   type                     = "ingress"
   protocol                 = "TCP"
   from_port                = 0
-  to_port                  = 5524
+  to_port                  = 5523
   source_security_group_id = "${aws_security_group.jumpbox.id}"
 }
