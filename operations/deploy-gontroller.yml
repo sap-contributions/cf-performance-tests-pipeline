@@ -9,9 +9,9 @@
   path: /releases/-
   value:
     name: "cloud-controller"
-    version: "0.0.20"
-    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.20/cloudgontroller-boshrelease-0.0.20.tgz
-    sha1: "40f07cd90ab14450a1c2cc9cbb7ac73c63f06a4a"
+    version: "0.0.21"
+    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.21/cloudgontroller-boshrelease-0.0.21.tgz
+    sha1: "221341de38104b1db47cf96b4b24dbae6b7612c3"
 - type: replace
   path: /instance_groups/-
   value:
