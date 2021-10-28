@@ -107,5 +107,5 @@
                 uris:
                   - api.((system_domain))/v3/info
                   - api.((system_domain))/v3/buildpacks
-                  - api.((system_domain))/v3/security_groups
+                  #- api.((system_domain))/v3/security_groups
                   - api.((system_domain))/docs
