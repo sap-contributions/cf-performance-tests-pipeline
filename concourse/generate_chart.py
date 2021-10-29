@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import glob
 import json
@@ -14,9 +15,6 @@ from pathlib import Path
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
-
-test_results_path = os.path.join(os.path.dirname(__file__), '../test-results')
-test_charts_path = os.path.join(os.path.dirname(__file__), '../test-charts')
 
 
 def load_test_results(prefix: str, file_paths: List[str]) -> (list, dict):
@@ -142,10 +140,17 @@ def format_timestamp(timestamp: str) -> str:
     return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
 
 
-def main():
-    for test_result_folder in glob.glob(os.path.join(test_results_path, '*/')):
+def dir_path(path):
+    if os.path.isdir(path):
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"{path} is not a valid path")
+
+
+def main(test_results: str, generated_charts: str):
+    for test_result_folder in glob.glob(os.path.join(test_results, '*/')):
         for test_result_version_folder in glob.glob(os.path.join(test_result_folder, '*/')):
-            test_chart_destination = os.path.join(test_charts_path, os.path.basename(os.path.normpath(test_result_folder)), os.path.basename(os.path.normpath(test_result_version_folder)))
+            test_chart_destination = os.path.join(generated_charts, os.path.basename(os.path.normpath(test_result_folder)), os.path.basename(os.path.normpath(test_result_version_folder)))
 
             test_result_file_paths = glob.glob(os.path.join(test_result_version_folder, '*-test-results-*.json'))
             test_suite_naming_pattern = re.compile('(.+?)-test-results-.+.json')
@@ -159,4 +164,14 @@ def main():
 
 if __name__ == '__main__':
     logger.info('Generating charts from performance test results...')
-    main()
+
+    parser = argparse.ArgumentParser(description='Create charts from performance test results')
+    parser.add_argument('--test-results', type=dir_path, required=True,
+                    help='absolute path to the test results folder')
+    parser.add_argument('--generated-charts', type=dir_path, required=True,
+                    help='absolute path where generated charts will be stored')
+    args = parser.parse_args()
+    logger.info(f'Loading test results from {args.test_results}')
+    logger.info(f'Storing charts in {args.generated_charts}')
+
+    main(test_results=args.test_results, generated_charts=args.generated_charts)

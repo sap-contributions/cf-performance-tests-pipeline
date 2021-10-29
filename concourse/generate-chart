@@ -6,8 +6,18 @@ set -eu
 echo -e "\nInstalling matplotlib..."
 pip install matplotlib
 
+if [ -z "$TEST_RESULTS_FOLDER" ]; then
+  echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
+  exit 1
+fi
+if [ -z "$GENERATED_CHARTS_FOLDER" ]; then
+  echo "Task parameter 'GENERATED_CHARTS_FOLDER' is empty. Check pipeline configuration."
+  exit 1
+fi
+
 echo -e "\nRunning Python script..."
-python ./perf-test-repo/concourse/generate_chart.py
+python ./perf-test-repo/concourse/generate_chart.py \
+  --test-results "$TEST_RESULTS_FOLDER" --generated-charts "$GENERATED_CHARTS_FOLDER"
 
 echo -e "\nCommitting generated chart..."
 # must copy original git repository to the "repository" folder specified in the "put" resource
