@@ -41,7 +41,7 @@ pushd "generated-chart-output" > /dev/null
   if [[ -n "$status" ]]; then
     git config user.name "${GIT_COMMIT_USERNAME}"
     git config user.email "${GIT_COMMIT_EMAIL}"
-    git add ./test-charts
+    git add .
     git commit -m "${GIT_COMMIT_MESSAGE}"
   fi
 popd > /dev/null
