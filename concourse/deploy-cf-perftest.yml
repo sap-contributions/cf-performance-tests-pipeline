@@ -34,6 +34,7 @@ resources:
   - name: ops-files
     type: git
     source:
+      branch: main
       uri: https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline.git
       username: ((github-serviceuser-username))
       password: ((github-serviceuser-token))
@@ -88,6 +89,8 @@ jobs:
         params:
           unpack: true
       - task: bbl-up
+        input_mapping:
+          bbl-config: perf-test-repo
         config:
           platform: linux
           image_resource:
@@ -99,7 +102,7 @@ jobs:
           inputs:
             - name: cf-deployment-concourse-tasks  # - This repo
             - name: bbl-state  # - The S3 bucket containing bbl state
-            - name: perf-test-repo
+            - name: bbl-config
             - name: lb-certificate
 
           outputs:
@@ -166,7 +169,7 @@ jobs:
             # - If blank or '.', uses `bbl-state` input as the location for bbl state
             # - If the specified path does not exist, it will be created
 
-            BBL_CONFIG_DIR:
+            BBL_CONFIG_DIR: bbl-patches
             # - Optional
             # - Path to the directory containing bbl plan patches
             # - The path is relative to the `bbl-config` input
@@ -470,6 +473,7 @@ jobs:
             GIT_COMMIT_EMAIL: "((github-serviceuser-email))"
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Performance tests results"
+            TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
           outputs:
             - name: performance-test-results
         on_failure:
@@ -505,6 +509,8 @@ jobs:
             GIT_COMMIT_EMAIL: "((github-serviceuser-email))"
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Generated Chart"
+            TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+            GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
           outputs:
             - name: generated-chart-output
         on_failure:
