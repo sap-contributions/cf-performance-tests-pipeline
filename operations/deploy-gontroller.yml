@@ -107,5 +107,7 @@
                 uris:
                   - api.((system_domain))/v3/info
                   - api.((system_domain))/v3/buildpacks
+                  # "security_groups" is not yet fully implemented
+                  # disable for now so that we have a green pipeline
                   #- api.((system_domain))/v3/security_groups
                   - api.((system_domain))/docs
