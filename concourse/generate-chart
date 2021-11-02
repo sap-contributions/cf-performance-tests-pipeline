@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -eu
-#TODO run shellcheck when done
 
 echo -e "\nInstalling matplotlib..."
 pip install matplotlib
