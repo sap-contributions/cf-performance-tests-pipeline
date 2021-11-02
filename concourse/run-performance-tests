@@ -1,10 +1,6 @@
 #!/bin/bash
 
 set -eu
-# TODO GOPATH setup can be removed as we use Go modules
-
-mkdir -p "$GOPATH/src/github.com/cloudfoundry-incubator"
-cp -r ./cf-performance-tests "$GOPATH/src/github.com/cloudfoundry-incubator"
 
 echo -e "\nGetting test landscape configuration from bbl state..."
 pushd "bbl-state/state" > /dev/null
@@ -40,8 +36,8 @@ if [ -z "$TEST_RESULTS_FOLDER" ]; then
   echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
   exit 1
 fi
-TEST_RESULTS="$GOPATH/src/github.com/cloudfoundry-incubator/cf-performance-tests/$TEST_RESULTS_FOLDER"
-pushd "$GOPATH/src/github.com/cloudfoundry-incubator/cf-performance-tests" > /dev/null
+TEST_RESULTS="./cf-performance-tests/$TEST_RESULTS_FOLDER"
+pushd "./cf-performance-tests" > /dev/null
   cat << EOF > ./config.yml
 api: "api.$CF_DOMAIN"
 skip_ssl_validation: true
