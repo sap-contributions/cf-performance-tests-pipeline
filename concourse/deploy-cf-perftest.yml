@@ -34,9 +34,18 @@ resources:
   - name: ops-files
     type: git
     source:
+      branch: main
       uri: https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline.git
       username: ((github-serviceuser-username))
       password: ((github-serviceuser-token))
+  - name: vars-files
+    type: s3
+    source:
+      region_name: eu-central-1
+      bucket: ((bbl-state-bucket-name))
+      versioned_file: artifactory-credentials.yml
+      access_key_id: ((bbl-state-bucket-access-key-id))
+      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: cf-performance-tests
     type: git
     source:
@@ -80,6 +89,8 @@ jobs:
         params:
           unpack: true
       - task: bbl-up
+        input_mapping:
+          bbl-config: perf-test-repo
         config:
           platform: linux
           image_resource:
@@ -91,7 +102,7 @@ jobs:
           inputs:
             - name: cf-deployment-concourse-tasks  # - This repo
             - name: bbl-state  # - The S3 bucket containing bbl state
-            - name: perf-test-repo
+            - name: bbl-config
             - name: lb-certificate
 
           outputs:
@@ -158,7 +169,7 @@ jobs:
             # - If blank or '.', uses `bbl-state` input as the location for bbl state
             # - If the specified path does not exist, it will be created
 
-            BBL_CONFIG_DIR:
+            BBL_CONFIG_DIR: bbl-patches
             # - Optional
             # - Path to the directory containing bbl plan patches
             # - The path is relative to the `bbl-config` input
@@ -253,6 +264,7 @@ jobs:
       - get: cf-deployment
         trigger: true
       - get: ops-files
+      - get: vars-files
       - task: bosh-deploy
         config:
           platform: linux
@@ -267,6 +279,7 @@ jobs:
             - name: bbl-state  # - The repo containing the Director's bbl state dir
             - name: cf-deployment  # - The cf-deployment manifest
             - name: ops-files  # - Operations files to be made available
+            - name: vars-files
             - name: cf-deployment-concourse-tasks  # - This repo
 
           run:
@@ -289,14 +302,14 @@ jobs:
             # - Required unless toolsmiths-env optional input is provided
             # - CF system base domain e.g. `my-cf.com`
 
-            OPS_FILES: "operations/use-postgres.yml operations/use-bionic-stemcell.yml"
+            OPS_FILES: "operations/use-postgres.yml operations/use-bionic-stemcell.yml((additional-ops-files))"
             # - Optional
             # - List of operations files to be applied to the manifest
             # - Quoted and space-separated
             # - Ops will be applied in the order they're listed
             # - Paths are relative to root of the `ops-files` input
 
-            VARS_FILES:
+            VARS_FILES: "artifactory-credentials.yml"
             # - Optional
             # - List of variable files to be applied to the manifest
             # - Quoted and space-separated
@@ -366,7 +379,7 @@ jobs:
             # - Configures uptimer to deploy with a single app instance rather than two.
             # - This is primarily used by Diego to validate new uptime features.
 
-            BOSH_DEPLOY_ARGS: "--no-redact"
+            BOSH_DEPLOY_ARGS:
             # - Optional
             # - Supplies additional arguments to the bosh deploy command
             # - For example, '--recreate'
@@ -460,6 +473,7 @@ jobs:
             GIT_COMMIT_EMAIL: "((github-serviceuser-email))"
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Performance tests results"
+            TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
           outputs:
             - name: performance-test-results
         on_failure:
@@ -495,6 +509,8 @@ jobs:
             GIT_COMMIT_EMAIL: "((github-serviceuser-email))"
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Generated Chart"
+            TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+            GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
           outputs:
             - name: generated-chart-output
         on_failure:

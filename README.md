@@ -1,6 +1,6 @@
 # CF Performance Tests Pipeline
 
-This repository contains all artifacts for the CF performance tests pipeline including boostrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
+This repository contains all artifacts for the CF performance tests pipeline including boostrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It is based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
 
 The performance tests can be found [here](https://github.com/cloudfoundry-incubator/cf-performance-tests)
 
@@ -41,6 +41,13 @@ read -s BBL_STATE_BUCKET_KEY_SECRET
 
 # "cf-perf-test-state" or "go-perf-test-state"
 BBL_STATE_BUCKET_NAME=<bucket name>
+# "" for default CF deployment or " operations/deploy-gontroller.yml" for CF with new Go cloud controller
+ADDITIONAL_OPS_FILES=""
+
+# use "test-results-go-cc" for CF with Go cc
+TEST_RESULTS_FOLDER=test-results
+# use "test-charts-go-cc" for CF with Go cc
+GENERATED_CHARTS_FOLDER=test-charts
 
 # find those in vault
 read -s GITHUB_USER
@@ -57,9 +64,12 @@ read -s SLACK_URL
 # pipeline name: "deploy-cf-performance-test" or "deploy-go-performance-test"
 fly -t <target> set-pipeline -p <pipeline name> \
 -v system-domain=$SYSTEM_DOMAIN \
+-v additional-ops-files="$ADDITIONAL_OPS_FILES" \
 -v bbl-state-bucket-access-key-id=$BBL_STATE_BUCKET_KEY_ID \
 -v bbl-state-bucket-access-key-secret=$BBL_STATE_BUCKET_KEY_SECRET \
 -v bbl-state-bucket-name=$BBL_STATE_BUCKET_NAME \
+-v test-results-folder=$TEST_RESULTS_FOLDER \
+-v generated-charts-folder=$GENERATED_CHARTS_FOLDER \
 -v github-serviceuser-username=$GITHUB_USER \
 -v github-serviceuser-token=$GITHUB_TOKEN \
 -v github-serviceuser-email=$GITHUB_EMAIL \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -eu
-#TODO run shellcheck when done
+# TODO GOPATH setup can be removed as we use Go modules
 
 mkdir -p "$GOPATH/src/github.com/cloudfoundry-incubator"
 cp -r ./cf-performance-tests "$GOPATH/src/github.com/cloudfoundry-incubator"
@@ -9,11 +9,11 @@ cp -r ./cf-performance-tests "$GOPATH/src/github.com/cloudfoundry-incubator"
 echo -e "\nGetting test landscape configuration from bbl state..."
 pushd "bbl-state/state" > /dev/null
   eval "$(bbl print-env)"
-  BOSH_DIRECTOR_NAME="$(cat bbl-state.json | jq -r .bosh.directorName)"
+  BOSH_DIRECTOR_NAME="$(<bbl-state.json jq -r .bosh.directorName)"
   CF_ADMIN_PASSWORD="$(credhub get -n "/$BOSH_DIRECTOR_NAME/cf/cf_admin_password" -j | jq -r .value)"
-  CF_DOMAIN="$(cat bbl-state.json | jq -r .lb.domain)"
-  JUMPBOX_URL="$(cat ./vars/jumpbox-vars-file.yml | yq -r .external_ip)"
-  JUMPBOX_PRIVATE_KEY="$(cat ./vars/jumpbox-vars-store.yml | yq -r .jumpbox_ssh.private_key)"
+  CF_DOMAIN="$(<bbl-state.json jq -r .lb.domain)"
+  JUMPBOX_URL="$(<./vars/jumpbox-vars-file.yml yq -r .external_ip)"
+  JUMPBOX_PRIVATE_KEY="$(<./vars/jumpbox-vars-store.yml yq -r .jumpbox_ssh.private_key)"
   DATABASE_IP="$(bosh -d cf vms --json | jq -r '.Tables[0].Rows[] | select(.instance | startswith("database/")) | .ips')"
   CCDB_PASSWORD="$(credhub get -n "/$BOSH_DIRECTOR_NAME/cf/cc_database_password" -j | jq -r .value)"
   UAADB_PASSWORD="$(credhub get -n "/$BOSH_DIRECTOR_NAME/cf/uaa_database_password" -j | jq -r .value)"
@@ -21,8 +21,8 @@ popd > /dev/null
 
 echo -e "\nGetting cf-deployment version..."
 # TODO if possible we could also get the cloud_controller_ng commit
-CF_DEPLOYMENT_VERSION="$(cat ./cf-deployment/cf-deployment.yml | yq '.manifest_version' -r)"
-CAPI_VERSION="$(cat ./cf-deployment/cf-deployment.yml| grep -A 1 capi | grep version | cut -d ':' -f2 | sed 's/ //g')"
+CF_DEPLOYMENT_VERSION="$(<./cf-deployment/cf-deployment.yml yq '.manifest_version' -r)"
+CAPI_VERSION="$(<./cf-deployment/cf-deployment.yml grep -A 1 capi | grep version | cut -d ':' -f2 | sed 's/ //g')"
 
 echo -e "\nLogging in to CF and creating a test user..."
 cf api --skip-ssl-validation "api.$CF_DOMAIN"
@@ -36,6 +36,11 @@ ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "Se
 SSH_PID=$!
 
 echo -e "\nRunning cf-performance tests..."
+if [ -z "$TEST_RESULTS_FOLDER" ]; then
+  echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
+  exit 1
+fi
+TEST_RESULTS="$GOPATH/src/github.com/cloudfoundry-incubator/cf-performance-tests/$TEST_RESULTS_FOLDER"
 pushd "$GOPATH/src/github.com/cloudfoundry-incubator/cf-performance-tests" > /dev/null
   cat << EOF > ./config.yml
 api: "api.$CF_DOMAIN"
@@ -48,6 +53,7 @@ users:
     password: "$CF_ADMIN_PASSWORD"
 ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:5524/cloud_controller?sslmode=disable"
 uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:5524/uaa?sslmode=disable"
+results_folder: "$TEST_RESULTS"
 EOF
   ginkgo ./...
 popd > /dev/null
@@ -56,7 +62,7 @@ echo -e "\nPushing cf-performance test results..."
 # must copy original git repository to the "repository" folder specified in the "put" resource
 cp -r "perf-test-repo/." "performance-test-results/"
 # now copy actual test result file to "put" resource
-cp -r "$GOPATH/src/github.com/cloudfoundry-incubator/cf-performance-tests/test-results" "performance-test-results/"
+cp -r "$TEST_RESULTS" "performance-test-results/"
 
 echo -e "\n Installing git lfs"
 tmpdir="$(mktemp -d git_lfs_install.XXXXXX)"
