@@ -36,7 +36,7 @@ if [ -z "$TEST_RESULTS_FOLDER" ]; then
   echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
   exit 1
 fi
-TEST_RESULTS="./cf-performance-tests/$TEST_RESULTS_FOLDER"
+TEST_RESULTS="$PWD/$TEST_RESULTS_FOLDER"
 pushd "./cf-performance-tests" > /dev/null
   cat << EOF > ./config.yml
 api: "api.$CF_DOMAIN"
@@ -57,8 +57,6 @@ popd > /dev/null
 echo -e "\nPushing cf-performance test results..."
 # must copy original git repository to the "repository" folder specified in the "put" resource
 cp -r "perf-test-repo/." "performance-test-results/"
-# now copy actual test result file to "put" resource
-cp -r "$TEST_RESULTS" "performance-test-results/"
 
 echo -e "\n Installing git lfs"
 tmpdir="$(mktemp -d git_lfs_install.XXXXXX)"
