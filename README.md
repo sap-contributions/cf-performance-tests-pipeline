@@ -1,6 +1,6 @@
 # CF Performance Tests Pipeline
 
-This repository contains all artifacts for the CF performance tests pipeline including boostrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It is based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
+This repository contains all artifacts for the CF performance tests pipeline including bootstrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It is based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
 
 The performance tests can be found [here](https://github.com/cloudfoundry-incubator/cf-performance-tests)
 
@@ -14,12 +14,14 @@ After finishing running the concourse pipeline, all results and charts are saved
 
 [isolation-segments-test-results](test-results/isolation-segments-test-results/v1/) / [isolation-segments-test-charts](test-charts/isolation-segments-test-results/v1/)
 
+[service-keys-test-results](test-results/service-keys-test-results/v1/) / [service-keys-test-charts](test-charts/service-keys-test-results/v1/)
+
 Several types of chart data will be generated:
 
 1. Detailed: contains the largest, shortest and average cf api execution time.
 2. Detailed with most recent runs. Same as 1, but only contains the last 15 runs.
 3. Simplified: Chart only contains the average cf api execution time.
-4. Simplified with most rencent runs: same as 3, only contains the last 15 runs.
+4. Simplified with most recent runs: same as 3, only contains the last 15 runs.
 
 ## General information
 The AWS account and domain used to host the BBL and CF foundation is currently owned by SAP. It might move to a community owned account in the future. A discription of how this was set up can be found [here](docs/manual-setup.md).
