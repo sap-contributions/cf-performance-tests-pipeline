@@ -302,7 +302,7 @@ jobs:
             # - Required unless toolsmiths-env optional input is provided
             # - CF system base domain e.g. `my-cf.com`
 
-            OPS_FILES: "operations/use-postgres.yml operations/use-bionic-stemcell.yml((additional-ops-files))"
+            OPS_FILES: "operations/use-postgres.yml operations/scale-up-database.yml operations/use-bionic-stemcell.yml((additional-ops-files))"
             # - Optional
             # - List of operations files to be applied to the manifest
             # - Quoted and space-separated
