@@ -51,7 +51,11 @@ ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:5524/clou
 uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:5524/uaa?sslmode=disable"
 results_folder: "$TEST_RESULTS"
 EOF
-  ginkgo ./...
+  if [ -z "$TEST_SUITE_FOLDER" ]; then
+    ginkgo ./...
+  else
+    ginkgo -r "$TEST_SUITE_FOLDER"
+  fi
 popd > /dev/null
 
 echo -e "\nPushing cf-performance test results..."
