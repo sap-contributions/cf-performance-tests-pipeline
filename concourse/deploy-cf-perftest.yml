@@ -253,6 +253,7 @@ jobs:
 
   - name: bosh-deploy
     serial: true
+    serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: cf-deployment-concourse-tasks
       - get: bbl-state
@@ -440,6 +441,7 @@ jobs:
 
   - name: run-performance-tests
     serial: true
+    serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: perf-test-repo
       - get: bbl-state
