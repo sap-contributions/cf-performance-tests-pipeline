@@ -30,7 +30,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-deployment.git
-      branch: main
+      branch: v16.15.0
   - name: ops-files
     type: git
     source:
@@ -474,6 +474,7 @@ jobs:
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Performance tests results"
             TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+            TEST_SUITE_FOLDER: "service_plans"
           outputs:
             - name: performance-test-results
         on_failure:
