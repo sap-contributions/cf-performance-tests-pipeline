@@ -72,6 +72,36 @@ eval "$(bbl print-env)"
 bosh releases
 ```
 
+### Adjust ELB Idle Timeout
+
+The AWS ELB has a default idle timeout of 60 seconds. This can be too short for long-running tests. You can receive a 504 response if the CF cloud controller takes longer than 60 seconds to respond:
+```
+$ cf curl -v /v3/service_plans 
+
+REQUEST: [2021-11-23T10:37:09Z]
+GET /v3/service_plans HTTP/1.1
+Host: api.cf.cfperftest.bndl.sapcloud.io
+Accept: application/json
+Authorization: [PRIVATE DATA HIDDEN]
+Content-Type: application/json
+User-Agent: go-cli 7.3.0+645c3ce6a.2021-08-16 / linux
+
+
+RESPONSE: [2021-11-23T10:38:42Z]
+HTTP/1.1 504 GATEWAY_TIMEOUT
+Connection: close
+Content-Length: 0
+```
+To adjust the timeout, we need a [Terraform override file](https://www.terraform.io/docs/language/files/override.html) which modifies the "cf_router_lb" resource. Create this file:
+```
+# elb-idle-timeout_override.tf
+
+resource "aws_elb" "cf_router_lb" {
+  idle_timeout = 300
+}
+```
+Place the file in the `state/terraform` folder. The next run of `bbl plan` and `bbl up` will apply the configuration. You can verify the configuration in the AWS console in "EC2" > "Load Balancers" > "bbl-env-<env name>-cf-router-lb" > "Attributes" > "Idle timeout".
+
 ### Upload State
 
 Now you must persist the state. As it contains credentials, it cannot be stored in git. Instead, we store it in a S3 bucket with special permissions.
