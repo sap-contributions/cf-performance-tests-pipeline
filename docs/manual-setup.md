@@ -60,8 +60,6 @@ bbl --state-dir ./state plan --lb-type cf --lb-domain cf.cfperftest.<your domain
 bbl --debug --state-dir ./state up --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET>
 ```
 
-**Note**: Store BBL state in a secure place e.g. encrypted S3 bucket.
-
 You should now be able to access the jumpbox and the BOSH director:
 ```
 bbl ssh --jumpbox
@@ -73,6 +71,18 @@ Log on to the BOSH director should also work now:
 eval "$(bbl print-env)"
 bosh releases
 ```
+
+### Upload State
+
+Now you must persist the state. As it contains credentials, it cannot be stored in git. Instead, we store it in a S3 bucket with special permissions.
+
+Create a tgz file of the state with:
+```
+tar -czvf bbl-state.tar.gz state
+```
+The archive must contain the "state" folder as the top-level content. It should be around 160kb in size. If it is several mb large, it probably contains unnecessary Terraform binaries. In that case, search for a ".terraform" folder with a "plugins" subfolder and remove it. Also make sure you are running the tar command in the Docker container and not locally on a Mac. The Mac "tar" command may add additional meta files which can lead to problems.
+
+Upload the tgz file to the S3 bucket "cf-perf-test-state" or "go-perf-test-state".
 
 ### DNS Setup
 
