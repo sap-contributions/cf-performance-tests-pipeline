@@ -72,18 +72,31 @@
               "/v3/info":
                 servers: [127.0.0.1]
                 port: 8282
-              "/v3/buildpacks AND method GET":
-                servers: [127.0.0.1]
-                port: 8282
-              "/v3/security_groups AND method GET":
-                servers: [127.0.0.1]
-                port: 8282
               "/docs":
                 servers: [127.0.0.1]
                 port: 8282
               "/healthz":
                 servers: [127.0.0.1]
                 port: 8282
+              # Nasty hack - we need to define a routed_backend so that the backend block gets created
+              # However we don't want to route to it here as we are using the overrides in frontend_config instead
+              # So use a path that is descriptive (e.g. "buildpacks") but will not actually match any routes
+              "buildpacks":
+                servers: [127.0.0.1]
+                port: 8282
+              "security_groups":
+                servers: [127.0.0.1]
+                port: 8282
+            # We cannot create acl rules other than path_beg with existing haproxy-boshrelease
+            # So we use frontend_config to hack our own acls and use_backend clauses in
+            # The hashes for the backends have been made to match what routed_backend_servers will generate
+            frontend_config: |
+              acl security_groups_method method GET
+              acl security_groups_path path_beg /v3/security_groups
+              use_backend http-routed-backend-add980 if security_groups_method security_groups_path
+              acl buildpacks_method method GET
+              acl buildpacks_path path_beg /v3/buildpacks
+              use_backend http-routed-backend-5e1c31 if buildpacks_method buildpacks_path
       - name: route_registrar
         release: routing
         properties:
