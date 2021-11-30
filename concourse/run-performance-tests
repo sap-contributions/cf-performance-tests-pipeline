@@ -32,7 +32,7 @@ ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "Se
 SSH_PID=$!
 
 echo -e "\nRunning cf-performance tests..."
-if [ -z "$TEST_RESULTS_FOLDER" ]; then
+if [ -z "${TEST_RESULTS_FOLDER:-}" ]; then
   echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
   exit 1
 fi
@@ -51,7 +51,7 @@ ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:5524/clou
 uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:5524/uaa?sslmode=disable"
 results_folder: "$TEST_RESULTS"
 EOF
-  if [ -z "$TEST_SUITE_FOLDER" ]; then
+  if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
     ginkgo ./...
   else
     ginkgo -r "$TEST_SUITE_FOLDER"
