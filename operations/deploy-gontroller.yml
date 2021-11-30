@@ -2,16 +2,16 @@
   path: /releases/-
   value:
     name: "haproxy"
-    version: "11.3.0"
-    url: "https://bosh.io/d/github.com/cloudfoundry-community/haproxy-boshrelease?v=11.3.0"
-    sha1: "4a52fa172480eae811043d27c49a17a1c54296e1"
+    version: "11.8.1"
+    url: "https://bosh.io/d/github.com/cloudfoundry-community/haproxy-boshrelease?v=11.8.1"
+    sha1: "80c160b8c91cc9bd3d50dd2e9b2a32b247e49b5d"
 - type: replace
   path: /releases/-
   value:
     name: "cloud-controller"
-    version: "0.0.24"
-    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.24/cloudgontroller-boshrelease-0.0.24.tgz
-    sha1: "234104aa3414466a8b5b3350a6b440be6226d490"
+    version: "0.0.25"
+    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.25/cloudgontroller-boshrelease-0.0.25.tgz
+    sha1: "f2bec728e7f57618ab76ca5c991b71628a1d7cf2"
 - type: replace
   path: /instance_groups/-
   value:
@@ -72,10 +72,12 @@
               "/v3/info":
                 servers: [127.0.0.1]
                 port: 8282
-              "/v3/buildpacks AND method GET":
+              "/v3/buildpacks":
+                additional_acls: [method GET]
                 servers: [127.0.0.1]
                 port: 8282
-              "/v3/security_groups AND method GET":
+              "/v3/security_groups":
+                additional_acls: [method GET]
                 servers: [127.0.0.1]
                 port: 8282
               "/docs":
