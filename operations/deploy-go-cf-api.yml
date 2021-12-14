@@ -66,6 +66,7 @@
             backend_ssl: verify
             backend_ca_file:
               ((cc_public_tls.ca))
+            backend_config: http-response set-header Server haproxy
             resolvers:
               - bosh_dns: 169.254.0.2
             routed_backend_servers:
@@ -73,7 +74,7 @@
                 servers: [127.0.0.1]
                 port: 8282
               "/v3/buildpacks":
-                additional_acls: [method GET]
+                additional_acls: [method GET POST]
                 servers: [127.0.0.1]
                 port: 8282
               "/v3/security_groups":
