@@ -28,7 +28,7 @@ The AWS account and domain used to host the BBL and CF foundation is currently o
 
 ## Automatic Setup / Destruction
 
-There are two Concourse pipelines for the automatic deployment and destruction of a CF foundation. Log on to Concourse with the "fly" CLI and upload the pipelines. The "cf-perf-test" variables configure the pipelines for the default CF deployment. The "go-perf-test" variables are for the CF deployment with the new gontroller reimplementation.
+There are two Concourse pipelines for the automatic deployment and destruction of a CF foundation. Log on to Concourse with the "fly" CLI and upload the pipelines. The "cf-perf-test" variables configure the pipelines for the default CF deployment. The "go-perf-test" variables are for the CF deployment with the new go-cf-api reimplementation.
 
 **NOTE**: The credentials which are required below are currently only available to SAP employees.
 
@@ -43,12 +43,12 @@ read -s BBL_STATE_BUCKET_KEY_SECRET
 
 # "cf-perf-test-state" or "go-perf-test-state"
 BBL_STATE_BUCKET_NAME=<bucket name>
-# "" for default CF deployment or " operations/deploy-gontroller.yml" for CF with new Go cloud controller
+# "" for default CF deployment or " operations/deploy-go-cf-api.yml" for CF with go cf api
 ADDITIONAL_OPS_FILES=""
 
-# use "test-results-go-cc" for CF with Go cc
+# use "test-results-go-cc" for CF with go-cf-api
 TEST_RESULTS_FOLDER=test-results
-# use "test-charts-go-cc" for CF with Go cc
+# use "test-charts-go-cc" for CF with go-cf-api
 GENERATED_CHARTS_FOLDER=test-charts
 
 # find those in vault

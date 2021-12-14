@@ -8,10 +8,10 @@
 - type: replace
   path: /releases/-
   value:
-    name: "cloud-controller"
-    version: "0.0.25"
-    url: https://((sap_artifactory_user)):((sap_artifactory_password))@common.cdn.repositories.cloud.sap:443/build.milestones/com/sap/cp/cloudfoundry/cloudgontroller-boshrelease/0.0.25/cloudgontroller-boshrelease-0.0.25.tgz
-    sha1: "f2bec728e7f57618ab76ca5c991b71628a1d7cf2"
+    name: go-cf-api
+    version: 0.1.2
+    url: https://github.com/cloudfoundry/go-cf-api-release/releases/download/v0.1.2/go-cf-api-boshrelease-0.1.2.tgz
+    sha1: 41287e2721b1add8747a5f1e486720028b02b6f1
 - type: replace
   path: /instance_groups/-
   value:
@@ -25,17 +25,17 @@
       - z2
     instances: 1
     jobs:
-      - name: cloud-controller
-        release: cloud-controller
+      - name: go-cf-api
+        release: go-cf-api
         consumes:
           cloud_controller_db:
             from: cloud_controller_db
         properties:
-          name: CloudGontroller
+          name: go-cf-api
           build: custom
           version: 0
           support_address: help@sap.com
-          description: CloudGontroller at SAP BTP
+          description: go-cf-api at SAP BTP
           db:
             max_connections: 20
             min_connections: 10
@@ -66,6 +66,7 @@
             backend_ssl: verify
             backend_ca_file:
               ((cc_public_tls.ca))
+            backend_config: http-response set-header Server haproxy
             resolvers:
               - bosh_dns: 169.254.0.2
             routed_backend_servers:
@@ -73,7 +74,7 @@
                 servers: [127.0.0.1]
                 port: 8282
               "/v3/buildpacks":
-                additional_acls: [method GET]
+                additional_acls: [method GET POST]
                 servers: [127.0.0.1]
                 port: 8282
               "/v3/security_groups":
