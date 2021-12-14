@@ -99,7 +99,7 @@
             routes:
               - health_check:
                   name: cc-api-health-check
-                  script_path: "/var/vcap/jobs/cloud-controller/bin/route-registrar-health-check.sh"
+                  script_path: "/var/vcap/jobs/go-cf-api/bin/route-registrar-health-check.sh"
                   timeout: 6s
                 name: api
                 tls_port: 443
