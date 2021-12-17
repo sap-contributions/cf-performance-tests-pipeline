@@ -73,8 +73,14 @@
               "/v3/info":
                 servers: [127.0.0.1]
                 port: 8282
+              "/v3/buildpacks/":
+                additional_acls: [method GET]
+                servers: [127.0.0.1]
+                port: 8282
               "/v3/buildpacks":
-                additional_acls: [method GET POST]
+                additional_acls:
+                - method GET POST
+                - path_end /v3/buildpacks
                 servers: [127.0.0.1]
                 port: 8282
               "/v3/security_groups":
