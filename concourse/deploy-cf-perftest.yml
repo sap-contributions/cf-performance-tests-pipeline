@@ -30,7 +30,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-deployment.git
-      branch: v16.15.0
+      branch: main
   - name: ops-files
     type: git
     source:
