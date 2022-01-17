@@ -51,6 +51,9 @@ TEST_RESULTS_FOLDER=test-results
 # use "test-charts-go-cc" for CF with go-cf-api
 GENERATED_CHARTS_FOLDER=test-charts
 
+# use for selecting a subset of tests, e.g. "security_groups" for CF with go-cf-api
+TEST_SUITE_FOLDER=
+
 # find those in vault
 read -s GITHUB_USER
 read -s GITHUB_EMAIL
@@ -72,6 +75,7 @@ fly -t <target> set-pipeline -p <pipeline name> \
 -v bbl-state-bucket-name=$BBL_STATE_BUCKET_NAME \
 -v test-results-folder=$TEST_RESULTS_FOLDER \
 -v generated-charts-folder=$GENERATED_CHARTS_FOLDER \
+-v test-suite-folder=$TEST_SUITE_FOLDER \
 -v github-serviceuser-username=$GITHUB_USER \
 -v github-serviceuser-token=$GITHUB_TOKEN \
 -v github-serviceuser-email=$GITHUB_EMAIL \
