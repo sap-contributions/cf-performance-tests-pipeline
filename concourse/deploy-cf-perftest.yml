@@ -476,7 +476,7 @@ jobs:
             GIT_COMMIT_USERNAME: "((github-serviceuser-username))"
             GIT_COMMIT_MESSAGE: "Performance tests results"
             TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
-            TEST_SUITE_FOLDER: "service_plans"
+            TEST_SUITE_FOLDER: "((test-suite-folder))"
           outputs:
             - name: performance-test-results
         on_failure:
