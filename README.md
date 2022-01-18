@@ -51,10 +51,12 @@ TEST_RESULTS_FOLDER=test-results
 # use "test-charts-go-cc" for CF with go-cf-api
 GENERATED_CHARTS_FOLDER=test-charts
 
-# use for selecting a subset of tests, e.g. "security_groups" for CF with go-cf-api
+# use for selecting a subset of tests, e.g. "security_groups"
+# leave empty to run all tests
 TEST_SUITE_FOLDER=
 
 # find those in vault
+# github_com/bosh-ci-serviceuser
 read -s GITHUB_USER
 read -s GITHUB_EMAIL
 read -s GITHUB_TOKEN
@@ -96,4 +98,6 @@ fly -t <target> set-pipeline -p <pipeline name> \
 -v aws-access-key-secret=$AWS_KEY_SECRET \
 -c ./concourse/destroy-cf-perftest.yml
 ```
-The deploy pipeline runs `bbl up` followed by a `bosh deploy` for the CF deployment. The destroy pipeline first deletes all BOSH deployments and then runs `bbl destroy` to delete all IaaS resources.
+The deploy pipeline runs `bbl up` followed by a `bosh deploy` for the CF deployment. Then it executes the performance tests and generates visual charts. Test results and charts are automatically uploaded to github. The pipeline also runs the CF Acceptance Tests and finally destroys the "cf" BOSH deployment to save cost.
+
+The destroy pipeline first deletes all BOSH deployments and then runs `bbl destroy` to delete all IaaS resources. Use this only if you want to tear down the complete environment.

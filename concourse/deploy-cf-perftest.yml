@@ -593,3 +593,61 @@ jobs:
           put: slack-notification
           params:
             alert_type: success
+
+  - name: bosh-delete-cf-deployment
+    serial: true
+    plan:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
+        params:
+          unpack: true
+      - get: perf-test-repo
+        passed:
+          - cf-acceptance-test
+        trigger: true
+      - task: bosh-delete-deployments
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: cloudfoundry/cf-deployment-concourse-tasks
+            version:
+              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+
+          inputs:
+            - name: bbl-state  # - The S3 bucket containing bbl state
+            - name: cf-deployment-concourse-tasks  # - This repo
+
+          run:
+            path: cf-deployment-concourse-tasks/bosh-delete-deployment/task
+
+          params:
+            BBL_STATE_DIR: state
+            # - Path to the directory containing the `bbl-state.json` file
+            # - The path is relative to the `bbl-state` input
+            # - If blank or '.', uses `bbl-state` input as the location for bbl state
+            # - If the specified path does not exist, it will be created
+            # - This input and parameter will be ignored if toolsmiths-env is provided
+
+            DELETE_ALL_DEPLOYMENTS: false
+            # - Optional
+            # - When true, deletes ALL BOSH deployments
+
+            DEPLOYMENT_NAME: cf
+
+            IGNORE_ERRORS: false
+            # - Optional
+            # - When true, passes the `--force` flag to the delete-deployment BOSH command
+
+            BBL_JSON_CONFIG:
+            # - Optional
+            # - For if you need a dynamic config for BBL
+        on_failure:
+          put: slack-notification
+          params:
+            alert_type: failed
+        on_success:
+          put: slack-notification
+          params:
+            alert_type: success
