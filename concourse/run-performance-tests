@@ -49,6 +49,7 @@ users:
     password: "$CF_ADMIN_PASSWORD"
 ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:5524/cloud_controller?sslmode=disable"
 uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:5524/uaa?sslmode=disable"
+samples: 10
 results_folder: "$TEST_RESULTS"
 EOF
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
