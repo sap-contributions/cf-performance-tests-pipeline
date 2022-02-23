@@ -2,7 +2,7 @@
 
 This repository contains all artifacts for the CF performance tests pipeline including bootstrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It is based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
 
-The performance tests can be found [here](https://github.com/cloudfoundry-incubator/cf-performance-tests)
+The performance tests can be found [here](https://github.com/cloudfoundry/cf-performance-tests)
 
 ## Test Results / Test Charts
 
