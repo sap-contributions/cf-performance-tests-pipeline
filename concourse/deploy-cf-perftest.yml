@@ -303,7 +303,7 @@ jobs:
             # - Required unless toolsmiths-env optional input is provided
             # - CF system base domain e.g. `my-cf.com`
 
-            OPS_FILES: "operations/use-postgres.yml operations/scale-up-database.yml operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-down-vms.yml operations/speed-up-dynamic-asgs.yml"
+            OPS_FILES: "operations/use-postgres.yml operations/scale-up-database.yml operations/use-bionic-stemcell.yml((additional-ops-files)) operations/speed-up-dynamic-asgs.yml"
             # - Optional
             # - List of operations files to be applied to the manifest
             # - Quoted and space-separated
@@ -556,7 +556,7 @@ jobs:
             # - Optional
             # - The amount of time, in seconds, to wait before marking a test as slow.
 
-            NODES: 1
+            NODES: 12
             # - Optional
             # - Number of parallel ginkgo nodes.
 
