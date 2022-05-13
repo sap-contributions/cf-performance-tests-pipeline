@@ -556,7 +556,7 @@ jobs:
             # - Optional
             # - The amount of time, in seconds, to wait before marking a test as slow.
 
-            NODES: 12
+            NODES: 1
             # - Optional
             # - Number of parallel ginkgo nodes.
 
