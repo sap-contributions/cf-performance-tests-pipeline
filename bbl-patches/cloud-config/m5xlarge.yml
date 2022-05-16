@@ -1,0 +1,9 @@
+- type: replace
+  path: /vm_types/-
+  value:
+    name: m5.xlarge
+    cloud_properties:
+      instance_type: m5.xlarge
+      ephemeral_disk:
+        size: 10240
+        type: gp2
