@@ -3,6 +3,8 @@ import datetime
 import glob
 import json
 import logging
+from decimal import Decimal, ROUND_DOWN, ROUND_UP
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -103,6 +105,10 @@ def generate_chart(prefix, chart_destination: str, file_paths: List[str], simpli
             average_times = get_test_values(test_name, 'Average', test_results, test_executions)
             
             axs[i].plot(label_locations, average_times, label='Average', marker='o')
+
+        y_lim = axs[i].get_ylim()
+        axs[i].set_ylim(bottom=Decimal(y_lim[0] * 0.8).quantize(Decimal('1.0'), rounding=ROUND_DOWN),
+                        top=Decimal(y_lim[1] * 1.2).quantize(Decimal('1.0'), rounding=ROUND_UP))
 
         axs[i].set_ylabel('Runtime (s)', loc='top')
         axs[i].set_xticks(label_locations)
