@@ -1,16 +1,29 @@
-resource_types:
-
-- name: slack-alert
-  type: docker-image
-  source:
-    repository: arbourd/concourse-slack-alert-resource
-
 
 resources:
   - name: cf-deployment-concourse-tasks
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
+  - name: eb-tasks
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/EngineerBetter/concourse-tasks.git
+      branch: main
+  - name: perf-test-repo-source
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
+      branch: ((cf-d.source)) # required for "put"
+  - name: perf-test-repo-target
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
+      branch: ((cf-d.target)) # required for "put"
   - name: perf-test-repo
     type: git
     source:
@@ -30,11 +43,11 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-deployment.git
-      branch: main
+      branch: ((cf-d.source))
   - name: ops-files
     type: git
     source:
-      branch: main
+      branch: ((cf-d.source))
       uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
@@ -51,18 +64,6 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests.git
       branch: main
-  - name: cf-acceptance-tests
-    type: git
-    source:
-      uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
-  - name: integration-config
-    type: s3
-    source:
-      region_name: eu-central-1
-      bucket: ((bbl-state-bucket-name))
-      versioned_file: integration_config.json
-      access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
-      secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
   - name: lb-certificate
     type: s3
     source:
@@ -71,17 +72,14 @@ resources:
       versioned_file: lb_certificate.tar.gz
       access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
       secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
-  - name: slack-notification
-    type: slack-alert
-    source:
-      url: ((cf-perf-slack-notification-url))
 
 jobs:
   - name: bbl-up
     serial: true
     plan:
       - get: cf-deployment-concourse-tasks
-      - get: perf-test-repo
+      - get: perf-test-repo-source
+        trigger: true
       - get: lb-certificate
         params:
           unpack: true
@@ -90,7 +88,7 @@ jobs:
           unpack: true
       - task: bbl-up
         input_mapping:
-          bbl-config: perf-test-repo
+          bbl-config: perf-test-repo-source
         config:
           platform: linux
           image_resource:
@@ -241,11 +239,6 @@ jobs:
             # - bbl will replace them on its next operation
             # - Set this to `false` to keep these plugins
 
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
-
         ensure:
           put: bbl-state
           params:
@@ -263,10 +256,10 @@ jobs:
           - bbl-up
         trigger: true
       - get: cf-deployment
-        trigger: true
       - get: ops-files
       - get: vars-files
       - task: bosh-deploy
+        attempts: 3
         config:
           platform: linux
           image_resource:
@@ -303,7 +296,7 @@ jobs:
             # - Required unless toolsmiths-env optional input is provided
             # - CF system base domain e.g. `my-cf.com`
 
-            OPS_FILES: "operations/use-postgres.yml operations/scale-up-vms.yml operations/use-bionic-stemcell.yml((additional-ops-files)) operations/speed-up-dynamic-asgs.yml"
+            OPS_FILES: "operations/use-postgres.yml operations/scale-up-vms.yml operations/use-bionic-stemcell.yml((additional-ops-files))((cf-d.additional-ops-files))"
             # - Optional
             # - List of operations files to be applied to the manifest
             # - Quoted and space-separated
@@ -393,10 +386,6 @@ jobs:
             BBL_JSON_CONFIG:
             # - Optional
             # - For if you need a dynamic config for BBL
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
 
   - name: bosh-clean-up
     serial: true
@@ -405,10 +394,10 @@ jobs:
       - get: bbl-state
         params:
           unpack: true
+        trigger: true
       - get: cf-deployment
         passed:
           - bosh-deploy
-        trigger: true
       - task: bosh-clean-up
         config:
           platform: linux
@@ -479,10 +468,6 @@ jobs:
             TEST_SUITE_FOLDER: "((test-suite-folder))"
           outputs:
             - name: performance-test-results
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
       - put: perf-test-repo
         params:
           repository: performance-test-results
@@ -516,83 +501,10 @@ jobs:
             GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
           outputs:
             - name: generated-chart-output
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
       - put: perf-test-repo
         params:
           repository: generated-chart-output
           rebase: true
-
-  - name: cf-acceptance-test
-    serial: true
-    plan:
-      - get: cf-deployment-concourse-tasks
-      - get: cf-acceptance-tests
-      - get: integration-config
-      - get: perf-test-repo
-        passed:
-          - generate-chart
-        trigger: true
-      - task: cf-acceptance-test
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
-          inputs:
-            - name: cf-deployment-concourse-tasks
-            - name: cf-acceptance-tests
-            - name: integration-config
-          run:
-            path: cf-deployment-concourse-tasks/run-cats/task
-
-          params:
-            SLOW_SPEC_THRESHOLD: 315
-            # - Optional
-            # - The amount of time, in seconds, to wait before marking a test as slow.
-
-            NODES: 1
-            # - Optional
-            # - Number of parallel ginkgo nodes.
-
-            CONFIG_FILE_PATH: integration_config.json
-            # - Optional
-            # - Path to the CATs integration configuration file.
-            # - The path is relative to the `integration-config` input.
-
-            REPORTER_CONFIG_FILE_PATH:
-            # - Optional
-            # - Path to the CATs reporter configuration file.
-            # - The path is relative to the `integration-config` input.
-            # - If this file exists, it will automatically be combined with the config file above.
-            # - The intent is to allow for the configuration of a CATs' custom reporter.
-
-            SKIP_REGEXP:
-            # - Optional
-            # - A regular expression to be passed to the ginkgo's `-skip` flag.
-            # - If set, ginkgo will skip tests that match this regular experession.
-
-            CAPTURE_LOGS: false
-            # - Optional
-            # - If set to `true`, the task will capture logs and save them
-            #   to the output directory
-
-            FLAKE_ATTEMPTS: 2
-            # - Optional
-            # - The number of times to retry a single failed test
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
-        on_success:
-          put: slack-notification
-          params:
-            alert_type: success
 
   - name: bosh-delete-cf-deployment
     serial: true
@@ -604,8 +516,9 @@ jobs:
           unpack: true
       - get: perf-test-repo
         passed:
-          - cf-acceptance-test
+          - generate-chart
         trigger: true
+      - get: perf-test-repo-source
       - task: bosh-delete-deployments
         config:
           platform: linux
@@ -644,11 +557,27 @@ jobs:
             BBL_JSON_CONFIG:
             # - Optional
             # - For if you need a dynamic config for BBL
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
-        on_success:
-          put: slack-notification
-          params:
-            alert_type: success
+
+  - name: set-next-pipeline-((cf-d.target))
+    serial: true
+    plan:
+      - in_parallel:
+          - get: perf-test-repo-source
+            trigger: true
+            passed:
+              - bosh-delete-cf-deployment
+          - get: eb-tasks
+      - try:
+          do:
+            - task: toggle
+              file: eb-tasks/toggle/task.yml
+              params: { TOGGLE: ((cf-d.has-follow-up)) }
+            - put: perf-test-repo-target
+              params:
+                repository: perf-test-repo-source
+                force: true
+            - set_pipeline: cf-perf-test-((cf-d.target))
+              file: perf-test-repo-source/concourse/cf-perf-test-rerun.yml
+              var_files:
+                - perf-test-repo-source/variables/vars-cf-perf-common.yml
+                - perf-test-repo-source/variables/cf-d-backfill/((cf-d.target)).yml
