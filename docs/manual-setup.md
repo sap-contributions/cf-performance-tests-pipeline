@@ -48,9 +48,13 @@ docker run -it -v ~/cf/cf-performance-tests-pipeline:/home/cfperftest cloudfound
 
 ### AWS Account Setup
 
-Create a AWS user with name **iaas-provider_bootstrap-cfperftest** and permissions "AdminsGroup / AdministratorAccess".
+Create a AWS user with name:
 
-Save credentials in a secure place.
+**iaas-provider_bootstrap-cfperftest** -or-
+**iaas-provider_bootstrap-goperftest** -or-
+**iaas-provider_bootstrap-cfperftest-mysql**
+
+and permissions "AdminsGroup / AdministratorAccess". Save credentials in a secure place.
 
 ### BBL Setup
 
@@ -58,6 +62,11 @@ Create a load balancer, the jumpbox and bootstrap-bosh with bbl:
 ```
 bbl --state-dir ./state plan --lb-type cf --lb-domain cf.cfperftest.<your domain> --lb-cert cert.pem --lb-key key.pem --iaas aws --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET> --aws-region eu-central-1
 bbl --debug --state-dir ./state up --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET>
+```
+
+Export the state folder location:
+```
+export BBL_STATE_DIRECTORY=./state
 ```
 
 You should now be able to access the jumpbox and the BOSH director:
@@ -112,7 +121,47 @@ tar -czvf bbl-state.tar.gz state
 ```
 The archive must contain the "state" folder as the top-level content. It should be around 160kb in size. If it is several mb large, it probably contains unnecessary Terraform binaries. In that case, search for a ".terraform" folder with a "plugins" subfolder and remove it. Also make sure you are running the tar command in the Docker container and not locally on a Mac. The Mac "tar" command may add additional meta files which can lead to problems.
 
-Upload the tgz file to the S3 bucket "cf-perf-test-state" or "go-perf-test-state".
+Create the S3 bucket "cf-perf-test-state", "go-perf-test-state" or "cf-perf-test-mysql-state", if not already done. Then upload the state zip file.
+
+### Create User for Bucket Access
+
+In IAM, create a new user "cf-perf-test-state-bucket-user", "go-perf-test-state-bucket-user" or "cf-mysql-perf-test-state-bucket-user". Attach the following inline policy and name it "cf-perf-test-state-bucket-access", "go-perf-test-state-bucket-access" or "cf-mysql-perf-test-state-bucket-access":
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ListObjectsInBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketVersioning"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<BUCKET NAME>"
+            ]
+        },
+        {
+            "Sid": "AllObjectActions",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObjectVersion",
+                "s3:PutObjectVersionAcl",
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<BUCKET NAME>/*"
+            ]
+        }
+    ]
+}
+```
+
+Store the user credentials in a safe place.
 
 ### DNS Setup
 
@@ -196,6 +245,6 @@ Now use bbl to destroy all infrastructure resources:
 ```
 bbl --debug --state-dir ./state destroy --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET> --aws-region eu-central-1
 ```
-After successful deletion the "state" folder should be empty again and MUST be commited.
+After successful deletion the "state" folder should be empty again and MUST be committed.
 
 Finally, delete the DNS configuration that was created in step [DNS Setup](#dns-setup).
