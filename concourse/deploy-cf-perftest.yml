@@ -98,7 +98,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
           inputs:
             - name: cf-deployment-concourse-tasks  # - This repo
             - name: bbl-state  # - The S3 bucket containing bbl state
@@ -274,7 +274,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
 
           inputs:
             - name: bbl-state  # - The repo containing the Director's bbl state dir
@@ -417,7 +417,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
 
           inputs:
             - name: bbl-state
@@ -463,7 +463,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
           inputs:
             - name: perf-test-repo
             - name: cf-performance-tests
@@ -543,7 +543,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
           inputs:
             - name: cf-deployment-concourse-tasks
             - name: cf-acceptance-tests
@@ -614,7 +614,7 @@ jobs:
             source:
               repository: cloudfoundry/cf-deployment-concourse-tasks
             version:
-              digest: sha256:90349a43f1a254d9e458a519fe2d3acc5c655d90ac82a418d009c923df0bcc26
+              digest: sha256:ae991e1fc32eeb1335352a95b080abc9c98dde038c14c9905ccd7b300b5a063e
 
           inputs:
             - name: bbl-state  # - The S3 bucket containing bbl state
