@@ -31,6 +31,10 @@ chmod 0600 ./jumpbox_private.key
 ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" -i ./jumpbox_private.key -L 5524:"$DATABASE_IP":5524 jumpbox@"$JUMPBOX_URL" &
 SSH_PID=$!
 
+# TODO remove this again
+echo -e "\nInstalling Ginkgo v1..."
+go install github.com/onsi/ginkgo/ginkgo@latest
+
 echo -e "\nRunning cf-performance tests..."
 if [ -z "${TEST_RESULTS_FOLDER:-}" ]; then
   echo "Task parameter 'TEST_RESULTS_FOLDER' is empty. Check pipeline configuration."
