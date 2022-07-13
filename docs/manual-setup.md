@@ -4,7 +4,7 @@ This protocol can be used as a base for creating an automation.
 
 ### Load Balancer Certificate
 
-Create a config file for the certificate:
+Create a folder `lb_certificate` to store all certificate-related files. Create a config file for the certificate:
 ```
 # server_rootCA.csr.cnf
 [req]
@@ -37,6 +37,12 @@ Create a self-signed certificate with:
 ```
 openssl req -x509 -sha256 -nodes -out cert.pem -newkey rsa:2048 -keyout key.pem -days 365 -config server_rootCA.csr.cnf -extensions req_ext
 ```
+
+Finally create an archive with the key, certificate and config file:
+```
+tar -czvf lb_certificate.tar.gz lb_certificate
+```
+This archive must be uploaded to the S3 bucket later (see below).
 
 ### Docker Tools Container
 
@@ -111,7 +117,7 @@ resource "aws_elb" "cf_router_lb" {
 ```
 Place the file in the `state/terraform` folder. The next run of `bbl plan` and `bbl up` will apply the configuration. You can verify the configuration in the AWS console in "EC2" > "Load Balancers" > "bbl-env-<env name>-cf-router-lb" > "Attributes" > "Idle timeout".
 
-### Upload State
+### Upload State and Certificate
 
 Now you must persist the state. As it contains credentials, it cannot be stored in git. Instead, we store it in a S3 bucket with special permissions.
 
@@ -121,7 +127,7 @@ tar -czvf bbl-state.tar.gz state
 ```
 The archive must contain the "state" folder as the top-level content. It should be around 160kb in size. If it is several mb large, it probably contains unnecessary Terraform binaries. In that case, search for a ".terraform" folder with a "plugins" subfolder and remove it. Also make sure you are running the tar command in the Docker container and not locally on a Mac. The Mac "tar" command may add additional meta files which can lead to problems.
 
-Create the S3 bucket "cf-perf-test-state", "go-perf-test-state" or "cf-perf-test-mysql-state", if not already done. Then upload the state zip file.
+Create the S3 bucket "cf-perf-test-state", "go-perf-test-state" or "cf-perf-test-mysql-state", if not already done. Then upload the state zip file. Also upload the `lb_certificate.tar.gz` archive.
 
 ### Create User for Bucket Access
 
