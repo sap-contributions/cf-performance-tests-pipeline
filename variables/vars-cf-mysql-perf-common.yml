@@ -1,0 +1,7 @@
+system-domain: cf.cfmysqlperftest.bndl.sapcloud.io
+bbl-state-bucket-name: cf-mysql-perf-test-state
+test-results-folder: test-results-mysql
+generated-charts-folder: test-charts-mysql
+results-branch: main
+test-suite-folder: ""
+additional-ops-files: ""
