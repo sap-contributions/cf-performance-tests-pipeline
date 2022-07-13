@@ -28,7 +28,7 @@ cf create-user perf-test-user perf-test-password
 echo -e "\nOpening SSH tunnel to CF database..."
 echo "$JUMPBOX_PRIVATE_KEY" > ./jumpbox_private.key
 chmod 0600 ./jumpbox_private.key
-ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" -i ./jumpbox_private.key -L 5524:"$DATABASE_IP":5524 jumpbox@"$JUMPBOX_URL" &
+ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" -i ./jumpbox_private.key -L 3306:"$DATABASE_IP":3306 jumpbox@"$JUMPBOX_URL" &
 SSH_PID=$!
 
 # TODO remove this again
@@ -51,8 +51,8 @@ users:
   admin:
     username: "admin"
     password: "$CF_ADMIN_PASSWORD"
-ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:5524/cloud_controller?sslmode=disable"
-uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:5524/uaa?sslmode=disable"
+ccdb_connection: "postgres://cloud_controller:$CCDB_PASSWORD@localhost:3306/cloud_controller?sslmode=disable"
+uaadb_connection: "postgres://uaa:$UAADB_PASSWORD@localhost:3306/uaa?sslmode=disable"
 samples: 10
 results_folder: "$TEST_RESULTS"
 EOF
