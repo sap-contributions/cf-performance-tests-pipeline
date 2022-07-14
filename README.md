@@ -124,5 +124,15 @@ Follow those steps to access the performance test landscape. The landscape is de
 - `bosh deployments` etc. should work now
 
 ### Connect to Concourse Credhub
-
 Run [this script](https://github.com/cloudfoundry/bosh-community-stemcell-ci-infra/blob/main/start-credhub-cli.sh), it requires access to the Bosh-CI Concourse GCP project.
+
+### Connect to MySQL Database
+If you have deployed CF with MySQL as cloud controller database, you can open a tunnel to the jumpbox and then connect to the database. Initialise bbl as explained above and then run:
+```bash
+ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" \
+  -i "$JUMPBOX_PRIVATE_KEY" -L "3306:10.0.16.5:3306" jumpbox@<jumpbox ip from $BOSH_ALL_PROXY> &
+# copy mysql client from "database" vm
+bosh -d cf scp database:/usr/local/bin/mysql .
+./mysql --host=127.0.0.1 --port=3306 --user=cloud_controller cloud_controller --password=<cc_database_password from credhub>
+```
+From the mysql command prompt, you can e.g. use `source db.sql` to read and execute statements from a file.
