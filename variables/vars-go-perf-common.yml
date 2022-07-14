@@ -8,3 +8,4 @@ results-branch: main
 # leave empty to run all tests
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml operations/deploy-go-cf-api.yml"
+database-type: postgres
