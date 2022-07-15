@@ -36,7 +36,7 @@ if [ "${DATABASE_TYPE}" == 'postgres' ]; then
 elif [ "${DATABASE_TYPE}" == 'mysql' ]; then
   DATABASE_PORT=3306
   DATABASE_CCDB="cloud_controller:$CCDB_PASSWORD@tcp(localhost:$DATABASE_PORT)/cloud_controller?multiStatements=true"
-  DATABASE_UAADB="uaa:$CCDB_PASSWORD@tcp(localhost:$DATABASE_PORT)/uaa?multiStatements=true"
+  DATABASE_UAADB="uaa:$UAADB_PASSWORD@tcp(localhost:$DATABASE_PORT)/uaa?multiStatements=true"
 else
   echo "Task parameter 'DATABASE_TYPE' must be one of 'postgres' or 'mysql' (is: ${DATABASE_TYPE})."
   exit 1
