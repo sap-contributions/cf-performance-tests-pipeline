@@ -89,77 +89,39 @@ jobs:
   - name: bbl-up
     serial: true
     plan:
-      - get: cf-deployment-concourse-tasks
-      - get: perf-test-repo
-      - get: lb-certificate
-        params:
-          unpack: true
-      - get: bbl-state-file
-        params:
-          unpack: true
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: perf-test-repo
+        - get: lb-certificate
+          params:
+            unpack: true
+        - get: bbl-state-file
+          params:
+            unpack: true
+      - in_parallel:
+        - load_var: lb_cert_pem
+          file: lb-certificate/lb_certificate/cert.pem
+        - load_var: lb_cert_key
+          file: lb-certificate/lb_certificate/key.pem
       - task: bbl-up
         input_mapping:
           bbl-config: perf-test-repo
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
-          inputs:
-            - name: cf-deployment-concourse-tasks
-            - name: bbl-state-file
-            - name: bbl-config
-            - name: lb-certificate
-          outputs:
-            - name: updated-bbl-state
-          run:
-            path: cf-deployment-concourse-tasks/bbl-up/task
-          params:
-            BBL_IAAS: aws
-            BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
-            BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
-            BBL_AWS_REGION: eu-central-1
-            BBL_STATE_DIR: state
-            BBL_CONFIG_DIR: bbl-patches
-            BBL_LB_CERT: ../../lb-certificate/lb_certificate/cert.pem
-            BBL_LB_CERT_CHAIN:
-            BBL_LB_KEY: ../../lb-certificate/lb_certificate/key.pem
-            LB_DOMAIN: ((system-domain))
-            SKIP_LB_CREATION: false
-            DEBUG_MODE: false
-            STORE_BBL_STATE_AS_TARBALL: true
-            DELETE_TERRAFORM_PLUGINS: true
-            BBL_AZURE_CLIENT_ID:
-            BBL_AZURE_CLIENT_SECRET:
-            BBL_AZURE_TENANT_ID:
-            BBL_AZURE_SUBSCRIPTION_ID:
-            BBL_AZURE_REGION:
-            BBL_GCP_SERVICE_ACCOUNT_KEY:
-            BBL_GCP_REGION:
-            BBL_OPENSTACK_AUTH_URL:
-            BBL_OPENSTACK_AZ:
-            BBL_OPENSTACK_NETWORK_ID:
-            BBL_OPENSTACK_NETWORK_NAME:
-            BBL_OPENSTACK_PASSWORD:
-            BBL_OPENSTACK_USERNAME:
-            BBL_OPENSTACK_PROJECT:
-            BBL_OPENSTACK_DOMAIN:
-            BBL_OPENSTACK_REGION:
-            BBL_VSPHERE_VCENTER_USER:
-            BBL_VSPHERE_VCENTER_PASSWORD:
-            BBL_VSPHERE_VCENTER_IP:
-            BBL_VSPHERE_VCENTER_DC:
-            BBL_VSPHERE_VCENTER_CLUSTER:
-            BBL_VSPHERE_VCENTER_RP:
-            BBL_VSPHERE_NETWORK:
-            BBL_VSPHERE_VCENTER_DS:
-            BBL_VSPHERE_SUBNET_CIDR:
-            BBL_VSPHERE_VCENTER_DISKS:
-            BBL_VSPHERE_VCENTER_TEMPLATES:
-            BBL_VSPHERE_VCENTER_VMS:
+          bbl-state: bbl-state-file
+        file: cf-deployment-concourse-tasks/bbl-up/task.yml
+        params:
+          BBL_IAAS: aws
+          BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
+          BBL_AWS_REGION: eu-central-1
+          BBL_STATE_DIR: state
+          BBL_CONFIG_DIR: bbl-patches
+          BBL_LB_CERT: ((.:lb_cert_pem))
+          BBL_LB_KEY: ((.:lb_cert_key))
+          LB_DOMAIN: ((system-domain))
+          SKIP_LB_CREATION: false
+          DEBUG_MODE: false
+          STORE_BBL_STATE_AS_TARBALL: true
+          DELETE_TERRAFORM_PLUGINS: true
         on_failure:
           put: slack-notification
           params:
