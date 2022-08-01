@@ -78,6 +78,15 @@ resources:
       url: ((cf-perf-slack-notification-url))
 
 jobs:
+  - name: set-pipeline
+    serial: true
+    plan:
+      - get: perf-test-repo
+        trigger: true
+      - set_pipeline: self
+        file: perf-test-repo/concourse/deploy-cf-perftest.yml
+        var_files:
+          - perf-test-repo/variables/vars-((env_name))-perf-common.yml
   - name: bbl-up
     serial: true
     plan:

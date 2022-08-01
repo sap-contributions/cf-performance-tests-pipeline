@@ -1,3 +1,4 @@
+env_name: go
 system-domain: cf.goperftest.bndl.sapcloud.io
 bbl-state-bucket-name: go-perf-test-state
 test-results-folder: test-results-go-cc

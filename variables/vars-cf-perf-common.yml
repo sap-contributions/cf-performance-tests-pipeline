@@ -1,3 +1,4 @@
+env_name: cf
 system-domain: cf.cfperftest.bndl.sapcloud.io
 bbl-state-bucket-name: cf-perf-test-state
 test-results-folder: test-results
