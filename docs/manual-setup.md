@@ -60,7 +60,13 @@ Create a AWS user with name:
 **iaas-provider_bootstrap-goperftest** -or-
 **iaas-provider_bootstrap-cfperftest-mysql**
 
-and permissions "AdminsGroup / AdministratorAccess". Save credentials in a secure place.
+and permissions "AdminsGroup / AdministratorAccess".
+
+Once created, store the user's AWS access key and secret access key in the Concourse CredHub under the following paths:
+```
+/concourse/cf-controlplane/<PIPELINE_NAME>/aws-access-key-id
+/concourse/cf-controlplane/<PIPELINE_NAME>/aws-access-key-secret
+```
 
 ### BBL Setup
 
@@ -167,8 +173,12 @@ In IAM, create a new user "cf-perf-test-state-bucket-user", "go-perf-test-state-
 }
 ```
 
-Store the user credentials in a safe place.
 
+Once created, store the user's AWS access key and secret access key in the Concourse CredHub under the following paths:
+```
+/concourse/cf-controlplane/<PIPELINE_NAME>/bbl-state-bucket-access-key-id
+/concourse/cf-controlplane/<PIPELINE_NAME>/bbl-state-bucket-access-key-secret
+```
 ### DNS Setup
 
 Get the name servers from "state/vars/terraform.tfstate":

@@ -38,15 +38,6 @@ The deploy pipelines run `bbl up` followed by a `bosh deploy` for the CF deploym
 
 The destroy pipelines first delete all BOSH deployments and then run `bbl destroy` to delete all IaaS resources. Use this only if you want to tear down the complete environment.
 
-### CF Performance Tests Pipeline
-
-Store the following credentials in the Concourse CredHub:
-```
-/concourse/cf-controlplane/cf-perf-aws-access-key-secret
-/concourse/cf-controlplane/cf-perf-aws-access-key-id
-/concourse/cf-controlplane/cf-perf-bbl-state-bucket-access-key-secret
-/concourse/cf-controlplane/cf-perf-bbl-state-bucket-access-key-id
-```
 
 #### Deploy-Pipeline
 ```bash
@@ -61,15 +52,6 @@ fly -t <target> set-pipeline -p destroy-cf-performance-test
   -c ./concourse/destroy-cf-perftest.yml
 ```
 
-### Go Performance Tests Pipeline
-
-Store these credentials in the Concourse CredHub:
-```
-/concourse/cf-controlplane/go-perf-aws-access-key-secret
-/concourse/cf-controlplane/go-perf-aws-access-key-id
-/concourse/cf-controlplane/go-perf-bbl-state-bucket-access-key-id
-/concourse/cf-controlplane/go-perf-bbl-state-bucket-access-key-secret
-```
 
 #### Deploy-Pipeline
 ```bash
@@ -85,15 +67,6 @@ fly -t <target> set-pipeline -p destroy-go-performance-test
   -c ./concourse/destroy-cf-perftest.yml
 ```
 
-### MySQL Performance Tests Pipeline
-
-Store these credentials in the Concourse CredHub:
-```
-/concourse/cf-controlplane/cf-mysql-perf-bbl-state-bucket-access-key-id
-/concourse/cf-controlplane/cf-mysql-perf-bbl-state-bucket-access-key-secret
-/concourse/cf-controlplane/cf-mysql-perf-aws-access-key-id
-/concourse/cf-controlplane/cf-mysql-perf-aws-access-key-secret
-```
 
 #### Deploy-Pipeline
 ```bash

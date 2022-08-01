@@ -23,10 +23,10 @@ resources:
     source:
       region_name: eu-central-1
       bucket: ((bbl-state-bucket-name))
-      initial_version: "0"
       versioned_file: bbl-state.tar.gz
-      access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
-      secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
+      initial_version: "0"
+      access_key_id: ((bbl-state-bucket-access-key-id))
+      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: cf-deployment
     type: git
     source:
@@ -45,8 +45,8 @@ resources:
       region_name: eu-central-1
       bucket: ((bbl-state-bucket-name))
       versioned_file: artifactory-credentials.yml
-      access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
-      secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
+      access_key_id: ((bbl-state-bucket-access-key-id))
+      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: cf-performance-tests
     type: git
     source:
@@ -62,16 +62,16 @@ resources:
       region_name: eu-central-1
       bucket: ((bbl-state-bucket-name))
       versioned_file: integration_config.json
-      access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
-      secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
+      access_key_id: ((bbl-state-bucket-access-key-id))
+      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: lb-certificate
     type: s3
     source:
       region_name: eu-central-1
       bucket: ((bbl-state-bucket-name))
       versioned_file: lb_certificate.tar.gz
-      access_key_id: ((cf-perf-bbl-state-bucket-access-key-id))
-      secret_access_key: ((cf-perf-bbl-state-bucket-access-key-secret))
+      access_key_id: ((bbl-state-bucket-access-key-id))
+      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: slack-notification
     type: slack-alert
     source:
@@ -118,8 +118,8 @@ jobs:
           params:
             # AWS Configuration Params
             # - Required for AWS
-            BBL_AWS_ACCESS_KEY_ID: ((cf-perf-aws-access-key-id))
-            BBL_AWS_SECRET_ACCESS_KEY: ((cf-perf-aws-access-key-secret))
+            BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+            BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
             BBL_AWS_REGION: eu-central-1
 
             # Azure Configuration Params
