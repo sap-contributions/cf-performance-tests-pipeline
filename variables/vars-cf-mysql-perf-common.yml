@@ -1,6 +1,6 @@
 env_name: cf-mysql
 system-domain: cf.cfmysqlperftest.bndl.sapcloud.io
-bbl-state-bucket-name: cf-mysql-perf-test-state
+bbl-state-bucket-name: mysql-perf-tests-tmp
 test-results-folder: test-results-mysql
 generated-charts-folder: test-charts-mysql
 results-branch: CFP-1806
