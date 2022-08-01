@@ -104,10 +104,10 @@ jobs:
         - load_var: lb_cert_key
           file: lb-certificate/lb_certificate/key.pem
       - task: bbl-up
+        file: cf-deployment-concourse-tasks/bbl-up/task.yml
         input_mapping:
           bbl-config: perf-test-repo
           bbl-state: bbl-state-file
-        file: cf-deployment-concourse-tasks/bbl-up/task.yml
         params:
           BBL_IAAS: aws
           BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
@@ -135,51 +135,28 @@ jobs:
     serial: true
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state-file
-        params:
-          unpack: true
-        passed:
-          - bbl-up
-        trigger: true
-      - get: cf-deployment
-        trigger: true
-      - get: ops-files
-      - get: vars-files
-      - task: bosh-deploy
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
-          inputs:
-            - name: bbl-state-file
-            - name: cf-deployment
-            - name: ops-files
-            - name: vars-files
-            - name: cf-deployment-concourse-tasks
-          run:
-            path: cf-deployment-concourse-tasks/bosh-deploy/task
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: bbl-state-file
           params:
-            BBL_STATE_DIR: state
-            MANIFEST_FILE: cf-deployment.yml
-            SYSTEM_DOMAIN: ((system-domain))
-            OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
-            VARS_FILES: "artifactory-credentials.yml"
-            REGENERATE_CREDENTIALS: false
-            DEPLOY_WITH_UPTIME_MEASUREMENTS: false
-            MEASURE_SYSLOG_AVAILABILITY: false
-            FAIL_ON_DOWNTIME: false
-            APP_PUSHABILITY_THRESHOLD: 0
-            HTTP_AVAILABILITY_THRESHOLD: 0
-            RECENT_LOGS_THRESHOLD: 0
-            STREAMING_LOGS_THRESHOLD: 0
-            APP_SYSLOG_AVAILABILITY_THRESHOLD: 0
-            USE_SINGLE_APP_INSTANCE: false
-            BOSH_LITE: false
+            unpack: true
+          passed:
+            - bbl-up
+          trigger: true
+        - get: cf-deployment
+          trigger: true
+        - get: ops-files
+        - get: vars-files
+      - task: bosh-deploy
+        file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          BBL_STATE_DIR: state
+          MANIFEST_FILE: cf-deployment.yml
+          SYSTEM_DOMAIN: ((system-domain))
+          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
+          VARS_FILES: "artifactory-credentials.yml"
         on_failure:
           put: slack-notification
           params:
@@ -188,47 +165,38 @@ jobs:
   - name: bosh-clean-up
     serial: true
     plan:
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state-file
-        params:
-          unpack: true
-      - get: cf-deployment
-        passed:
-          - bosh-deploy
-        trigger: true
-      - task: bosh-clean-up
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
-          inputs:
-            - name: bbl-state-file
-            - name: cf-deployment-concourse-tasks
-          run:
-            path: cf-deployment-concourse-tasks/bosh-cleanup/task
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: bbl-state-file
           params:
-            BBL_STATE_DIR: state
-            CLEAN_ALL: true
+            unpack: true
+        - get: cf-deployment
+          passed:
+            - bosh-deploy
+          trigger: true
+      - task: bosh-clean-up
+        file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          BBL_STATE_DIR: state
 
   - name: run-performance-tests
     serial: true
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
-      - get: perf-test-repo
-      - get: bbl-state-file
-        params:
-          unpack: true
-        passed:
-          - bosh-deploy
-        trigger: true
-      - get: cf-deployment
-        passed:
-          - bosh-deploy
-        trigger: true
+      - in_parallel:
+        - get: perf-test-repo
+        - get: bbl-state-file
+          params:
+            unpack: true
+          passed:
+            - bosh-deploy
+          trigger: true
+        - get: cf-deployment
+          passed:
+            - bosh-deploy
+          trigger: true
       - get: cf-performance-tests
       - task: run-performance-tests
         config:
@@ -268,9 +236,9 @@ jobs:
     serial: true
     plan:
       - get: perf-test-repo
+        trigger: true
         passed:
           - run-performance-tests
-        trigger: true
       - task: generate-chart
         config:
           platform: linux
@@ -302,34 +270,18 @@ jobs:
   - name: cf-acceptance-test
     serial: true
     plan:
-      - get: cf-deployment-concourse-tasks
-      - get: cf-acceptance-tests
-      - get: integration-config
-      - get: perf-test-repo
-        passed:
-          - generate-chart
-        trigger: true
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: integration-config
+        - get: perf-test-repo
+          trigger: true
+          passed:
+            - generate-chart
       - task: cf-acceptance-test
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
-          inputs:
-            - name: cf-deployment-concourse-tasks
-            - name: cf-acceptance-tests
-            - name: integration-config
-          run:
-            path: cf-deployment-concourse-tasks/run-cats/task
-          params:
-            SLOW_SPEC_THRESHOLD: 315
-            NODES: 1
-            CONFIG_FILE_PATH: integration_config.json
-            CAPTURE_LOGS: false
-            FLAKE_ATTEMPTS: 2
+        file: cf-deployment-concourse-tasks/run-cats/task.yml
+        params:
+          NODES: 1
         on_failure:
           put: slack-notification
           params:
@@ -343,33 +295,21 @@ jobs:
     serial: true
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state-file
-        params:
-          unpack: true
-      - get: perf-test-repo
-        passed:
-          - cf-acceptance-test
-        trigger: true
-      - task: bosh-delete-deployments
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cloudfoundry/cf-deployment-concourse-tasks
-            version:
-              digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
-          inputs:
-            - name: bbl-state-file
-            - name: cf-deployment-concourse-tasks
-          run:
-            path: cf-deployment-concourse-tasks/bosh-delete-deployment/task
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: bbl-state-file
           params:
-            BBL_STATE_DIR: state
-            DELETE_ALL_DEPLOYMENTS: false
-            DEPLOYMENT_NAME: cf
-            IGNORE_ERRORS: false
+            unpack: true
+        - get: perf-test-repo
+          trigger: true
+          passed:
+            - cf-acceptance-test
+      - task: bosh-delete-deployments
+        file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          BBL_STATE_DIR: state
         on_failure:
           put: slack-notification
           params:
