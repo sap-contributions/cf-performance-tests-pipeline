@@ -3,7 +3,7 @@
 resource "aws_security_group" "jumpbox" {
   name        = "${var.env_id}-jumpbox-security-group"
   description = "Jumpbox"
-  vpc_id      = local.vpc_id
+  vpc_id      = "${local.vpc_id}"
 
   tags = {
     Name                         = "${var.env_id}-jumpbox-security-group",
