@@ -17,7 +17,7 @@ resources:
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
       branch: ((results-branch))
-  - name: bbl-state
+  - name: bbl-state-file
     type: s3
     source:
       region_name: eu-central-1
@@ -94,7 +94,7 @@ jobs:
       - get: lb-certificate
         params:
           unpack: true
-      - get: bbl-state
+      - get: bbl-state-file
         params:
           unpack: true
       - task: bbl-up
@@ -110,7 +110,7 @@ jobs:
               digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
           inputs:
             - name: cf-deployment-concourse-tasks
-            - name: bbl-state
+            - name: bbl-state-file
             - name: bbl-config
             - name: lb-certificate
           outputs:
@@ -137,7 +137,7 @@ jobs:
           params:
             alert_type: failed
         ensure:
-          put: bbl-state
+          put: bbl-state-file
           params:
             file: updated-bbl-state/bbl-state.tgz
 
@@ -146,7 +146,7 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
+      - get: bbl-state-file
         params:
           unpack: true
         passed:
@@ -166,7 +166,7 @@ jobs:
             version:
               digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
           inputs:
-            - name: bbl-state
+            - name: bbl-state-file
             - name: cf-deployment
             - name: ops-files
             - name: vars-files
@@ -199,7 +199,7 @@ jobs:
     serial: true
     plan:
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
+      - get: bbl-state-file
         params:
           unpack: true
       - get: cf-deployment
@@ -216,7 +216,7 @@ jobs:
             version:
               digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
           inputs:
-            - name: bbl-state
+            - name: bbl-state-file
             - name: cf-deployment-concourse-tasks
           run:
             path: cf-deployment-concourse-tasks/bosh-cleanup/task
@@ -229,7 +229,7 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: perf-test-repo
-      - get: bbl-state
+      - get: bbl-state-file
         params:
           unpack: true
         passed:
@@ -252,7 +252,7 @@ jobs:
           inputs:
             - name: perf-test-repo
             - name: cf-performance-tests
-            - name: bbl-state
+            - name: bbl-state-file
             - name: cf-deployment
           run:
             path: perf-test-repo/concourse/run-performance-tests
@@ -354,7 +354,7 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: cf-deployment-concourse-tasks
-      - get: bbl-state
+      - get: bbl-state-file
         params:
           unpack: true
       - get: perf-test-repo
@@ -371,7 +371,7 @@ jobs:
             version:
               digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
           inputs:
-            - name: bbl-state
+            - name: bbl-state-file
             - name: cf-deployment-concourse-tasks
           run:
             path: cf-deployment-concourse-tasks/bosh-delete-deployment/task
