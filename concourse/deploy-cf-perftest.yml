@@ -140,8 +140,7 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
-          passed:
-            - bbl-up
+          passed: [bbl-up]
           trigger: true
         - get: cf-deployment
           trigger: true
@@ -171,8 +170,7 @@ jobs:
           params:
             unpack: true
         - get: cf-deployment
-          passed:
-            - bosh-deploy
+          passed: [bosh-deploy]
           trigger: true
       - task: bosh-clean-up
         file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
@@ -190,12 +188,10 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
-          passed:
-            - bosh-deploy
+          passed: [bosh-deploy]
           trigger: true
         - get: cf-deployment
-          passed:
-            - bosh-deploy
+          passed: [bosh-deploy]
           trigger: true
       - get: cf-performance-tests
       - task: run-performance-tests
@@ -276,8 +272,7 @@ jobs:
         - get: integration-config
         - get: perf-test-repo
           trigger: true
-          passed:
-            - generate-chart
+          passed: [generate-chart]
       - task: cf-acceptance-test
         file: cf-deployment-concourse-tasks/run-cats/task.yml
         params:
@@ -302,8 +297,7 @@ jobs:
             unpack: true
         - get: perf-test-repo
           trigger: true
-          passed:
-            - cf-acceptance-test
+          passed: [cf-acceptance-test]
       - task: bosh-delete-deployments
         file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
         input_mapping:
