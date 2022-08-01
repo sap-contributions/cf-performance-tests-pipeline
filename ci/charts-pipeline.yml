@@ -1,0 +1,86 @@
+resources:
+- name: cf-performance-tests-pipeline
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    username: ((temporary-github-token))
+    password: x-oauth-basic
+    branch: ((results-branch))
+    paths: [ci/charts-pipeline.yml, ci/tasks/generate-charts/*, variables/common.yml]
+    ignore_paths: [results/**/*.json]
+- name: results
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    username: ((temporary-github-token))
+    password: x-oauth-basic
+    branch: ((results-branch))
+    paths: [results/**/*.json]
+
+- name: charts
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    username: ((temporary-github-token))
+    password: x-oauth-basic
+    branch: ((results-branch))
+
+jobs:
+- name: set-pipeline
+  serial: true
+  plan:
+  - get: cf-performance-tests-pipeline
+    trigger: true
+  - set_pipeline: self
+    file: cf-performance-tests-pipeline/ci/charts-pipeline.yml
+    var_files:
+      - cf-performance-tests-pipeline/variables/common.yml
+
+- name: generate-charts
+  serial: true
+  plan:
+  - get: cf-performance-tests-pipeline
+    trigger: true
+    passed: [set-pipeline]
+  - get: results
+    trigger: true
+  - in_parallel:
+    - task: generate-chart
+      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      params:
+        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+        GIT_COMMIT_MESSAGE: Generated Chart
+        CCDB: postgres
+        CLOUD_CONTROLLER_TYPE: rails
+    - task: generate-chart
+      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      params:
+        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+        GIT_COMMIT_MESSAGE: Generated Chart
+        CCDB: mysql
+        CLOUD_CONTROLLER_TYPE: rails
+    - task: generate-chart
+      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      params:
+        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+        GIT_COMMIT_MESSAGE: Generated Chart
+        CCDB: postgres
+        CLOUD_CONTROLLER_TYPE: go
+    - task: generate-chart
+      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      params:
+        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+        GIT_COMMIT_MESSAGE: Generated Chart
+        CCDB: mysql
+        CLOUD_CONTROLLER_TYPE: go
+  - put: charts
+    params:
+      repository: cf-performance-tests-pipeline
+      rebase: true

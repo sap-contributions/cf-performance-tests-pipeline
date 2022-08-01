@@ -1,0 +1,3 @@
+![security-groups-simple-chart-with-most-recent-runs](https://media.githubusercontent.com/media/sap-contributions/cf-performance-tests-pipeline/CFP-1806/results/go/postgres/charts/security-groups-test-results/v1/security-groups-simple-chart-with-most-recent-runs.png)
+![security-groups-detailed-chart](https://media.githubusercontent.com/media/sap-contributions/cf-performance-tests-pipeline/CFP-1806/results/go/postgres/charts/security-groups-test-results/v1/security-groups-detailed-chart.png)
+![security-groups-simple-chart](https://media.githubusercontent.com/media/sap-contributions/cf-performance-tests-pipeline/CFP-1806/results/go/postgres/charts/security-groups-test-results/v1/security-groups-simple-chart.png)

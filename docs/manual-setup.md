@@ -1,256 +1,70 @@
-# Manual Setup
+### Manual steps
 
-This protocol can be used as a base for creating an automation.
+## AWS setup
 
-### Load Balancer Certificate
+In order to automate the end-to-end deployment and destruction of the test environments, a number of AWS resources - shared between those test environments need to first be created first. Those resources are:
 
-Create a folder `lb_certificate` to store all certificate-related files. Create a config file for the certificate:
-```
-# server_rootCA.csr.cnf
-[req]
-default_bits = 2048
-prompt = no
-default_md = sha256
-distinguished_name = dn
-req_extensions = req_ext
+* An IAM user
+* A policy for that IAM user
+* Access keys for the user
+* Storage of those keys in AWS Secrets Manager
+* An S3 bucket (`cf-performance-tests`) to store the state of (all) the test environments
 
-[dn]
-C=<Country>
-ST=<City>
-L=<Province>
-O=<Organisation>
-OU=<Organization Unit>
-CN = *.cf.cfperftest.<your domain>
+These resources are created by a CloudFormation stack defined in [scripts/bootstrap.yml](../scripts/bootstrap.yml) which is in turn called by the bash script [scripts/bootstrap.sh](../bootstrap.sh).
 
-[req_ext]
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-subjectAltName = @alt_names
+1. Install the [aws CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and authenticate with SAP's AWS account with a user whose permissions exceed those defined in `bootstrap.yml` for the `PipelineUser`.
+1. Run `bootstrap.sh`. Upon completion the script will output the arn for the secret holding that user's AWS keys. 
+1. Retrieve the access key and secret key from AWS Secrets Manager, either in your browser or with the `aws` CLI.
+1. Authenticate with [Concourse's CredHub](../README.md#general-information) and store these as follows:
+    ```bash
+    credhub set --name /concourse/cf-controlplane/aws-pipeline-user-id --type value --value <AWS_ACCESS_KEY_ID>
+    credhub set --name /concourse/cf-controlplane/aws-pipeline-user-secret --type value --value <AWS_SECRET_ACCESS_KEY>
+    ```
 
-[alt_names]
-DNS.0 = *.cfapps.cfperftest.<your domain>
-DNS.1 = *.login.cfperftest.<your domain>
-DNS.2 = *.uaa.cfperftest.<your domain>
-```
+## Configuring automatic tests
+### Variables
 
-Create a self-signed certificate with:
-```
-openssl req -x509 -sha256 -nodes -out cert.pem -newkey rsa:2048 -keyout key.pem -days 365 -config server_rootCA.csr.cnf -extensions req_ext
-```
+In order to define a test configuration (e.g. with a specific ops file) that will be tested automatically against future releases of cf-deployment, define a variables file in `variables/` with the following structure:
+  ```yaml
+  cloud_controller_type: rails #either 'rails' or 'go'
+  additional-ops-files: " operations/use-postgres.yml" #any bosh operations files required to deploy cf. The single character of whitespace at the beginning is mandatory.
+  cf_router_idle_timeout_secs: "60" #adjust as desired to change the router timeout
+  test_suffix: "" #optional naming suffix for the test configuration. Must be provided as an empty string if you don't want to use it.
+  ```
 
-Finally create an archive with the key, certificate and config file:
-```
-tar -czvf lb_certificate.tar.gz lb_certificate
-```
-This archive must be uploaded to the S3 bucket later (see below).
+The name of the file must follow this format: `<cloud_controller_type><test_suffix>.yml`. If no `test_suffix` is set, simply name the file `<cloud_controller_type>.yml`.
 
-### Docker Tools Container
+### Set the pipeline
 
-The [cf-deployment-concourse-tasks](https://github.com/cloudfoundry/cf-deployment-concourse-tasks) Docker image contains all required CLI tools. Assuming that this repo is cloned into ~/cf/cf-performance-tests-pipeline, start a Docker container with:
-```
-docker pull cloudfoundry/cf-deployment-concourse-tasks
-docker run -it -v ~/cf/cf-performance-tests-pipeline:/home/cfperftest cloudfoundry/cf-deployment-concourse-tasks
+After being set for the first time, the first job in the pipeline will set itself thereafter when there are new commits to this repo. You will still need to set it manually in some situations, such as when a new commit adds or renames a pipeline variable.
+
+Whatever the case case, manually set the pipeline with the following command:
+
+```bash
+fly --target bosh-cf set-pipeline \
+  --pipeline <PIPELINE-NAME> \
+  --load-vars-from=variables/<VARS-FILE>.yml \
+  --load-vars-from variables/common.yml \
+  --config ci/pipeline.yml
 ```
 
-### AWS Account Setup
+Strictly speaking you're free to choose any pipeline name you like. Just use a name that's consistent with those for other test configurations.
 
-Create a AWS user with name:
+### Manual destruction
 
-**iaas-provider_bootstrap-cfperftest** -or-
-**iaas-provider_bootstrap-goperftest** -or-
-**iaas-provider_bootstrap-cfperftest-mysql**
+Aside from the several dozen bosh-managed VMs created as part of a cf deployment, the pipeline creates a total of about 100 AWS resources per test in environment. Although the pipeline is written to destroy these resources upon successfully completing the tests, it also has a series of jobs that can be manually triggered to separately delete the cf bosh deployment, the bosh director, the base infrastructure (upon which the former both depend) - or all three reverse-order. These are defined in a pipeline group that you can view by clicking the `manual-teardown` button in the top-left of the Concourse UI when viewing the pipeline in question.
 
-and permissions "AdminsGroup / AdministratorAccess". Save credentials in a secure place.
+> Warning: If you run `manual-teardown-base-infra-only` deletes the IAM user and associated policy that `bbl` depends on to manage resources in AWS. You should not run this before `bbl` has destroyed those resources.
 
-### BBL Setup
+If these manual jobs fail to clean up an environment, you will need to locate the test environment's subfolder in the `cf-performance-tests` S3 bucket and, depending on the failure, download either `bbl-state.tgz` or `base-infra/terraform.tfstate`.
+- `bbl-state.tgz`:
+    1. Extract the archive and change into the state directory
+    1. Run `eval "$(bbl print-env)"` and then `bosh vms` to check if any bosh-managed vms still exist. If they do, try to delete them with bosh (if this fails, you'll have to do this manually in AWS)
+    1. If there are no bosh-managed VMs left but you've still got a director, try to delete it with `bbl destroy`. If this fails, you'll have to delete the director and jumpbox VMs manually in AWS.
+    1. If `bbl destroy` is unable to delete the director, or succeeds but then fails while destroying terraform resources, you'll have to try to delete these yourself.
+    1. Download version 0.11.x of the `terraform` CLI, and move `vars/terraform.tfstate` and `vars/bbl.tfvars` into the `terraform` subdirectory.
+    1. Run `terraform init` and provide the values for any required variables, then `terraform destroy -var-file=bbl.tfvars`. You may need to remove resources from the tls provider from the state file.
+- `base-infra/terraform.tfstate`
+    1. Download the file, place it in [base-infra/terraform](../base-infra/terraform), and run `terraform init` with whatever version of the terraform CLI matches that used by the latest commit of the [Concourse terraform resource](https://github.com/ljfranklin/terraform-resource) when the pipeline last ran the `base-infra` job. Then `terraform destroy`.
 
-Create a load balancer, the jumpbox and bootstrap-bosh with bbl:
-```
-bbl --state-dir ./state plan --lb-type cf --lb-domain cf.cfperftest.<your domain> --lb-cert cert.pem --lb-key key.pem --iaas aws --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET> --aws-region eu-central-1
-bbl --debug --state-dir ./state up --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET>
-```
-
-Export the state folder location:
-```
-export BBL_STATE_DIRECTORY=./state
-```
-
-You should now be able to access the jumpbox and the BOSH director:
-```
-bbl ssh --jumpbox
-bbl ssh --director
-```
-
-Log on to the BOSH director should also work now:
-```
-eval "$(bbl print-env)"
-bosh releases
-```
-
-### Adjust ELB Idle Timeout
-
-The AWS ELB has a default idle timeout of 60 seconds. This can be too short for long-running tests. You can receive a 504 response if the CF cloud controller takes longer than 60 seconds to respond:
-```
-$ cf curl -v /v3/service_plans 
-
-REQUEST: [2021-11-23T10:37:09Z]
-GET /v3/service_plans HTTP/1.1
-Host: api.cf.cfperftest.bndl.sapcloud.io
-Accept: application/json
-Authorization: [PRIVATE DATA HIDDEN]
-Content-Type: application/json
-User-Agent: go-cli 7.3.0+645c3ce6a.2021-08-16 / linux
-
-
-RESPONSE: [2021-11-23T10:38:42Z]
-HTTP/1.1 504 GATEWAY_TIMEOUT
-Connection: close
-Content-Length: 0
-```
-To adjust the timeout, we need a [Terraform override file](https://www.terraform.io/docs/language/files/override.html) which modifies the "cf_router_lb" resource. Create this file:
-```
-# elb-idle-timeout_override.tf
-
-resource "aws_elb" "cf_router_lb" {
-  idle_timeout = 300
-}
-```
-Place the file in the `state/terraform` folder. The next run of `bbl plan` and `bbl up` will apply the configuration. You can verify the configuration in the AWS console in "EC2" > "Load Balancers" > "bbl-env-<env name>-cf-router-lb" > "Attributes" > "Idle timeout".
-
-### Upload State and Certificate
-
-Now you must persist the state. As it contains credentials, it cannot be stored in git. Instead, we store it in a S3 bucket with special permissions.
-
-Create a tgz file of the state with:
-```
-tar -czvf bbl-state.tar.gz state
-```
-The archive must contain the "state" folder as the top-level content. It should be around 160kb in size. If it is several mb large, it probably contains unnecessary Terraform binaries. In that case, search for a ".terraform" folder with a "plugins" subfolder and remove it. Also make sure you are running the tar command in the Docker container and not locally on a Mac. The Mac "tar" command may add additional meta files which can lead to problems.
-
-Create the S3 bucket "cf-perf-test-state", "go-perf-test-state" or "cf-perf-test-mysql-state", if not already done. Then upload the state zip file. Also upload the `lb_certificate.tar.gz` archive.
-
-### Create User for Bucket Access
-
-In IAM, create a new user "cf-perf-test-state-bucket-user", "go-perf-test-state-bucket-user" or "cf-mysql-perf-test-state-bucket-user". Attach the following inline policy and name it "cf-perf-test-state-bucket-access", "go-perf-test-state-bucket-access" or "cf-mysql-perf-test-state-bucket-access":
-
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "ListObjectsInBucket",
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket",
-                "s3:ListBucketVersions",
-                "s3:GetBucketVersioning"
-            ],
-            "Resource": [
-                "arn:aws:s3:::<BUCKET NAME>"
-            ]
-        },
-        {
-            "Sid": "AllObjectActions",
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObjectVersion",
-                "s3:PutObjectVersionAcl",
-                "s3:PutObject",
-                "s3:PutObjectAcl",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::<BUCKET NAME>/*"
-            ]
-        }
-    ]
-}
-```
-
-Store the user credentials in a safe place.
-
-### DNS Setup
-
-Get the name servers from "state/vars/terraform.tfstate":
-```
-"name_servers.0": "some.domain.com"
-"name_servers.1": "some.domain.com"
-"name_servers.2": "some.domain.com"
-"name_servers.3": "some.domain.com"
-```
-
-Go to your domain service, and create the following entry for your domain:
-
-* Record name: "cf.cfperftest"
-* Record type: "NS - Name servers for a hosted zone"
-* Value: (the 4 "ns-..." entries from above)
-
-### BOSH Setup
-
-The "dns" runtime-config should already have been uploaded, check with:
-```
-bosh configs
-```
-
-Upload stemcell:
-```
-export IAAS_INFO=aws-xen-hvm
-bosh upload-stemcell https://storage.googleapis.com/bosh-core-stemcells/1.13/bosh-stemcell-1.13-aws-xen-hvm-ubuntu-bionic-go_agent.tgz
-```
-
-### S3 Blobstore Setup (optional)
-
-By default, cf-deployment uses a single-node WebDAV blobstore. It shows up as `singleton-blobstore` in the list of VMs. If it turns out that the WebDAV blobstore is a bottleneck for certain performance tests, you can also use a S3 blobstore instead.
-
-In AWS IAM, create a new S3 user for the blobstore access. Attach the policy "AmazonS3FullAccess". Store the access key id and the secret key in CredHub. The "credhub" CLI should already be ready to use, see [BBL Setup](#bbl-setup).
-```
-credhub set -n /blobstore-cfperftest/access_key_id -t password -w <ACCESS_KEY_ID>
-credhub set -n /blobstore-cfperftest/access_secret_id -t password -w <ACCESS_KEY_SECRET>
-```
-These credentials are referenced in [variables/vars-use-s3-blobstore.yml](variables/vars-use-s3-blobstore.yml).
-
-Now create the S3 buckets. Use the default settings, but enable "Server-side encryption" with "Amazon S3 key". Create 4 buckets:
-
-* cfperftest-buildpacks
-* cfperftest-droplets
-* cfperftest-packages
-* cfperftest-resources
-
-Add the following vars and ops files to the deployment script:
-
-```
-  --vars-file=operations/vars-use-s3-blobstore.yml \	
-  -o cf-deployment/operations/use-external-blobstore.yml \
-  -o cf-deployment/operations/use-s3-blobstore.yml \
-```
-
-### Cloud Controller Database
-
-The default database for a cf-deployment installation is a MySQL Galera cluster. To use Postgres instead, simply add this ops file:
-https://github.com/cloudfoundry/cf-deployment/blob/main/operations/use-postgres.yml
-
-### Deployment of CF
-
-Clone the desired version of cf-deployment into this project's root:
-```
-git clone https://github.com/cloudfoundry/cf-deployment.git
-```
-Now we are ready to deploy CF. Execute the [scripts/deploy_cf.sh](scripts/deploy_cf.sh) script. It generates the manifest using a few ops and vars files and then triggers the BOSH deployment. When the deployment has finished, you should be able to access the CF API:
-```
-curl -k https://api.cf.cfperftest.<your domain>/v2/info
-```
-
-### Manual Destruction
-
-To manually delete everything, first delete the CF deployment (and all other deployments, if any):
-```
-bosh -d cf delete-deployment
-```
-
-Now use bbl to destroy all infrastructure resources:
-```
-bbl --debug --state-dir ./state destroy --aws-access-key-id <ACCESS_KEY_ID> --aws-secret-access-key <ACCESS_KEY_SECRET> --aws-region eu-central-1
-```
-After successful deletion the "state" folder should be empty again and MUST be committed.
-
-Finally, delete the DNS configuration that was created in step [DNS Setup](#dns-setup).
+In both cases, the last resort - and this should almost never be necessary - will be to manually delete any remaining resources from AWS

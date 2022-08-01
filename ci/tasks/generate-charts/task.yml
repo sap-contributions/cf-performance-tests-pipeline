@@ -1,0 +1,22 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: python
+
+inputs:
+- name: cf-performance-tests-pipeline
+
+outputs:
+- name: cf-performance-tests-pipeline
+
+run:
+  path: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.sh
+
+params:
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_MESSAGE:
+  CLOUD_CONTROLLER_TYPE:
+  CCDB:
