@@ -312,3 +312,31 @@ jobs:
           put: slack-notification
           params:
             alert_type: success
+
+  - name: bbl-destroy
+    serial: true
+    serial_groups: [bosh-deploy-run-performance-tests]
+    plan:
+      - get: perf-test-repo
+        trigger: true
+        passed: [bosh-delete-cf-deployment]
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state-file
+        params:
+          unpack: true
+      - task: bbl-destroy
+        file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          BBL_STATE_DIR: state
+          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
+          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
+          GIT_COMMIT_MESSAGE: "Update bbl state dir"
+          BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
+          BBL_AWS_REGION: eu-central-1
+        ensure:
+          put: bbl-state-file
+          params:
+            file: updated-bbl-state/bbl-state.tgz
