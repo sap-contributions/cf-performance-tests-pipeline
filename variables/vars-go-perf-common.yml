@@ -10,3 +10,4 @@ results-branch: main
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml operations/deploy-go-cf-api.yml"
 database-type: postgres
+parent_zone_id: Z221ODT4T41IC2

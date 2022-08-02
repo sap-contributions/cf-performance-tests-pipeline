@@ -86,6 +86,7 @@ jobs:
         file: perf-test-repo/concourse/deploy-cf-perftest.yml
         var_files:
           - perf-test-repo/variables/vars-((env_name))-perf-common.yml
+  
   - name: bbl-up
     serial: true
     plan:
@@ -122,6 +123,7 @@ jobs:
           DEBUG_MODE: false
           STORE_BBL_STATE_AS_TARBALL: true
           DELETE_TERRAFORM_PLUGINS: true
+          TF_VAR_parent_zone_id: ((parent_zone_id))
         on_failure:
           put: slack-notification
           params:
