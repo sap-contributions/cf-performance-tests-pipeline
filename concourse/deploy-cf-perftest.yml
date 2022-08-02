@@ -118,7 +118,7 @@ jobs:
           BBL_CONFIG_DIR: bbl-patches
           BBL_LB_CERT: ((.:lb_cert_pem))
           BBL_LB_KEY: ((.:lb_cert_key))
-          LB_DOMAIN: ((system-domain))
+          LB_DOMAIN: cf.((domain))
           SKIP_LB_CREATION: false
           DEBUG_MODE: false
           STORE_BBL_STATE_AS_TARBALL: true
@@ -155,7 +155,7 @@ jobs:
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
-          SYSTEM_DOMAIN: ((system-domain))
+          SYSTEM_DOMAIN: cf.((domain))
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
           VARS_FILES: "artifactory-credentials.yml"
         on_failure:
