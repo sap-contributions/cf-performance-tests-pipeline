@@ -195,6 +195,8 @@ jobs:
           trigger: true
       - get: cf-performance-tests
       - task: run-performance-tests
+        input_mapping:
+          bbl-state: bbl-state-file
         config:
           platform: linux
           image_resource:
@@ -206,7 +208,7 @@ jobs:
           inputs:
             - name: perf-test-repo
             - name: cf-performance-tests
-            - name: bbl-state-file
+            - name: bbl-state
             - name: cf-deployment
           run:
             path: perf-test-repo/concourse/run-performance-tests
