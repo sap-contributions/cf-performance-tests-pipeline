@@ -31,6 +31,8 @@ resource "acme_certificate" "certificate" {
     "*.uaa.cf.${var.domain}"
     ]
 
+  recursive_nameservers = ["8.8.8.8:53"]
+
   dns_challenge {
     provider = "route53"
   }
