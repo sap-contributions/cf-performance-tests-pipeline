@@ -5,6 +5,12 @@ resource_types:
   source:
     repository: arbourd/concourse-slack-alert-resource
 
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+    tag: latest
+
 resources:
   - name: cf-deployment-concourse-tasks
     type: git
@@ -75,6 +81,20 @@ resources:
     type: slack-alert
     source:
       url: ((cf-perf-slack-notification-url))
+  - name: base-infra
+    type: terraform
+    source:
+      env_name: base-infra
+      backend_type: s3
+      backend_config:
+        bucket: ((bbl-state-bucket-name))
+        key: terraform.tfstate
+        region: eu-central-1
+        access_key: ((bbl-state-bucket-access-key-id))
+        secret_key: ((bbl-state-bucket-access-key-secret))
+      env:
+        AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+        AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
 
 jobs:
   - name: set-pipeline
@@ -86,13 +106,26 @@ jobs:
         file: perf-test-repo/concourse/deploy-cf-perftest.yml
         var_files:
           - perf-test-repo/variables/vars-((env_name))-perf-common.yml
-  
+
+  - name: create-base-infra
+    serial: true
+    plan:
+      - get: perf-test-repo
+        passed: [set-pipeline]
+        trigger: true
+      - put: base-infra
+        params:
+          terraform_source: perf-test-repo/base-infra/terraform
+          vars:
+            domain: ((domain))
+
   - name: bbl-up
     serial: true
     plan:
       - in_parallel:
         - get: cf-deployment-concourse-tasks
         - get: perf-test-repo
+          passed: [create-base-infra]
         - get: lb-certificate
           params:
             unpack: true
