@@ -1,3 +1,3 @@
-variable "domain" {
+variable "system_domain" {
   type = string
 }

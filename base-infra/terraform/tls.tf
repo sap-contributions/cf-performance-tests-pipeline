@@ -1,49 +1,44 @@
 terraform {
   required_providers {
-    acme = {
-      source = "vancluever/acme"
-      version = "~> 2.0"
+    tls = {
+      source  = "hashicorp/tls"
+      version = "3.1.0"
     }
   }
 }
 
-provider "acme" {
-  server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
-  #TODO switch to production URL
-  # https://acme-v02.api.letsencrypt.org/directory
-}
+provider "tls" {}
 
-resource "tls_private_key" "private_key" {
+resource "tls_private_key" "sys_domain" {
   algorithm = "RSA"
 }
 
-resource "acme_registration" "reg" {
-  account_key_pem = tls_private_key.private_key.private_key_pem
-  email_address   = "performance-tests@cloudfoundry.com"
-}
+resource "tls_self_signed_cert" "sys_domain" {
+  key_algorithm   = tls_private_key.sys_domain.algorithm
+  private_key_pem = tls_private_key.sys_domain.private_key_pem
 
-resource "acme_certificate" "certificate" {
-  account_key_pem           = acme_registration.reg.account_key_pem
-  common_name               = "*.cf.${var.domain}"
-  subject_alternative_names = [
-    "*.cfapps.cf.${var.domain}", 
-    "*.login.cf.${var.domain}", 
-    "*.uaa.cf.${var.domain}"
-    ]
+  validity_period_hours = 4032
 
-  recursive_nameservers = ["8.8.8.8:53"]
+  early_renewal_hours = 672
 
-  dns_challenge {
-    provider = "route53"
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+
+  dns_names = ["*.${var.system_domain}", "ssh.${var.system_domain}", "bosh.${var.system_domain}", "tcp.${var.system_domain}", "*.iso-seg.${var.system_domain}"]
+
+  subject {
+    common_name = var.system_domain
   }
 }
 
-output "private_key" {
-    value = acme_certificate.certificate.private_key_pem
-    sensitive = true
+output "cert_pem" {
+  value = tls_self_signed_cert.sys_domain.cert_pem
 }
 
-output "certificate" {
-    value = acme_certificate.certificate.certificate_pem
-    sensitive = true
+output "private_key" {
+  value = tls_private_key.sys_domain.private_key_pem
+  sensitive = true
 }

@@ -117,7 +117,7 @@ jobs:
         params:
           terraform_source: perf-test-repo/base-infra/terraform
           vars:
-            domain: ((domain))
+            system_domain: cf.((domain))
 
   - name: bbl-up
     serial: true
