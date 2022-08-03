@@ -1,0 +1,21 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: cloudfoundry/cf-deployment-concourse-tasks
+  version:
+    digest: sha256:e5a5877fa88caa76b3f8dafe7d15111b295a97506780dfe16cbf1e05a3e4fbad
+
+inputs:
+  - name: perf-test-repo
+  - name: bbl-state
+
+outputs:
+  - name: test-config
+
+run:
+  path: perf-test-repo/concourse/tasks/generate-config/task.sh
+
+params:
+  SYSTEM_DOMAIN: cf.((domain))
