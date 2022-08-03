@@ -132,11 +132,11 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
-      - in_parallel:
-        - load_var: lb_cert_pem
-          file: lb-certificate/lb_certificate/cert.pem
-        - load_var: lb_cert_key
-          file: lb-certificate/lb_certificate/key.pem
+        - get: base-infra
+          passed: [create-base-infra]
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
       - task: bbl-up
         file: cf-deployment-concourse-tasks/bbl-up/task.yml
         input_mapping:
@@ -149,8 +149,8 @@ jobs:
           BBL_AWS_REGION: eu-central-1
           BBL_STATE_DIR: state
           BBL_CONFIG_DIR: bbl-patches
-          BBL_LB_CERT: ((.:lb_cert_pem))
-          BBL_LB_KEY: ((.:lb_cert_key))
+          BBL_LB_CERT: ((.:base-infra.cert_pem))
+          BBL_LB_KEY: ((.:base-infra.private_key))
           LB_DOMAIN: cf.((domain))
           SKIP_LB_CREATION: false
           DEBUG_MODE: false
