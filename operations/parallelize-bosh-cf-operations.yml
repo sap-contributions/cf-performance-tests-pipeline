@@ -1,0 +1,34 @@
+- type: replace
+  path: /update
+  value: 
+    max_in_flight: 100%
+    canaries: 0
+    serial: false
+    initial_deploy_az_update_strategy: parallel
+
+- type: remove
+  path: /instance_groups/name=database?/update?
+
+- type: remove
+  path: /instance_groups/name=singleton-blobstore?/update?
+
+- type: remove
+  path: /instance_groups/name=router?/update?
+
+- type: remove
+  path: /instance_groups/name=api?/update?
+
+- type: remove
+  path: /instance_groups/name=cc-worker?/update?
+
+- type: remove
+  path: /instance_groups/name=log-cache?/update?
+
+- type: remove
+  path: /instance_groups/name=doppler?/update?
+
+- type: remove
+  path: /instance_groups/name=diego-cell?/update?
+
+- type: remove
+  path: /instance_groups/name=log-api?/update?

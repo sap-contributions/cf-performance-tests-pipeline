@@ -172,7 +172,7 @@ jobs:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: cf.((domain))
-          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
+          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/parallelize-bosh-cf-operations.yml"
         on_failure:
           put: slack-notification
           params:
