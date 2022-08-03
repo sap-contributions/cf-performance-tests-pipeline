@@ -144,10 +144,10 @@ jobs:
           STORE_BBL_STATE_AS_TARBALL: true
           DELETE_TERRAFORM_PLUGINS: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
         ensure:
           put: bbl-state-file
           params:
@@ -179,10 +179,10 @@ jobs:
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: cf.((domain))
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/parallelize-bosh-cf-operations.yml"
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
 
   - name: bosh-clean-up
     serial: true
@@ -269,10 +269,10 @@ jobs:
             GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
           outputs:
             - name: generated-chart-output
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
       # - put: perf-test-repo
       #   params:
       #     repository: generated-chart-output
@@ -300,10 +300,10 @@ jobs:
         file: cf-deployment-concourse-tasks/run-cats/task.yml
         params:
           NODES: 1
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
         on_success:
           put: slack-notification
           params:
@@ -331,10 +331,10 @@ jobs:
         params:
           BBL_STATE_DIR: state
           IGNORE_ERRORS: true
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
         on_success:
           put: slack-notification
           params:
