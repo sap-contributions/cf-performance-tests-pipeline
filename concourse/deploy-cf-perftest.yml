@@ -12,10 +12,12 @@ resource_types:
 resources:
   - name: cf-deployment-concourse-tasks
     type: git
+    icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
   - name: perf-test-repo
     type: git
+    icon: github
     source:
       uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
       username: ((cf-perf-github-username))
@@ -23,6 +25,7 @@ resources:
       branch: ((results-branch))
   - name: bbl-state-file
     type: s3
+    icon: aws
     source:
       region_name: eu-central-1
       bucket: ((bbl-state-bucket-name))
@@ -32,17 +35,20 @@ resources:
       secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: cf-deployment
     type: git
+    icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment.git
       branch: main
       tag_filter: v*
   - name: cf-performance-tests
     type: git
+    icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests.git
       branch: CFP-1806
   - name: cf-acceptance-tests
     type: git
+    icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
       tag_filter: v*
@@ -52,6 +58,7 @@ resources:
   #     url: ((cf-perf-slack-notification-url))
   - name: base-infra
     type: terraform
+    icon: terraform
     source:
       env_name: base-infra
       backend_type: s3
