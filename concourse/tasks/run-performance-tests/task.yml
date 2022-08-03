@@ -20,9 +20,9 @@ run:
   path: perf-test-repo/concourse/tasks/run-performance-tests/task.sh
 
 params:
-  GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-  GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-  GIT_COMMIT_MESSAGE: "Performance tests results"
-  TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
-  TEST_SUITE_FOLDER: "((test-suite-folder))"
-  DATABASE_TYPE: "((database-type))"
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_MESSAGE:
+  TEST_RESULTS_FOLDER:
+  TEST_SUITE_FOLDER:
+  DATABASE_TYPE:
