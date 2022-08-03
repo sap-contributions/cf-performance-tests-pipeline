@@ -223,7 +223,6 @@ jobs:
         - get: cf-deployment
           trigger: true
           passed: [bosh-deploy]
-        - get: perf-test-repo
         - get: bbl-state-file
           params:
             unpack: true
