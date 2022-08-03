@@ -81,10 +81,12 @@ resources:
         AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
 
 jobs:
-  - name: set-pipeline
+  - name: detect-new-versions
     serial: true
     plan:
       - get: perf-test-repo
+        trigger: true
+      - get: cf-deployment
         trigger: true
       - set_pipeline: self
         file: perf-test-repo/concourse/deploy-cf-perftest.yml
@@ -95,8 +97,11 @@ jobs:
     serial: true
     plan:
       - get: perf-test-repo
-        passed: [set-pipeline]
         trigger: true
+        passed: [detect-new-versions]
+      - get: cf-deployment
+        trigger: true
+        passed: [detect-new-versions]
       - put: base-infra
         params:
           terraform_source: perf-test-repo/base-infra/terraform
@@ -107,9 +112,13 @@ jobs:
     serial: true
     plan:
       - in_parallel:
-        - get: cf-deployment-concourse-tasks
         - get: perf-test-repo
+          trigger: true
           passed: [create-base-infra]
+        - get: cf-deployment
+          trigger: true
+          passed: [create-base-infra]
+        - get: cf-deployment-concourse-tasks
         - get: lb-certificate
           params:
             unpack: true
@@ -155,14 +164,17 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - in_parallel:
+        - get: perf-test-repo
+          trigger: true
+          passed: [bbl-up]
+        - get: cf-deployment
+          trigger: true
+          passed: [bbl-up]
         - get: cf-deployment-concourse-tasks
         - get: bbl-state-file
           params:
             unpack: true
           passed: [bbl-up]
-          trigger: true
-        - get: cf-deployment
-          trigger: true
         - get: ops-files
       - task: bosh-deploy
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
@@ -182,13 +194,16 @@ jobs:
     serial: true
     plan:
       - in_parallel:
+        - get: perf-test-repo
+          trigger: true
+          passed: [bosh-deploy]
+        - get: cf-deployment
+          trigger: true
+          passed: [bosh-deploy]
         - get: cf-deployment-concourse-tasks
         - get: bbl-state-file
           params:
             unpack: true
-        - get: cf-deployment
-          passed: [bosh-deploy]
-          trigger: true
       - task: bosh-clean-up
         file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
         input_mapping:
@@ -202,15 +217,16 @@ jobs:
     plan:
       - in_parallel:
         - get: perf-test-repo
+          trigger: true
+          passed: [bosh-deploy]
+        - get: cf-deployment
+          trigger: true
+          passed: [bosh-deploy]
+        - get: perf-test-repo
         - get: bbl-state-file
           params:
             unpack: true
-          passed: [bosh-deploy]
-          trigger: true
-        - get: cf-deployment
-          passed: [bosh-deploy]
-          trigger: true
-      - get: cf-performance-tests
+        - get: cf-performance-tests
       - task: run-performance-tests
         file: perf-test-repo/concourse/tasks/run-performance-tests/task.yml
         input_mapping:
@@ -234,10 +250,13 @@ jobs:
   - name: generate-chart
     serial: true
     plan:
-      - get: perf-test-repo
-        trigger: true
-        passed:
-          - run-performance-tests
+      - in_parallel:
+        - get: perf-test-repo
+          trigger: true
+          passed: [run-performance-tests]
+        - get: cf-deployment
+          trigger: true
+          passed: [run-performance-tests]
       - task: generate-chart
         config:
           platform: linux
@@ -274,7 +293,10 @@ jobs:
         - get: cf-acceptance-tests
         - get: perf-test-repo
           trigger: true
-          passed: [generate-chart]
+          passed: [run-performance-tests]
+        - get: cf-deployment
+          trigger: true
+          passed: [run-performance-tests]
       - task: generate-config
         file: perf-test-repo/concourse/tasks/generate-config/task.yml
         input_mapping:
@@ -299,19 +321,23 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - in_parallel:
+        - get: perf-test-repo
+          trigger: true
+          passed: [cf-acceptance-test]
+        - get: cf-deployment
+          trigger: true
+          passed: [cf-acceptance-test]
         - get: cf-deployment-concourse-tasks
         - get: bbl-state-file
           params:
             unpack: true
-        - get: perf-test-repo
-          trigger: true
-          passed: [cf-acceptance-test]
       - task: bosh-delete-deployments
         file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
         input_mapping:
           bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
+          IGNORE_ERRORS: true
         on_failure:
           put: slack-notification
           params:
@@ -326,6 +352,9 @@ jobs:
     serial_groups: [bosh-deploy-run-performance-tests]
     plan:
       - get: perf-test-repo
+        trigger: true
+        passed: [bosh-delete-cf-deployment]
+      - get: cf-deployment
         trigger: true
         passed: [bosh-delete-cf-deployment]
       - get: cf-deployment-concourse-tasks
