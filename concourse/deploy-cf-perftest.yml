@@ -38,13 +38,6 @@ resources:
       uri: https://github.com/cloudfoundry/cf-deployment.git
       branch: main
       tag_filter: v*
-  - name: ops-files
-    type: git
-    source:
-      branch: main
-      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-      username: ((cf-perf-github-username))
-      password: ((cf-perf-github-user-token))
   - name: cf-performance-tests
     type: git
     source:
@@ -176,11 +169,11 @@ jobs:
           params:
             unpack: true
           passed: [bbl-up]
-        - get: ops-files
       - task: bosh-deploy
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           bbl-state: bbl-state-file
+          ops-files: perf-test-repo
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
