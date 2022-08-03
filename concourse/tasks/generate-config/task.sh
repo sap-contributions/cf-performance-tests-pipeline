@@ -5,7 +5,7 @@ set -x
 
 echo "::: Generating config :::"
 
-BOSH_DIRECTOR_NAME="$(bbl-state/state/bbl-state.json jq -r .bosh.directorName)"
+BOSH_DIRECTOR_NAME="$(bbl-state/state/bbl-state.json jq --raw-output .bosh.directorName)"
 CF_ADMIN_PASSWORD="$(credhub get --name "/$BOSH_DIRECTOR_NAME/cf/cf_admin_password" --output-json | jq --raw-output .value)"
 
 config_json=$(jq --null-input '{
