@@ -278,6 +278,9 @@ jobs:
         - get: cf-deployment
           trigger: true
           passed: [run-performance-tests]
+        - get: bbl-state-file
+          params:
+            unpack: true
       - task: generate-config
         file: perf-test-repo/concourse/tasks/generate-config/task.yml
         input_mapping:
