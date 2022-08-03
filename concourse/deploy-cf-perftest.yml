@@ -53,14 +53,6 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
-  - name: integration-config
-    type: s3
-    source:
-      region_name: eu-central-1
-      bucket: ((bbl-state-bucket-name))
-      versioned_file: integration_config.json
-      access_key_id: ((bbl-state-bucket-access-key-id))
-      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: lb-certificate
     type: s3
     source:
@@ -273,7 +265,6 @@ jobs:
       - in_parallel:
         - get: cf-deployment-concourse-tasks
         - get: cf-acceptance-tests
-        - get: integration-config
         - get: perf-test-repo
           trigger: true
           passed: [generate-chart]
