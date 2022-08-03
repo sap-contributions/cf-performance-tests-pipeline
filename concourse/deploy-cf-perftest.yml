@@ -45,6 +45,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
+      tag_filter: v*
   # - name: slack-notification
   #   type: slack-alert
   #   source:
