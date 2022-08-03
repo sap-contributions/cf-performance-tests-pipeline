@@ -13,7 +13,7 @@ outputs:
   - name: integration-config
 
 run:
-  path: perf-test-repo/concourse/tasks/generate-config/task.sh
+  path: perf-test-repo/concourse/tasks/generate-test-config/task.sh
 
 params:
   SYSTEM_DOMAIN:

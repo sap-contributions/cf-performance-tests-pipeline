@@ -282,8 +282,8 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
-      - task: generate-config
-        file: perf-test-repo/concourse/tasks/generate-config/task.yml
+      - task: generate-test-config
+        file: perf-test-repo/concourse/tasks/generate-test-config/task.yml
         input_mapping:
           bbl-state: bbl-state-file
         params:
