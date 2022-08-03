@@ -1,10 +1,18 @@
 - type: replace
-  path: /update
-  value: 
-    max_in_flight: 100%
-    canaries: 0
-    serial: false
-    initial_deploy_az_update_strategy: parallel
+  path: /update/max_in_flight
+  value: 100%
+
+- type: replace
+  path: /update/canaries
+  value: 0
+
+- type: replace
+  path: /update/serial
+  value: false
+
+- type: replace
+  path: /update/initial_deploy_az_update_strategy?
+  value: parallel
 
 - type: remove
   path: /instance_groups/name=database?/update?
