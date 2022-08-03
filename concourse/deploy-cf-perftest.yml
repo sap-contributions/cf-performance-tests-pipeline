@@ -304,10 +304,6 @@ jobs:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
-        on_success:
-          put: slack-notification
-          params:
-            alert_type: success
 
   - name: bosh-delete-cf-deployment
     serial: true
@@ -335,10 +331,6 @@ jobs:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
-        on_success:
-          put: slack-notification
-          params:
-            alert_type: success
 
   - name: bbl-destroy
     serial: true
