@@ -4,15 +4,24 @@ set -eu
 set -x
 
 echo "::: Generating config :::"
-mkdir -p integration-config
 
 BOSH_DIRECTOR_NAME="$(bbl-state/state/bbl-state.json jq -r .bosh.directorName)"
-CF_ADMIN_PASSWORD="$(credhub get -n "/$BOSH_DIRECTOR_NAME/cf/cf_admin_password" -j | jq -r .value)"
+CF_ADMIN_PASSWORD="$(credhub get --name "/$BOSH_DIRECTOR_NAME/cf/cf_admin_password" --output-json | jq --raw-output .value)"
 
-config_json=$(jq -n '{
+config_json=$(jq --null-input '{
   "api": "'"api.$SYSTEM_DOMAIN"'",
   "apps_domain": "'"$SYSTEM_DOMAIN"'",
-  "admin_password": "'"$CF_ADMIN_PASSWORD"'"
+  "admin_password": "'"$CF_ADMIN_PASSWORD"'",
+  "use_http": false,
+  "skip_ssl_validation": true,
+  "admin_user": "admin",
+  "include_apps": false,
+  "include_detect": false,
+  "include_security_groups": true,
+  "include_routing": true,
+  "include_tcp_routing": true
   }')
 
-echo $config_json > integration-config/integration_config.json
+echo "$config_json" > integration-config/integration_config.json
+
+echo "::: Done :::"

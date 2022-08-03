@@ -12,10 +12,10 @@ inputs:
   - name: bbl-state
 
 outputs:
-  - name: test-config
+  - name: integration-config
 
 run:
   path: perf-test-repo/concourse/tasks/generate-config/task.sh
 
 params:
-  SYSTEM_DOMAIN: cf.((domain))
+  SYSTEM_DOMAIN:

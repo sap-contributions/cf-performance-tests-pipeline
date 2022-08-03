@@ -277,6 +277,10 @@ jobs:
           passed: [generate-chart]
       - task: generate-config
         file: perf-test-repo/concourse/tasks/generate-config/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          SYSTEM_DOMAIN: cf.((domain))
       - task: cf-acceptance-test
         file: cf-deployment-concourse-tasks/run-cats/task.yml
         params:
