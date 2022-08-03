@@ -220,21 +220,21 @@ jobs:
           params:
             unpack: true
         - get: cf-performance-tests
-      - task: run-performance-tests
-        file: perf-test-repo/concourse/tasks/run-performance-tests/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
-        params:
-          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-          GIT_COMMIT_MESSAGE: "Performance tests results"
-          TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
-          TEST_SUITE_FOLDER: "((test-suite-folder))"
-          DATABASE_TYPE: "((database-type))"
-        on_failure:
-          put: slack-notification
-          params:
-            alert_type: failed
+      # - task: run-performance-tests
+      #   file: perf-test-repo/concourse/tasks/run-performance-tests/task.yml
+      #   input_mapping:
+      #     bbl-state: bbl-state-file
+      #   params:
+      #     GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
+      #     GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
+      #     GIT_COMMIT_MESSAGE: "Performance tests results"
+      #     TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+      #     TEST_SUITE_FOLDER: "((test-suite-folder))"
+      #     DATABASE_TYPE: "((database-type))"
+      #   on_failure:
+      #     put: slack-notification
+      #     params:
+      #       alert_type: failed
       # - put: perf-test-repo
       #   params:
       #     repository: performance-test-results
