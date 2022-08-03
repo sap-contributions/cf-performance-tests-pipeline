@@ -44,14 +44,6 @@ resources:
       uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
-  - name: vars-files
-    type: s3
-    source:
-      region_name: eu-central-1
-      bucket: ((bbl-state-bucket-name))
-      versioned_file: artifactory-credentials.yml
-      access_key_id: ((bbl-state-bucket-access-key-id))
-      secret_access_key: ((bbl-state-bucket-access-key-secret))
   - name: cf-performance-tests
     type: git
     source:
@@ -180,7 +172,6 @@ jobs:
         - get: cf-deployment
           trigger: true
         - get: ops-files
-        - get: vars-files
       - task: bosh-deploy
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
@@ -190,7 +181,6 @@ jobs:
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: cf.((domain))
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
-          VARS_FILES: "artifactory-credentials.yml"
         on_failure:
           put: slack-notification
           params:
