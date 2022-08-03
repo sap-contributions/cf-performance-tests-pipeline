@@ -1,10 +1,8 @@
 resource_types:
-
-- name: slack-alert
-  type: docker-image
-  source:
-    repository: arbourd/concourse-slack-alert-resource
-
+# - name: slack-alert
+#   type: docker-image
+#   source:
+#     repository: arbourd/concourse-slack-alert-resource
 - name: terraform
   type: docker-image
   source:
@@ -55,10 +53,10 @@ resources:
       versioned_file: lb_certificate.tar.gz
       access_key_id: ((bbl-state-bucket-access-key-id))
       secret_access_key: ((bbl-state-bucket-access-key-secret))
-  - name: slack-notification
-    type: slack-alert
-    source:
-      url: ((cf-perf-slack-notification-url))
+  # - name: slack-notification
+  #   type: slack-alert
+  #   source:
+  #     url: ((cf-perf-slack-notification-url))
   - name: base-infra
     type: terraform
     source:
