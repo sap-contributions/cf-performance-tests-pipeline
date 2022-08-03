@@ -239,31 +239,20 @@ jobs:
           trigger: true
           passed: [run-performance-tests]
       - task: generate-chart
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: python
-          inputs:
-            - name: perf-test-repo
-          run:
-            path: perf-test-repo/concourse/generate-chart
-          params:
-            GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-            GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-            GIT_COMMIT_MESSAGE: "Generated Chart"
-            TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
-            GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
-          outputs:
-            - name: generated-chart-output
+        file: perf-test-repo/concourse/tasks/generate-charts/task.yml
+        params:
+          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
+          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
+          GIT_COMMIT_MESSAGE: "Generated Chart"
+          TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+          GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
         # on_failure:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
       # - put: perf-test-repo
       #   params:
-      #     repository: generated-chart-output
+      #     repository: generated-charts
       #     rebase: true
 
   - name: cf-acceptance-test

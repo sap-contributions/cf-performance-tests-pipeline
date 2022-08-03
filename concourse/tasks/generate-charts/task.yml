@@ -1,0 +1,22 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: python
+
+inputs:
+- name: perf-test-repo
+
+outputs:
+- name: generated-charts
+
+run:
+  path: perf-test-repo/concourse/tasks/generate-charts/task.sh
+
+params:
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_MESSAGE:
+  TEST_RESULTS_FOLDER:
+  GENERATED_CHARTS_FOLDER:
