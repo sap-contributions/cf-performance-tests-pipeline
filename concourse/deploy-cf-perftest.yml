@@ -226,10 +226,10 @@ jobs:
           put: slack-notification
           params:
             alert_type: failed
-      - put: perf-test-repo
-        params:
-          repository: performance-test-results
-          rebase: true
+      # - put: perf-test-repo
+      #   params:
+      #     repository: performance-test-results
+      #     rebase: true
 
   - name: generate-chart
     serial: true
@@ -261,10 +261,10 @@ jobs:
           put: slack-notification
           params:
             alert_type: failed
-      - put: perf-test-repo
-        params:
-          repository: generated-chart-output
-          rebase: true
+      # - put: perf-test-repo
+      #   params:
+      #     repository: generated-chart-output
+      #     rebase: true
 
   - name: cf-acceptance-test
     serial: true
