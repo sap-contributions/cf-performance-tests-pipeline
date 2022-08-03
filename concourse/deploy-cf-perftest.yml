@@ -262,7 +262,7 @@ jobs:
       #     repository: generated-charts
       #     rebase: true
 
-  - name: cf-acceptance-test
+  - name: cf-acceptance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
@@ -284,10 +284,10 @@ jobs:
           bbl-state: bbl-state-file
         params:
           SYSTEM_DOMAIN: cf.((domain))
-      - task: cf-acceptance-test
-        file: cf-deployment-concourse-tasks/run-cats/task.yml
-        params:
-          NODES: 1
+      # - task: cf-acceptance-tests
+      #   file: cf-deployment-concourse-tasks/run-cats/task.yml
+      #   params:
+      #     NODES: 1
         # on_failure:
         #   put: slack-notification
         #   params:
@@ -300,10 +300,10 @@ jobs:
       - in_parallel:
         - get: perf-test-repo
           trigger: true
-          passed: [cf-acceptance-test]
+          passed: [cf-acceptance-tests]
         - get: cf-deployment
           trigger: true
-          passed: [cf-acceptance-test]
+          passed: [cf-acceptance-tests]
         - get: cf-deployment-concourse-tasks
         - get: bbl-state-file
           params:
