@@ -45,14 +45,6 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
-  - name: lb-certificate
-    type: s3
-    source:
-      region_name: eu-central-1
-      bucket: ((bbl-state-bucket-name))
-      versioned_file: lb_certificate.tar.gz
-      access_key_id: ((bbl-state-bucket-access-key-id))
-      secret_access_key: ((bbl-state-bucket-access-key-secret))
   # - name: slack-notification
   #   type: slack-alert
   #   source:
@@ -111,9 +103,6 @@ jobs:
           trigger: true
           passed: [create-base-infra]
         - get: cf-deployment-concourse-tasks
-        - get: lb-certificate
-          params:
-            unpack: true
         - get: bbl-state-file
           params:
             unpack: true
