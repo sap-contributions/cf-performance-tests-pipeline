@@ -346,6 +346,7 @@ jobs:
           BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
           BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
           BBL_AWS_REGION: eu-central-1
+          TF_VAR_parent_zone_id: ((parent_zone_id))
         ensure:
           put: bbl-state-file
           params:
