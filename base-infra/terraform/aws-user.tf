@@ -46,9 +46,14 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:GetPolicy",
           "iam:GetPolicyVersion",
           "iam:GetRole",
+          "iam:GetServerCertificate",
+          "iam:GetRolePolicy",
           "iam:ListAttachedRolePolicies",
           "iam:ListInstanceProfilesForRole",
-          "iam:ListPolicyVersions"
+          "iam:ListPolicyVersions",
+          "iam:PutRolePolicy",
+          "iam:PassRole",
+          "iam:UploadServerCertificate"
         ],
         "Resource" = "*",
       }
