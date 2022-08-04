@@ -89,6 +89,7 @@ jobs:
 
   - name: create-base-infra
     serial: true
+    serial_groups: [deploy-test-destroy]
     plan:
       - get: cf-performance-tests-pipeline
         trigger: true
@@ -106,6 +107,7 @@ jobs:
 
   - name: bbl-up
     serial: true
+    serial_groups: [deploy-test-destroy]
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -119,7 +121,6 @@ jobs:
           params:
             unpack: true
         - get: base-infra
-          passed: [create-base-infra]
       - load_var: base-infra
         file: base-infra/metadata
         format: json
@@ -130,8 +131,8 @@ jobs:
           bbl-state: bbl-state-file
         params:
           BBL_IAAS: aws
-          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.aws_creds.aws_access_key_id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.aws_creds.aws_secret_access_key))
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))
           BBL_STATE_DIR: state
           BBL_CONFIG_DIR: bbl-patches
@@ -169,16 +170,33 @@ jobs:
           params:
             unpack: true
           passed: [bbl-up]
+        - get: base-infra
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
+      - task: write-bosh-vars-file
+        file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+        params:
+          VARS:
+            aws_region: ((region))
+            blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
+            blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
+            app_package_directory_key: ((.:base-infra.packages_bucket_name))
+            buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
+            droplet_directory_key: ((.:base-infra.droplets_bucket_name))
+            resource_directory_key: ((.:base-infra.resources_bucket_name))
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           bbl-state: bbl-state-file
           ops-files: cf-performance-tests-pipeline
+          vars-files: cf-vars-file
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: cf.((domain))
-          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml"
+          VARS_FILES: cf-vars.yml
+          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
         # on_failure:
         #   put: slack-notification
         #   params:
@@ -335,8 +353,8 @@ jobs:
           bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
-          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.aws_creds.aws_access_key_id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.aws_creds.aws_secret_access_key))
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))
           STORE_BBL_STATE_AS_TARBALL: true
           TF_VAR_parent_zone_id: ((parent_zone_id))

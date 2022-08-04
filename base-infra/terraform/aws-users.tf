@@ -1,14 +1,14 @@
-resource "aws_iam_user" "pipeline-user" {
-  name = "${var.env_name}-perf-tests"
+resource "aws_iam_user" "bbl" {
+  name = "${var.env_name}-bbl-perf-tests"
 }
 
-resource "aws_iam_access_key" "pipeline-user" {
-  user = aws_iam_user.pipeline-user.name
+resource "aws_iam_access_key" "bbl" {
+  user = aws_iam_user.bbl.name
 }
 
 resource "aws_iam_user_policy" "bbl" {
   name = "${var.env_name}-bbl"
-  user = aws_iam_user.pipeline-user.name
+  user = aws_iam_user.bbl.name
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -57,6 +57,41 @@ resource "aws_iam_user_policy" "bbl" {
         ],
         "Resource" = "*",
       }
+    ]
+  })
+}
+
+resource "aws_iam_user" "cloud_controller" {
+  name = "${var.env_name}-cc-perf-tests"
+}
+
+resource "aws_iam_access_key" "cloud_controller" {
+  user = aws_iam_user.cloud_controller.name
+}
+
+resource "aws_iam_user_policy" "cloud_controller" {
+  name = "${var.env_name}-cloud_controller"
+  user = aws_iam_user.cloud_controller.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Effect" = "Allow",
+        "Action" = [
+          "s3:*",
+        ],
+        "Resource" = [
+          aws_s3_bucket.cc-blobstore-packages.arn,
+          "${aws_s3_bucket.cc-blobstore-packages.arn}/*",
+          aws_s3_bucket.cc-blobstore-buildpacks.arn,
+          "${aws_s3_bucket.cc-blobstore-buildpacks.arn}/*",
+          aws_s3_bucket.cc-blobstore-droplets.arn,
+          "${aws_s3_bucket.cc-blobstore-droplets.arn}/*",
+          aws_s3_bucket.cc-blobstore-resources.arn,
+          "${aws_s3_bucket.cc-blobstore-resources.arn}/*",
+        ]
+      }   
     ]
   })
 }
