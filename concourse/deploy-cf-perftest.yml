@@ -226,7 +226,7 @@ jobs:
       #     GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
       #     GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
       #     GIT_COMMIT_MESSAGE: "Performance tests results"
-      #     TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
+      #     TEST_RESULTS_FOLDER: "((test-results-folder))"
       #     TEST_SUITE_FOLDER: "((test-suite-folder))"
       #     DATABASE_TYPE: "((database-type))"
       #   on_failure:
