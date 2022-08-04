@@ -2,6 +2,15 @@ resource "aws_s3_bucket" "cc-blobstore-packages" {
   bucket = "${var.env_name}-perf-tests-packages"
 }
 
+resource "aws_s3_bucket_public_access_block" "packages" {
+  bucket = aws_s3_bucket.cc-blobstore-packages.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "packages" {
   bucket = aws_s3_bucket.cc-blobstore-packages.bucket
 
@@ -14,6 +23,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "packages" {
 
 resource "aws_s3_bucket" "cc-blobstore-buildpacks" {
   bucket = "${var.env_name}-perf-tests-buildpacks"
+}
+
+resource "aws_s3_bucket_public_access_block" "exbuildpacks" {
+  bucket = aws_s3_bucket.cc-blobstore-buildpacks.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "buildpacks" {
@@ -30,6 +48,15 @@ resource "aws_s3_bucket" "cc-blobstore-droplets" {
   bucket = "${var.env_name}-perf-tests-dropletss"
 }
 
+resource "aws_s3_bucket_public_access_block" "droplets" {
+  bucket = aws_s3_bucket.cc-blobstore-droplets.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "droplets" {
   bucket = aws_s3_bucket.cc-blobstore-droplets.bucket
 
@@ -42,6 +69,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "droplets" {
 
 resource "aws_s3_bucket" "cc-blobstore-resources" {
   bucket = "${var.env_name}-perf-tests-resources"
+}
+
+resource "aws_s3_bucket_public_access_block" "resources" {
+  bucket = aws_s3_bucket.cc-blobstore-resources.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "resources" {
