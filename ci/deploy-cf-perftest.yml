@@ -15,6 +15,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
+      tag_filter: v*
   - name: cf-performance-tests-pipeline
     type: git
     icon: github
@@ -38,7 +39,6 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment.git
-      branch: main
       tag_filter: v*
   - name: cf-performance-tests
     type: git
