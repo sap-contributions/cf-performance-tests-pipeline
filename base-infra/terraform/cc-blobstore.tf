@@ -45,7 +45,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "buildpacks" {
 }
 
 resource "aws_s3_bucket" "cc-blobstore-droplets" {
-  bucket = "${var.env_name}-perf-tests-dropletss"
+  bucket = "${var.env_name}-perf-tests-droplets"
 }
 
 resource "aws_s3_bucket_public_access_block" "droplets" {
