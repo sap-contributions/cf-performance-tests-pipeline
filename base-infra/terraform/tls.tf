@@ -1,14 +1,3 @@
-terraform {
-  required_providers {
-    tls = {
-      source  = "hashicorp/tls"
-      version = "3.1.0"
-    }
-  }
-}
-
-provider "tls" {}
-
 resource "tls_private_key" "sys_domain" {
   algorithm = "RSA"
 }
@@ -32,13 +21,4 @@ resource "tls_self_signed_cert" "sys_domain" {
   subject {
     common_name = var.system_domain
   }
-}
-
-output "cert_pem" {
-  value = tls_self_signed_cert.sys_domain.cert_pem
-}
-
-output "private_key" {
-  value = tls_private_key.sys_domain.private_key_pem
-  sensitive = true
 }

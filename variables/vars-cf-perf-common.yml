@@ -7,4 +7,5 @@ results-branch: main
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml"
 database-type: postgres
+region: eu-central-1
 parent_zone_id: Z221ODT4T41IC2

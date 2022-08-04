@@ -27,7 +27,7 @@ resources:
     type: s3
     icon: aws
     source:
-      region_name: eu-central-1
+      region_name: ((region))
       bucket: ((bbl-state-bucket-name))
       versioned_file: bbl-state.tar.gz
       initial_version: "0"
@@ -65,12 +65,13 @@ resources:
       backend_config:
         bucket: ((bbl-state-bucket-name))
         key: terraform.tfstate
-        region: eu-central-1
+        region: ((region))
         access_key: ((bbl-state-bucket-access-key-id))
         secret_key: ((bbl-state-bucket-access-key-secret))
       env:
         AWS_ACCESS_KEY_ID: ((aws-access-key-id))
         AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
+        AWS_DEFAULT_REGION: ((region))
 
 jobs:
   - name: detect-new-versions
@@ -98,7 +99,9 @@ jobs:
         params:
           terraform_source: perf-test-repo/base-infra/terraform
           vars:
+            env_name: ((env_name))
             system_domain: cf.((domain))
+            region: ((region))
 
   - name: bbl-up
     serial: true
@@ -126,9 +129,9 @@ jobs:
           bbl-state: bbl-state-file
         params:
           BBL_IAAS: aws
-          BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
-          BBL_AWS_REGION: eu-central-1
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.aws_creds.aws_access_key_id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.aws_creds.aws_secret_access_key))
+          BBL_AWS_REGION: ((region))
           BBL_STATE_DIR: state
           BBL_CONFIG_DIR: bbl-patches
           BBL_LB_CERT: ((.:base-infra.cert_pem))
@@ -334,18 +337,19 @@ jobs:
       - get: bbl-state-file
         params:
           unpack: true
+      - get: base-infra
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
       - task: bbl-destroy
         file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
         input_mapping:
           bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
-          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-          GIT_COMMIT_MESSAGE: "Update bbl state dir"
-          BBL_AWS_ACCESS_KEY_ID: ((aws-access-key-id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
-          BBL_AWS_REGION: eu-central-1
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.aws_creds.aws_access_key_id))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.aws_creds.aws_secret_access_key))
+          BBL_AWS_REGION: ((region))
           STORE_BBL_STATE_AS_TARBALL: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
         ensure:
