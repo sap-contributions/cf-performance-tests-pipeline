@@ -225,6 +225,7 @@ jobs:
         input_mapping:
           bbl-state: bbl-state-file
         params:
+          BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
           GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
           GIT_COMMIT_MESSAGE: "Performance tests results"

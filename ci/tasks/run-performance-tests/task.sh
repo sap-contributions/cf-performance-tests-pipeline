@@ -6,7 +6,7 @@ task_root="$(pwd)"
 cf_perf_tests_pipeline_repo="${task_root}/cf-performance-tests-pipeline"
 cf_perf_tests_repo="${task_root}/cf-performance-tests"
 cf_deployment_repo="${task_root}/cf_deployment"
-bbl_state="${task_root}/bbl-state"
+bbl_state="${task_root}/bbl-state/${BBL_STATE_DIR}"
 performance_test_results="${task_root}/performance-test-results"
 
 echo -e "\nGetting test landscape configuration from bbl state..."
