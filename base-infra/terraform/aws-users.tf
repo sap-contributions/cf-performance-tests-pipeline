@@ -2,6 +2,10 @@ resource "aws_iam_user" "bbl" {
   name = "${var.env_name}-bbl-perf-tests"
 }
 
+resource "aws_iam_access_key" "bbl" {
+    user = aws_iam_user.bbl.name
+}
+
 resource "aws_iam_user_policy" "bbl" {
   name = "${var.env_name}-bbl"
   user = aws_iam_user.bbl.name
@@ -59,6 +63,10 @@ resource "aws_iam_user_policy" "bbl" {
 
 resource "aws_iam_user" "cloud_controller" {
   name = "${var.env_name}-cc-perf-tests"
+}
+
+resource "aws_iam_access_key" "cloud_controller" {
+  user = aws_iam_user.cloud_controller.name
 }
 
 resource "aws_iam_user_policy" "cloud_controller" {
