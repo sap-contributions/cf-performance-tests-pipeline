@@ -20,8 +20,19 @@ resource "aws_iam_user_policy" "bbl" {
           "elasticloadbalancing:*",
           "cloudformation:*",
           "kms:*",
-          "route53:*",
           "ec2:*",
+        ],
+        "Resource" = "*",
+        "Condition" = {
+          "StringEquals" = {
+            "aws:RequestedRegion" = var.region
+          }
+        }
+      },
+      {
+        "Effect" = "Allow",
+        "Action" = [
+          "route53:*",
           "iam:AddRoleToInstanceProfile",
           "iam:AttachRolePolicy",
           "iam:CreateInstanceProfile",
@@ -40,11 +51,6 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:ListPolicyVersions"
         ],
         "Resource" = "*",
-        "Condition" = {
-          "StringEquals" = {
-            "aws:RequestedRegion" = var.region
-          }
-        }
       }
     ]
   })
