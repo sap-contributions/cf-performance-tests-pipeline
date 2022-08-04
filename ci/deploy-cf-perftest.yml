@@ -56,6 +56,11 @@ resources:
   #   type: slack-alert
   #   source:
   #     url: ((cf-perf-slack-notification-url))
+  - name: concourse-tasks
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/EngineerBetter/concourse-tasks.git
   - name: base-infra
     type: terraform
     icon: terraform
@@ -171,32 +176,44 @@ jobs:
             unpack: true
           passed: [bbl-up]
         - get: base-infra
+        - get: concourse-tasks
       - load_var: base-infra
         file: base-infra/metadata
         format: json
-      - task: write-bosh-vars-file
-        file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
-        params:
-          VARS:
-            aws_region: ((region))
-            blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
-            blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
-            app_package_directory_key: ((.:base-infra.packages_bucket_name))
-            buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
-            droplet_directory_key: ((.:base-infra.droplets_bucket_name))
-            resource_directory_key: ((.:base-infra.resources_bucket_name))
+      - in_parallel:
+        - task: combine-ops-file-directories
+          file: concourse-tasks/combine-directories/task.yml
+          input_mapping:
+            src-1: cf-deployment
+            src-2: cf-performance-tests-pipeline
+          params:
+            SRC_1_GLOB: operations/*.yml
+            SRC_2_GLOB: operations/*.yml
+          output_mapping:
+            target: combined-ops-files
+        - task: write-bosh-vars-file
+          file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+          params:
+            VARS:
+              aws_region: ((region))
+              blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
+              blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
+              app_package_directory_key: ((.:base-infra.packages_bucket_name))
+              buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
+              droplet_directory_key: ((.:base-infra.droplets_bucket_name))
+              resource_directory_key: ((.:base-infra.resources_bucket_name))
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           bbl-state: bbl-state-file
-          ops-files: cf-performance-tests-pipeline
+          ops-files: combined-ops-files
           vars-files: cf-vars-file
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: cf.((domain))
           VARS_FILES: cf-vars.yml
-          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml cf-deployment/operations/use-external-blobstore.yml cf-deployment/operations/use-s3-blobstore.yml"
+          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
         # on_failure:
         #   put: slack-notification
         #   params:
