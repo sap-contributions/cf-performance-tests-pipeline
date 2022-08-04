@@ -142,6 +142,7 @@ jobs:
           STORE_BBL_STATE_AS_TARBALL: true
           DELETE_TERRAFORM_PLUGINS: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
+          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
         # on_failure:
         #   put: slack-notification
         #   params:
@@ -352,6 +353,7 @@ jobs:
           BBL_AWS_REGION: ((region))
           STORE_BBL_STATE_AS_TARBALL: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
+          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
         ensure:
           put: bbl-state-file
           params:
