@@ -226,12 +226,12 @@ jobs:
           bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
-          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-          GIT_COMMIT_MESSAGE: "Performance tests results"
-          TEST_RESULTS_FOLDER: "((test-results-folder))"
-          TEST_SUITE_FOLDER: "((test-suite-folder))"
-          DATABASE_TYPE: "((database-type))"
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_MESSAGE: Performance tests results
+          TEST_RESULTS_FOLDER: ((test-results-folder))
+          TEST_SUITE_FOLDER: ((test-suite-folder))
+          DATABASE_TYPE: ((database-type))
         # on_failure:
         #   put: slack-notification
         #   params:
@@ -254,11 +254,11 @@ jobs:
       - task: generate-chart
         file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
         params:
-          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-          GIT_COMMIT_MESSAGE: "Generated Chart"
-          TEST_RESULTS_FOLDER: "cf-performance-tests-pipeline/((test-results-folder))"
-          GENERATED_CHARTS_FOLDER: "cf-performance-tests-pipeline/((generated-charts-folder))"
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_MESSAGE: Generated Chart
+          TEST_RESULTS_FOLDER: cf-performance-tests-pipeline/((test-results-folder))
+          GENERATED_CHARTS_FOLDER: cf-performance-tests-pipeline/((generated-charts-folder))
         # on_failure:
         #   put: slack-notification
         #   params:
