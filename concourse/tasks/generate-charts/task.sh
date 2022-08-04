@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-repo="$(pwd)/perf-test-repo"
+repo="$(pwd)/cf-performance-tests-pipeline"
 
 echo -e "\nInstalling matplotlib..."
 pip install matplotlib

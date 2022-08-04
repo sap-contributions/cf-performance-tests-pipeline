@@ -15,7 +15,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-  - name: perf-test-repo
+  - name: cf-performance-tests-pipeline
     type: git
     icon: github
     source:
@@ -77,19 +77,19 @@ jobs:
   - name: detect-new-versions
     serial: true
     plan:
-      - get: perf-test-repo
+      - get: cf-performance-tests-pipeline
         trigger: true
       - get: cf-deployment
         trigger: true
       - set_pipeline: self
-        file: perf-test-repo/concourse/deploy-cf-perftest.yml
+        file: cf-performance-tests-pipeline/concourse/deploy-cf-perftest.yml
         var_files:
-          - perf-test-repo/variables/vars-((env_name))-perf-common.yml
+          - cf-performance-tests-pipeline/variables/vars-((env_name))-perf-common.yml
 
   - name: create-base-infra
     serial: true
     plan:
-      - get: perf-test-repo
+      - get: cf-performance-tests-pipeline
         trigger: true
         passed: [detect-new-versions]
       - get: cf-deployment
@@ -97,7 +97,7 @@ jobs:
         passed: [detect-new-versions]
       - put: base-infra
         params:
-          terraform_source: perf-test-repo/base-infra/terraform
+          terraform_source: cf-performance-tests-pipeline/base-infra/terraform
           vars:
             env_name: ((env_name))
             system_domain: cf.((domain))
@@ -107,7 +107,7 @@ jobs:
     serial: true
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [create-base-infra]
         - get: cf-deployment
@@ -125,7 +125,7 @@ jobs:
       - task: bbl-up
         file: cf-deployment-concourse-tasks/bbl-up/task.yml
         input_mapping:
-          bbl-config: perf-test-repo
+          bbl-config: cf-performance-tests-pipeline
           bbl-state: bbl-state-file
         params:
           BBL_IAAS: aws
@@ -156,7 +156,7 @@ jobs:
     serial_groups: [deploy-test-destroy]
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [bbl-up]
         - get: cf-deployment
@@ -171,7 +171,7 @@ jobs:
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           bbl-state: bbl-state-file
-          ops-files: perf-test-repo
+          ops-files: cf-performance-tests-pipeline
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
@@ -186,7 +186,7 @@ jobs:
     serial: true
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [bosh-deploy]
         - get: cf-deployment
@@ -208,7 +208,7 @@ jobs:
     serial_groups: [deploy-test-destroy]
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [bosh-deploy]
         - get: cf-deployment
@@ -219,7 +219,7 @@ jobs:
             unpack: true
         - get: cf-performance-tests
       # - task: run-performance-tests
-      #   file: perf-test-repo/concourse/tasks/run-performance-tests/task.yml
+      #   file: cf-performance-tests-pipeline/concourse/tasks/run-performance-tests/task.yml
       #   input_mapping:
       #     bbl-state: bbl-state-file
       #   params:
@@ -233,7 +233,7 @@ jobs:
       #     put: slack-notification
       #     params:
       #       alert_type: failed
-      # - put: perf-test-repo
+      # - put: cf-performance-tests-pipeline
       #   params:
       #     repository: performance-test-results
       #     rebase: true
@@ -242,25 +242,25 @@ jobs:
     serial: true
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [run-performance-tests]
         - get: cf-deployment
           trigger: true
           passed: [run-performance-tests]
       - task: generate-chart
-        file: perf-test-repo/concourse/tasks/generate-charts/task.yml
+        file: cf-performance-tests-pipeline/concourse/tasks/generate-charts/task.yml
         params:
           GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
           GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
           GIT_COMMIT_MESSAGE: "Generated Chart"
-          TEST_RESULTS_FOLDER: "perf-test-repo/((test-results-folder))"
-          GENERATED_CHARTS_FOLDER: "perf-test-repo/((generated-charts-folder))"
+          TEST_RESULTS_FOLDER: "cf-performance-tests-pipeline/((test-results-folder))"
+          GENERATED_CHARTS_FOLDER: "cf-performance-tests-pipeline/((generated-charts-folder))"
         # on_failure:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
-      # - put: perf-test-repo
+      # - put: cf-performance-tests-pipeline
       #   params:
       #     repository: generated-charts
       #     rebase: true
@@ -272,7 +272,7 @@ jobs:
       - in_parallel:
         - get: cf-deployment-concourse-tasks
         - get: cf-acceptance-tests
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [run-performance-tests]
         - get: cf-deployment
@@ -282,7 +282,7 @@ jobs:
           params:
             unpack: true
       - task: generate-test-config
-        file: perf-test-repo/concourse/tasks/generate-test-config/task.yml
+        file: cf-performance-tests-pipeline/concourse/tasks/generate-test-config/task.yml
         input_mapping:
           bbl-state: bbl-state-file
         params:
@@ -301,7 +301,7 @@ jobs:
     serial_groups: [deploy-test-destroy]
     plan:
       - in_parallel:
-        - get: perf-test-repo
+        - get: cf-performance-tests-pipeline
           trigger: true
           passed: [cf-acceptance-tests]
         - get: cf-deployment
@@ -327,7 +327,7 @@ jobs:
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
-      - get: perf-test-repo
+      - get: cf-performance-tests-pipeline
         trigger: true
         passed: [bosh-delete-cf-deployment]
       - get: cf-deployment
@@ -359,7 +359,7 @@ jobs:
       - put: base-infra
         params:
           action: destroy
-          terraform_source: perf-test-repo/base-infra/terraform
+          terraform_source: cf-performance-tests-pipeline/base-infra/terraform
           vars:
             system_domain: cf.((domain))
         get_params:

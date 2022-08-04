@@ -3,7 +3,7 @@
 set -eu
 
 task_root="$(pwd)"
-cf_perf_tests_pipeline_repo="${task_root}/perf-test-repo"
+cf_perf_tests_pipeline_repo="${task_root}/cf-performance-tests-pipeline"
 cf_perf_tests_repo="${task_root}/cf-performance-tests"
 cf_deployment_repo="${task_root}/cf_deployment"
 bbl_state="${task_root}/bbl-state"

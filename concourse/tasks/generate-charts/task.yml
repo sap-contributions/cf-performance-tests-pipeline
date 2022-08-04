@@ -6,13 +6,13 @@ image_resource:
     repository: python
 
 inputs:
-- name: perf-test-repo
+- name: cf-performance-tests-pipeline
 
 outputs:
 - name: generated-charts
 
 run:
-  path: perf-test-repo/concourse/tasks/generate-charts/task.sh
+  path: cf-performance-tests-pipeline/concourse/tasks/generate-charts/task.sh
 
 params:
   GIT_COMMIT_EMAIL:

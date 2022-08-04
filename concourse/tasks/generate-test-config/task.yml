@@ -6,14 +6,14 @@ image_resource:
     repository: cloudfoundry/cf-deployment-concourse-tasks
 
 inputs:
-  - name: perf-test-repo
+  - name: cf-performance-tests-pipeline
   - name: bbl-state
 
 outputs:
   - name: integration-config
 
 run:
-  path: perf-test-repo/concourse/tasks/generate-test-config/task.sh
+  path: cf-performance-tests-pipeline/concourse/tasks/generate-test-config/task.sh
 
 params:
   SYSTEM_DOMAIN:

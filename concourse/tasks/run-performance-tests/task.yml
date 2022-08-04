@@ -6,7 +6,7 @@ image_resource:
     repository: cloudfoundry/cf-deployment-concourse-tasks
 
 inputs:
-  - name: perf-test-repo
+  - name: cf-performance-tests-pipeline
   - name: cf-performance-tests
   - name: bbl-state
   - name: cf-deployment
@@ -15,7 +15,7 @@ outputs:
   - name: performance-test-results
 
 run:
-  path: perf-test-repo/concourse/tasks/run-performance-tests/task.sh
+  path: cf-performance-tests-pipeline/concourse/tasks/run-performance-tests/task.sh
 
 params:
   GIT_COMMIT_EMAIL:
