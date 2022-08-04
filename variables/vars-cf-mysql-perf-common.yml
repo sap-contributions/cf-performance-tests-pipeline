@@ -9,4 +9,4 @@ additional-ops-files: ""
 database-type: mysql
 region: eu-central-1
 parent_zone_id: Z221ODT4T41IC2
-cf_router_idle_timeout_secs: 60
+cf_router_idle_timeout_secs: "60"
