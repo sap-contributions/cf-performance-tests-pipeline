@@ -15,16 +15,16 @@ output "cloud_controller_aws_creds" {
 }
 
 output "packages_bucket_name" {
-  value = aws_s3_bucket.cc-blobstore-packages.name
+  value = aws_s3_bucket.cc-blobstore-packages.bucket
 }
 output "buildpacks_bucket_name" {
-  value = aws_s3_bucket.cc-blobstore-buildpacks.name
+  value = aws_s3_bucket.cc-blobstore-buildpacks.bucket
 }
 output "droplets_bucket_name" {
-  value = aws_s3_bucket.cc-blobstore-droplets.name
+  value = aws_s3_bucket.cc-blobstore-droplets.bucket
 }
 output "resources_bucket_name" {
-  value = aws_s3_bucket.cc-blobstore-resources.name
+  value = aws_s3_bucket.cc-blobstore-resources.bucket
 }
 
 output "cert_pem" {
