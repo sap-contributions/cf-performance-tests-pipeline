@@ -13,7 +13,7 @@ outputs:
   - name: integration-config
 
 run:
-  path: cf-performance-tests-pipeline/concourse/tasks/generate-test-config/task.sh
+  path: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.sh
 
 params:
   SYSTEM_DOMAIN:

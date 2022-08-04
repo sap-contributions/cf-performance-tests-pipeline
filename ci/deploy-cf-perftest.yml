@@ -60,10 +60,11 @@ resources:
     type: terraform
     icon: terraform
     source:
-      env_name: base-infra
+      env_name: terraform
       backend_type: s3
       backend_config:
         bucket: ((bbl-state-bucket-name))
+        workspace_key_prefix: base-infra
         key: terraform.tfstate
         region: ((region))
         access_key: ((bbl-state-bucket-access-key-id))
@@ -82,7 +83,7 @@ jobs:
       - get: cf-deployment
         trigger: true
       - set_pipeline: self
-        file: cf-performance-tests-pipeline/concourse/deploy-cf-perftest.yml
+        file: cf-performance-tests-pipeline/ci/deploy-cf-perftest.yml
         var_files:
           - cf-performance-tests-pipeline/variables/vars-((env_name))-perf-common.yml
 
@@ -219,21 +220,21 @@ jobs:
           params:
             unpack: true
         - get: cf-performance-tests
-      # - task: run-performance-tests
-      #   file: cf-performance-tests-pipeline/concourse/tasks/run-performance-tests/task.yml
-      #   input_mapping:
-      #     bbl-state: bbl-state-file
-      #   params:
-      #     GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
-      #     GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
-      #     GIT_COMMIT_MESSAGE: "Performance tests results"
-      #     TEST_RESULTS_FOLDER: "((test-results-folder))"
-      #     TEST_SUITE_FOLDER: "((test-suite-folder))"
-      #     DATABASE_TYPE: "((database-type))"
-      #   on_failure:
-      #     put: slack-notification
-      #     params:
-      #       alert_type: failed
+      - task: run-performance-tests
+        file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
+          GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
+          GIT_COMMIT_MESSAGE: "Performance tests results"
+          TEST_RESULTS_FOLDER: "((test-results-folder))"
+          TEST_SUITE_FOLDER: "((test-suite-folder))"
+          DATABASE_TYPE: "((database-type))"
+        # on_failure:
+        #   put: slack-notification
+        #   params:
+        #     alert_type: failed
       # - put: cf-performance-tests-pipeline
       #   params:
       #     repository: performance-test-results
@@ -250,7 +251,7 @@ jobs:
           trigger: true
           passed: [run-performance-tests]
       - task: generate-chart
-        file: cf-performance-tests-pipeline/concourse/tasks/generate-charts/task.yml
+        file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
         params:
           GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
           GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
@@ -282,8 +283,8 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
-      - task: generate-test-config
-        file: cf-performance-tests-pipeline/concourse/tasks/generate-test-config/task.yml
+      - task: generate-cats-config
+        file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
         input_mapping:
           bbl-state: bbl-state-file
         params:

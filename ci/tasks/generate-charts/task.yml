@@ -12,7 +12,7 @@ outputs:
 - name: generated-charts
 
 run:
-  path: cf-performance-tests-pipeline/concourse/tasks/generate-charts/task.sh
+  path: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.sh
 
 params:
   GIT_COMMIT_EMAIL:

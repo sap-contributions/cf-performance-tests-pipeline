@@ -18,7 +18,7 @@ fi
 mkdir -p "$GENERATED_CHARTS_FOLDER"
 
 echo -e "\nGenerating charts..."
-python "${repo}/concourse/tasks/generate-charts/generate_charts.py" \
+python "${repo}/ci/tasks/generate-charts/generate_charts.py" \
   --test-results "$TEST_RESULTS_FOLDER" --generated-charts "$GENERATED_CHARTS_FOLDER"
 
 echo -e "\n Installing git lfs"

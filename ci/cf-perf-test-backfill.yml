@@ -459,7 +459,7 @@ jobs:
             - name: bbl-state
             - name: cf-deployment
           run:
-            path: perf-test-repo/concourse/run-performance-tests
+            path: perf-test-repo/ci/run-performance-tests
           params:
             GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
             GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
@@ -492,7 +492,7 @@ jobs:
           inputs:
             - name: perf-test-repo
           run:
-            path: perf-test-repo/concourse/generate-chart
+            path: perf-test-repo/ci/generate-chart
           params:
             GIT_COMMIT_EMAIL: "((cf-perf-github-user-email))"
             GIT_COMMIT_USERNAME: "((cf-perf-github-username))"
@@ -577,7 +577,7 @@ jobs:
                 repository: perf-test-repo-source
                 force: true
             - set_pipeline: cf-perf-test-((cf-d.target))
-              file: perf-test-repo-source/concourse/cf-perf-test-rerun.yml
+              file: perf-test-repo-source/ci/cf-perf-test-rerun.yml
               var_files:
                 - perf-test-repo-source/variables/vars-cf-perf-common.yml
                 - perf-test-repo-source/variables/cf-d-backfill/((cf-d.target)).yml

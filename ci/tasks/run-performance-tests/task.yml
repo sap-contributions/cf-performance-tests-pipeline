@@ -15,7 +15,7 @@ outputs:
   - name: performance-test-results
 
 run:
-  path: cf-performance-tests-pipeline/concourse/tasks/run-performance-tests/task.sh
+  path: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.sh
 
 params:
   GIT_COMMIT_EMAIL:
