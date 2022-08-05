@@ -6,3 +6,8 @@ provider "aws" {
     }
   }
 }
+
+variable "env_name" {
+  type        = string
+  description = "Name of this test environment"
+}

@@ -151,6 +151,7 @@ jobs:
           DELETE_TERRAFORM_PLUGINS: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_env_name: ((env_name))
         # on_failure:
         #   put: slack-notification
         #   params:
@@ -377,6 +378,7 @@ jobs:
           STORE_BBL_STATE_AS_TARBALL: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_env_name: ((env_name))
         ensure:
           put: bbl-state-file
           params:
