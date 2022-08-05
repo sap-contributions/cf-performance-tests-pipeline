@@ -136,6 +136,7 @@ jobs:
           bbl-state: bbl-state-file
         params:
           BBL_IAAS: aws
+          BBL_ENV_NAME: ((env_name))
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))
