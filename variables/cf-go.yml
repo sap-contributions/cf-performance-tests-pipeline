@@ -3,7 +3,7 @@ domain: goperftest.bndl.sapcloud.io
 bbl-state-bucket-name: go-perf-test-state
 test-results-folder: test-results-go-cc
 generated-charts-folder: test-charts-go-cc
-results-branch: main
+results-branch: CFP-1806
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml operations/deploy-go-cf-api.yml"
 database-type: postgres
