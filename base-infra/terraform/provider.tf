@@ -11,5 +11,12 @@ terraform {
   }
 }
 
-provider "aws" {}
+provider "aws" {
+  default_tags {
+    tags = {
+      performance_test_environment = var.env_name
+      managed_by                   = "cf-performance-tests-pipeline"
+    }
+  }
+}
 provider "tls" {}
