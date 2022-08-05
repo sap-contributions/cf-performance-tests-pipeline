@@ -1,5 +1,5 @@
 env_name: cf-go
-system-domain: cf.goperftest.bndl.sapcloud.io
+domain: goperftest.bndl.sapcloud.io
 bbl-state-bucket-name: go-perf-test-state
 test-results-folder: test-results-go-cc
 generated-charts-folder: test-charts-go-cc
