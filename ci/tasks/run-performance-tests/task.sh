@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -eu
+set -euo pipefail
 
 task_root="$(pwd)"
 cf_perf_tests_pipeline_repo="${task_root}/cf-performance-tests-pipeline"
 cf_perf_tests_repo="${task_root}/cf-performance-tests"
+test_results_absolute_path="${cf_perf_tests_pipeline_repo}/${TEST_RESULTS_FOLDER}"
 cf_deployment_repo="${task_root}/cf-deployment"
 bbl_state="${task_root}/bbl-state/${BBL_STATE_DIR}"
 
@@ -53,9 +54,6 @@ echo -e "\nOpening SSH tunnel to CF database..."
 ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" -i "$jumpbox_private_key_file" -L "$database_port":"$database_ip":"$database_port" jumpbox@"$jumpbox_url" &
 ssh_pid=$!
 
-echo -e "\nRunning cf-performance tests..."
-test_results="${cf_perf_tests_pipeline_repo}/${TEST_RESULTS_FOLDER}"
-
 pushd "$cf_perf_tests_repo" >/dev/null
   cat << EOF > ./config.yml
 api: "api.${cf_domain}"
@@ -70,13 +68,13 @@ database_type: "$DATABASE_TYPE"
 ccdb_connection: "$database_ccdb"
 uaadb_connection: "$database_uaadb"
 samples: 10
-results_folder: "$test_results"
+results_folder: "$test_results_absolute_path"
 EOF
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
-    echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
+    echo -e "\nRunning all tests..."
     ginkgo ./...
   else
-    echo -e "\nRunning all tests..."
+    echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
     ginkgo -r "$TEST_SUITE_FOLDER"
   fi
 popd >/dev/null
@@ -87,10 +85,10 @@ git lfs install
 
 if [[ $(git -C "$cf_perf_tests_pipeline_repo" status --porcelain) ]]; then
   echo -e "\nCommitting test results..."
-  git -C "$cf_perf_tests_pipeline_repo" config user.name "${GIT_COMMIT_USERNAME}"
-  git -C "$cf_perf_tests_pipeline_repo" config user.email "${GIT_COMMIT_EMAIL}"
-  git -C "$cf_perf_tests_pipeline_repo" add --all "$test_results"
-  git -C "$cf_perf_tests_pipeline_repo" commit -m "${GIT_COMMIT_MESSAGE}"
+  git -C "$cf_perf_tests_pipeline_repo" config user.name "$GIT_COMMIT_USERNAME"
+  git -C "$cf_perf_tests_pipeline_repo" config user.email "$GIT_COMMIT_EMAIL"
+  git -C "$cf_perf_tests_pipeline_repo" add --all "$test_results_absolute_path"
+  git -C "$cf_perf_tests_pipeline_repo" commit -m "$GIT_COMMIT_MESSAGE"
 fi
 
 echo "Killing background ssh tunnel..."
