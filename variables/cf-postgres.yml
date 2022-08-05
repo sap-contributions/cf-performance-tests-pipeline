@@ -1,4 +1,4 @@
-env_name: cf
+env_name: cf-postgres
 system-domain: cf.cfperftest.bndl.sapcloud.io
 bbl-state-bucket-name: cf-perf-test-state
 test-results-folder: test-results
@@ -7,6 +7,4 @@ results-branch: main
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml"
 database-type: postgres
-region: eu-central-1
-parent_zone_id: Z221ODT4T41IC2
 cf_router_idle_timeout_secs: "60"

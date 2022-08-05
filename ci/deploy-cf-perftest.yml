@@ -90,7 +90,8 @@ jobs:
       - set_pipeline: self
         file: cf-performance-tests-pipeline/ci/deploy-cf-perftest.yml
         var_files:
-          - cf-performance-tests-pipeline/variables/vars-((env_name))-perf-common.yml
+          - cf-performance-tests-pipeline/variables/((env_name)).yml
+          - cf-performance-tests-pipeline/variables/common.yml
 
   - name: create-base-infra
     serial: true

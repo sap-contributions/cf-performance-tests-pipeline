@@ -1,7 +1,0 @@
-aws_region: eu-central-1
-blobstore_access_key_id: ((/blobstore-cfperftest/access_key_id))
-blobstore_secret_access_key: ((/blobstore-cfperftest/access_secret_id))
-app_package_directory_key: cfperftest-packages
-buildpack_directory_key: cfperftest-buildpacks
-droplet_directory_key: cfperftest-droplets
-resource_directory_key: cfperftest-resources
