@@ -32,8 +32,8 @@ resources:
       bucket: ((bbl-state-bucket-name))
       versioned_file: bbl-state.tar.gz
       initial_version: "0"
-      access_key_id: ((bbl-state-bucket-access-key-id))
-      secret_access_key: ((bbl-state-bucket-access-key-secret))
+      access_key_id: ((aws-pipeline-user-id))
+      secret_access_key: ((aws-pipeline-user-secret))
   - name: cf-deployment
     type: git
     icon: github
@@ -72,11 +72,11 @@ resources:
         workspace_key_prefix: base-infra
         key: terraform.tfstate
         region: ((region))
-        access_key: ((bbl-state-bucket-access-key-id))
-        secret_key: ((bbl-state-bucket-access-key-secret))
+        access_key: ((aws-pipeline-user-id))
+        secret_key: ((aws-pipeline-user-secret))
       env:
-        AWS_ACCESS_KEY_ID: ((aws-access-key-id))
-        AWS_SECRET_ACCESS_KEY: ((aws-access-key-secret))
+        AWS_ACCESS_KEY_ID: ((aws-pipeline-user-id))
+        AWS_SECRET_ACCESS_KEY: ((aws-pipeline-user-secret))
         AWS_DEFAULT_REGION: ((region))
 
 jobs:
