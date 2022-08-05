@@ -41,7 +41,9 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:DeleteInstanceProfile",
           "iam:DeletePolicy",
           "iam:DeleteRole",
+          "iam:DeleteRolePolicy",
           "iam:DetachRolePolicy",
+          "iam:DeleteServerCertificate",
           "iam:GetInstanceProfile",
           "iam:GetPolicy",
           "iam:GetPolicyVersion",
@@ -53,6 +55,7 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:ListPolicyVersions",
           "iam:PutRolePolicy",
           "iam:PassRole",
+          "iam:RemoveRoleFromInstanceProfile",
           "iam:UploadServerCertificate"
         ],
         "Resource" = "*",
