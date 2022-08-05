@@ -1,9 +1,9 @@
 env_name: cf-postgres
 system-domain: cf.cfperftest.bndl.sapcloud.io
-bbl-state-bucket-name: cf-perf-test-state
-test-results-folder: test-results
-generated-charts-folder: test-charts
-results-branch: main
+bbl-state-bucket-name: cf-perf-tests-postgres
+test-results-folder: test-results-postgres
+generated-charts-folder: test-charts-postres
+results-branch: CFP-1806
 test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml"
 database-type: postgres
