@@ -31,7 +31,6 @@ if [[ $(git -C "$repo" status --porcelain) ]]; then
   git -C "$repo" config user.email "$GIT_COMMIT_EMAIL"
   git -C "$repo" add "$GENERATED_CHARTS_FOLDER"
   git -C "$repo" commit -m "$GIT_COMMIT_MESSAGE"
-  cp -r "${repo}/." "generated-charts/"
 fi
 
 echo "Finished."

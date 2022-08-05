@@ -226,6 +226,34 @@ jobs:
         params:
           BBL_STATE_DIR: state
 
+  - name: cf-acceptance-tests
+    serial: true
+    serial_groups: [deploy-test-destroy]
+    plan:
+      - in_parallel:
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-performance-tests-pipeline
+          trigger: true
+          passed: [deploy-cf]
+        - get: cf-deployment
+          trigger: true
+          passed: [deploy-cf]
+        - get: bbl-state-file
+          params:
+            unpack: true
+      - task: generate-cats-config
+        file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
+        input_mapping:
+          bbl-state: bbl-state-file
+        params:
+          SYSTEM_DOMAIN: cf.((domain))
+      # - task: cf-acceptance-tests
+      #   file: cf-deployment-concourse-tasks/run-cats/task.yml
+      #   params:
+      #     NODES: 1
+        # <<: *slack_failure_alert
+
   - name: run-performance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
@@ -233,10 +261,10 @@ jobs:
       - in_parallel:
         - get: cf-performance-tests-pipeline
           trigger: true
-          passed: [deploy-cf]
+          passed: [cf-acceptance-tests]
         - get: cf-deployment
           trigger: true
-          passed: [deploy-cf]
+          passed: [cf-acceptance-tests]
         - get: bbl-state-file
           params:
             unpack: true
@@ -270,37 +298,6 @@ jobs:
           repository: performance-test-results
           rebase: true
 
-  - name: cf-acceptance-tests
-    serial: true
-    serial_groups: [deploy-test-destroy]
-    plan:
-      - in_parallel:
-        - get: cf-deployment-concourse-tasks
-        - get: cf-acceptance-tests
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [run-performance-tests]
-        - get: cf-deployment
-          trigger: true
-          passed: [run-performance-tests]
-        - get: bbl-state-file
-          params:
-            unpack: true
-      - task: generate-cats-config
-        file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
-        params:
-          SYSTEM_DOMAIN: cf.((domain))
-      # - task: cf-acceptance-tests
-      #   file: cf-deployment-concourse-tasks/run-cats/task.yml
-      #   params:
-      #     NODES: 1
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
-
   - name: bosh-delete-cf-deployment
     serial: true
     serial_groups: [deploy-test-destroy]
@@ -308,10 +305,10 @@ jobs:
       - in_parallel:
         - get: cf-performance-tests-pipeline
           trigger: true
-          passed: [cf-acceptance-tests]
+          passed: [run-performance-tests]
         - get: cf-deployment
           trigger: true
-          passed: [cf-acceptance-tests]
+          passed: [run-performance-tests]
         - get: cf-deployment-concourse-tasks
         - get: bbl-state-file
           params:

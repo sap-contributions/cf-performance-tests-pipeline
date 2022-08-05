@@ -9,7 +9,7 @@ inputs:
 - name: cf-performance-tests-pipeline
 
 outputs:
-- name: generated-charts
+- name: cf-performance-tests-pipeline
 
 run:
   path: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.sh
