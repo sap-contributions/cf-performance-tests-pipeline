@@ -294,10 +294,10 @@ jobs:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
-      - put: cf-performance-tests-pipeline
-        params:
-          repository: performance-test-results
-          rebase: true
+      # - put: cf-performance-tests-pipeline
+      #   params:
+      #     repository: performance-test-results
+      #     rebase: true
 
   - name: bosh-delete-cf-deployment
     serial: true
