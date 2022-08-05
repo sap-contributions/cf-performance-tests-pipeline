@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-repo="$(pwd)/cf-performance-tests-pipeline"
+cf_perf_tests_pipeline_repo="$(pwd)/cf-performance-tests-pipeline"
 
 echo -e "\nInstalling matplotlib..."
 pip install matplotlib
@@ -18,19 +18,19 @@ fi
 mkdir -p "$GENERATED_CHARTS_FOLDER"
 
 echo -e "\nGenerating charts..."
-python "${repo}/ci/tasks/generate-charts/generate_charts.py" \
+python "${cf_perf_tests_pipeline_repo}/ci/tasks/generate-charts/generate_charts.py" \
   --test-results "$TEST_RESULTS_FOLDER" --generated-charts "$GENERATED_CHARTS_FOLDER"
 
 echo -e "\n Installing git lfs"
 apt-get update && apt-get -y install git-lfs
 git lfs install
 
-if [[ $(git -C "$repo" status --porcelain) ]]; then
+if [[ $(git -C "$cf_perf_tests_pipeline_repo" status --porcelain) ]]; then
   echo -e "\nCommitting generated charts..."
-  git -C "$repo" config user.name "$GIT_COMMIT_USERNAME"
-  git -C "$repo" config user.email "$GIT_COMMIT_EMAIL"
-  git -C "$repo" add "$GENERATED_CHARTS_FOLDER"
-  git -C "$repo" commit -m "$GIT_COMMIT_MESSAGE"
+  git -C "$cf_perf_tests_pipeline_repo" config user.name "$GIT_COMMIT_USERNAME"
+  git -C "$cf_perf_tests_pipeline_repo" config user.email "$GIT_COMMIT_EMAIL"
+  git -C "$cf_perf_tests_pipeline_repo" add --all "$GENERATED_CHARTS_FOLDER"
+  git -C "$cf_perf_tests_pipeline_repo" commit -m "$GIT_COMMIT_MESSAGE"
 fi
 
 echo "Finished."
