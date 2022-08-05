@@ -3,12 +3,9 @@ resource "tls_private_key" "sys_domain" {
 }
 
 resource "tls_self_signed_cert" "sys_domain" {
-  key_algorithm   = tls_private_key.sys_domain.algorithm
   private_key_pem = tls_private_key.sys_domain.private_key_pem
 
   validity_period_hours = 4032
-
-  early_renewal_hours = 672
 
   allowed_uses = [
     "key_encipherment",
