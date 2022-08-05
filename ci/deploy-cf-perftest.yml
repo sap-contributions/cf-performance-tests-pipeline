@@ -61,7 +61,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/EngineerBetter/concourse-tasks.git
-      tag_filter: v*
+      tag_regex: '[0-9]+\.[0-9]+\.[0-9]+'
   - name: base-infra
     type: terraform
     icon: terraform
