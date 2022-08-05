@@ -300,7 +300,7 @@ jobs:
       #     repository: performance-test-results
       #     rebase: true
 
-  - name: bosh-delete-cf-deployment
+  - name: teardown
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
@@ -315,6 +315,10 @@ jobs:
         - get: bbl-state-file
           params:
             unpack: true
+        - get: base-infra
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
       - task: bosh-delete-deployments
         file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
         input_mapping:
@@ -322,29 +326,6 @@ jobs:
         params:
           BBL_STATE_DIR: state
           IGNORE_ERRORS: true
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
-
-  - name: teardown
-    serial: true
-    serial_groups: [deploy-test-destroy]
-    plan:
-      - get: cf-performance-tests-pipeline
-        trigger: true
-        passed: [bosh-delete-cf-deployment]
-      - get: cf-deployment
-        trigger: true
-        passed: [bosh-delete-cf-deployment]
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state-file
-        params:
-          unpack: true
-      - get: base-infra
-      - load_var: base-infra
-        file: base-infra/metadata
-        format: json
       - task: bbl-destroy
         file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
         input_mapping:
