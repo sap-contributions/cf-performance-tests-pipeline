@@ -81,9 +81,10 @@ resource "aws_iam_user_policy" "cloud_controller" {
     Statement = [
       {
         "Effect" = "Allow",
-        "Action" = [
-          "s3:*",
-        ],
+        "NotAction": [
+          "s3:CreateBucket",
+          "s3:DeleteBucket"
+        ]
         "Resource" = [
           aws_s3_bucket.cc-blobstore-packages.arn,
           "${aws_s3_bucket.cc-blobstore-packages.arn}/*",
