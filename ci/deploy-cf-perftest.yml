@@ -254,25 +254,6 @@ jobs:
           TEST_RESULTS_FOLDER: ((test-results-folder))
           TEST_SUITE_FOLDER: ((test-suite-folder))
           DATABASE_TYPE: ((database-type))
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
-      # - put: cf-performance-tests-pipeline
-      #   params:
-      #     repository: performance-test-results
-      #     rebase: true
-
-  - name: generate-chart
-    serial: true
-    plan:
-      - in_parallel:
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [run-performance-tests]
-        - get: cf-deployment
-          trigger: true
-          passed: [run-performance-tests]
       - task: generate-chart
         file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
         params:
@@ -285,10 +266,10 @@ jobs:
         #   put: slack-notification
         #   params:
         #     alert_type: failed
-      # - put: cf-performance-tests-pipeline
-      #   params:
-      #     repository: generated-charts
-      #     rebase: true
+      - put: cf-performance-tests-pipeline
+        params:
+          repository: performance-test-results
+          rebase: true
 
   - name: cf-acceptance-tests
     serial: true
