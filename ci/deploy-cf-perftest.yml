@@ -107,7 +107,7 @@ jobs:
       - put: base-infra
         params:
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-          vars:
+          vars: &base_infra_tf_vars
             env_name: ((env_name))
             system_domain: cf.((domain))
             region: ((region))
@@ -346,7 +346,6 @@ jobs:
         params:
           action: destroy
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-          vars:
-            system_domain: cf.((domain))
+          vars: *base_infra_tf_vars
         get_params:
           action: destroy
