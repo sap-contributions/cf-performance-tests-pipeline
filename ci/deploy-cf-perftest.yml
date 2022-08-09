@@ -36,8 +36,8 @@ resources:
     icon: aws
     source:
       region_name: ((region))
-      bucket: ((bbl-state-bucket-name))
-      versioned_file: bbl-state.tar.gz
+      bucket: ((state-bucket-name))
+      versioned_file: ((env_name))/bbl-state.tar.gz
       initial_version: "0"
       access_key_id: ((aws-pipeline-user-id))
       secret_access_key: ((aws-pipeline-user-secret))
@@ -76,9 +76,9 @@ resources:
       env_name: terraform
       backend_type: s3
       backend_config:
-        bucket: ((bbl-state-bucket-name))
-        workspace_key_prefix: base-infra
-        key: terraform.tfstate
+        bucket: ((state-bucket-name))
+        workspace_key_prefix: ((env_name))
+        key: base-infra.tfstate
         region: ((region))
         access_key: ((aws-pipeline-user-id))
         secret_key: ((aws-pipeline-user-secret))

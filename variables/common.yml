@@ -1,2 +1,3 @@
 region: eu-central-1
 parent_zone_id: Z221ODT4T41IC2
+state-bucket-name: cf-performance-tests

@@ -3,19 +3,13 @@ Description: 'Bootstraps all s3 buckets and IAM users needed by performance test
 Parameters:
   UserName:
     Type: String
-    Default: cf-perf-tests-pipelines
+    Default: cf-perf-tests-pipeline
   AWSRegion:
     Type: String
     Default: eu-central-1
-  CfPostgresBucketName:
+  BucketName:
     Type: String
-    Default: cf-perf-tests-postgres
-  CfMysqlBucketName:
-    Type: String
-    Default: cf-perf-tests-mysql
-  CfGoBucketName:
-    Type: String
-    Default: cf-perf-tests-go
+    Default: cf-performance-tests
 Resources:
   PipelineUser:
     Type: AWS::IAM::User
@@ -23,11 +17,13 @@ Resources:
       UserName: !Ref UserName
   PipelineUserCreds:
     Type: AWS::IAM::AccessKey
+    DependsOn: PipelineUser
     Properties:
       Status: Active
       UserName: !Ref UserName
   PipelineUserCredsSecret:
     Type: AWS::SecretsManager::Secret
+    DependsOn: PipelineUserCreds
     Properties:
       Name: !Sub /${UserName}
       Description: !Sub 'credentials for the ${UserName} user'
@@ -36,7 +32,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     DependsOn: PipelineUser
     Properties:
-      PolicyName: cf-perf-tests-pipelines
+      PolicyName: cf-perf-tests-pipeline
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -58,52 +54,10 @@ Resources:
             Resource: '*'
       Users:
         - !Ref UserName
-  CfPostgresBucket:
+  PerfTestBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Ref CfPostgresBucketName
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-      LifecycleConfiguration:
-        Rules:
-          - Id: DeleteRule
-            Status: Enabled
-            NoncurrentVersionExpiration:
-              NoncurrentDays: 14
-  CfMysqlBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Ref CfMysqlBucketName
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-      LifecycleConfiguration:
-        Rules:
-          - Id: DeleteRule
-            Status: Enabled
-            NoncurrentVersionExpiration:
-              NoncurrentDays: 14
-  CfGoBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Ref CfGoBucketName
+      BucketName: !Ref BucketName
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:

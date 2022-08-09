@@ -1,6 +1,5 @@
 env_name: cf-go
 domain: goperftest.bndl.sapcloud.io
-bbl-state-bucket-name: cf-perf-tests-go
 test-results-folder: test-results-go-cc
 generated-charts-folder: test-charts-go-cc
 results-branch: CFP-1806

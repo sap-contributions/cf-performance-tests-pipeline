@@ -1,6 +1,5 @@
 env_name: cf-postgres
 domain: cfperftest.bndl.sapcloud.io
-bbl-state-bucket-name: cf-perf-tests-postgres
 test-results-folder: test-results-postgres
 generated-charts-folder: test-charts-postres
 results-branch: CFP-1806
