@@ -64,7 +64,7 @@ users:
   admin:
     username: "admin"
     password: "$cf_admin_password"
-CCDB: "$CCDB"
+database_type: "$CCDB"
 ccdb_connection: "$database_ccdb"
 uaadb_connection: "$database_uaadb"
 samples: 10

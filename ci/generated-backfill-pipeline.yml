@@ -200,7 +200,7 @@ jobs:
     task: generate-chart
   - params:
       rebase: true
-      repository: performance-test-results
+      repository: cf-performance-tests-pipeline
     put: cf-performance-tests-pipeline
   serial: true
   serial_groups:

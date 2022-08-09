@@ -288,7 +288,7 @@ jobs:
           CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
       - put: cf-performance-tests-pipeline
         params:
-          repository: performance-test-results
+          repository: cf-performance-tests-pipeline
           rebase: true
 
   - name: teardown
