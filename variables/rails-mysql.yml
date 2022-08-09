@@ -2,3 +2,4 @@ cloud_controller_type: rails
 ccdb: mysql
 additional-ops-files: ""
 cf_router_idle_timeout_secs: "60"
+dns_prefix: ""
