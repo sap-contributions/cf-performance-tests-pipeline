@@ -1,6 +1,4 @@
-env_name: cf-go
 cloud_controller_type: go
 ccdb: postgres
-domain: goperftest.bndl.sapcloud.io
 additional-ops-files: " operations/use-postgres.yml operations/deploy-go-cf-api.yml"
 cf_router_idle_timeout_secs: "60"

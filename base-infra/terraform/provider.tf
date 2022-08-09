@@ -14,7 +14,7 @@ terraform {
 provider "aws" {
   default_tags {
     tags = {
-      performance_test_environment = var.env_name
+      performance_test_environment = var.test_environment
       managed_by                   = "cf-performance-tests-pipeline"
     }
   }

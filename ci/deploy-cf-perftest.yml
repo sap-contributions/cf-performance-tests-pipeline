@@ -4,6 +4,7 @@ anchors:
       put: slack-notification
       params:
         alert_type: failed
+  system_domain: &system_domain cf.((cloud_controller_type))-((ccdb)).((parent_zone_domain))
 
 resource_types:
 - name: slack-alert
@@ -37,7 +38,7 @@ resources:
     source:
       region_name: ((region))
       bucket: ((state-bucket-name))
-      versioned_file: ((env_name))/bbl-state.tar.gz
+      versioned_file: ((cloud_controller_type))-((ccdb))/bbl-state.tar.gz
       initial_version: "0"
       access_key_id: ((aws-pipeline-user-id))
       secret_access_key: ((aws-pipeline-user-secret))
@@ -77,7 +78,7 @@ resources:
       backend_type: s3
       backend_config:
         bucket: ((state-bucket-name))
-        workspace_key_prefix: ((env_name))
+        workspace_key_prefix: ((cloud_controller_type))-((ccdb))
         key: base-infra.tfstate
         region: ((region))
         access_key: ((aws-pipeline-user-id))
@@ -99,7 +100,7 @@ jobs:
       - set_pipeline: self
         file: cf-performance-tests-pipeline/ci/deploy-cf-perftest.yml
         var_files:
-          - cf-performance-tests-pipeline/variables/((env_name)).yml
+          - cf-performance-tests-pipeline/variables/((cloud_controller_type))-((ccdb)).yml
           - cf-performance-tests-pipeline/variables/common.yml
 
   - name: create-base-infra
@@ -117,8 +118,8 @@ jobs:
         params:
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
           vars: &base_infra_tf_vars
-            env_name: ((env_name))
-            system_domain: cf.((domain))
+            env_name: ((cloud_controller_type))-((ccdb))
+            system_domain: *system_domain
             region: ((region))
 
   - name: bbl-up
@@ -147,7 +148,7 @@ jobs:
           bbl-config: cf-performance-tests-pipeline
         params:
           BBL_IAAS: aws
-          BBL_ENV_NAME: ((env_name))
+          BBL_ENV_NAME: ((cloud_controller_type))-((ccdb))
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))
@@ -155,11 +156,9 @@ jobs:
           BBL_CONFIG_DIR: bbl-patches
           BBL_LB_CERT: ((.:base-infra.cert_pem))
           BBL_LB_KEY: ((.:base-infra.private_key))
-          LB_DOMAIN: cf.((domain))
+          LB_DOMAIN: *system_domain
           SKIP_LB_CREATION: false
-          DEBUG_MODE: false
           STORE_BBL_STATE_AS_TARBALL: true
-          DELETE_TERRAFORM_PLUGINS: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
         ensure:
@@ -219,7 +218,7 @@ jobs:
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
-          SYSTEM_DOMAIN: cf.((domain))
+          SYSTEM_DOMAIN: *system_domain
           VARS_FILES: cf-vars.yml
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
       - task: bosh-clean-up
@@ -247,7 +246,7 @@ jobs:
       - task: generate-cats-config
         file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
         params:
-          SYSTEM_DOMAIN: cf.((domain))
+          SYSTEM_DOMAIN: *system_domain
       - task: cf-acceptance-tests
         file: cf-deployment-concourse-tasks/run-cats/task.yml
         params:

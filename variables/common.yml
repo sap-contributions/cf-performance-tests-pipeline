@@ -1,5 +1,6 @@
 region: eu-central-1
 parent_zone_id: Z221ODT4T41IC2
+parent_zone_domain: bndl.sapcloud.io
 state-bucket-name: cf-performance-tests
 results-branch: CFP-1806
 test-suite-folder: ""

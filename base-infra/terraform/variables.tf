@@ -8,7 +8,7 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "env_name" {
+variable "test_environment" {
   type        = string
   description = "Name of this test environment"
 }

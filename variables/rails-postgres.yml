@@ -1,6 +1,4 @@
-env_name: cf-postgres
 cloud_controller_type: rails
 ccdb: postgres
-domain: cfperftest.bndl.sapcloud.io
 additional-ops-files: " operations/use-postgres.yml"
 cf_router_idle_timeout_secs: "60"
