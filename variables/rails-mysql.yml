@@ -1,5 +1,5 @@
 cloud_controller_type: rails
 ccdb: mysql
-additional-ops-files: ""
+additional-ops-files: " operations/speed-up-dynamic-asgs.yml"
 cf_router_idle_timeout_secs: "60"
 test_prefix: ""

@@ -220,7 +220,7 @@ jobs:
           MANIFEST_FILE: cf-deployment.yml
           SYSTEM_DOMAIN: *system_domain
           VARS_FILES: cf-vars.yml
-          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
+          OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
       - task: bosh-clean-up
         file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
         params:

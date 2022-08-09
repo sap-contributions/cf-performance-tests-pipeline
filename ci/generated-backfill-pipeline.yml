@@ -126,8 +126,7 @@ jobs:
       BBL_STATE_DIR: state
       MANIFEST_FILE: cf-deployment.yml
       OPS_FILES: operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml
-        operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml
-        operations/use-s3-blobstore.yml
+        operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
       SYSTEM_DOMAIN: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf

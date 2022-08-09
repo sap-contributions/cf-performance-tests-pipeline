@@ -1,4 +1,4 @@
-from distutils.version import StrictVersion
+from packaging.version import Version
 from pathlib import Path
 
 import yaml
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     vars_dir_path = Path(Path.cwd(), "variables")
     cf_d_rerun_vars_path = Path(vars_dir_path, "cf-d-backfill")
 
-    cf_d_versions.sort(key=StrictVersion)
+    cf_d_versions.sort(key=Version)
 
     for idx_ver, cfd_version in enumerate(cf_d_versions):
         for idx_db, db_name in enumerate(dbs):
@@ -70,12 +70,9 @@ if __name__ == '__main__':
             else:
                 cf_perf_tests_pipeline_source_branch = test_name
 
-            cfd_major_version = int(cfd_version.split('.')[0])
-            cfd_minor_version = int(cfd_version.split('.')[1])
-
-            if cfd_major_version >= 20:
+            if Version(cfd_version) >= Version("20.0.0"):
                 additional_ops_files = ' operations/speed-up-dynamic-asgs.yml'
-            elif cfd_major_version == 16 and cfd_minor_version <= 14:
+            elif Version(cfd_version) <= Version("16.14.0"):
                 additional_ops_files = ' operations/use-bionic-stemcell-for-addons.yml'
 
             if "postgres" in db_name:
