@@ -87,11 +87,15 @@ resources:
         AWS_ACCESS_KEY_ID: ((aws-pipeline-user-id))
         AWS_SECRET_ACCESS_KEY: ((aws-pipeline-user-secret))
         AWS_DEFAULT_REGION: ((region))
+      vars:
+        test_environment: ((cloud_controller_type))-((ccdb))
+        system_domain: *system_domain
+        region: ((region))
 
 jobs:
   - name: detect-new-versions
     serial: true
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
         trigger: true
@@ -106,7 +110,7 @@ jobs:
   - name: create-base-infra
     serial: true
     serial_groups: [deploy-test-destroy]
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
         trigger: true
@@ -117,15 +121,11 @@ jobs:
       - put: base-infra
         params:
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-          vars: &base_infra_tf_vars
-            env_name: ((cloud_controller_type))-((ccdb))
-            system_domain: *system_domain
-            region: ((region))
 
   - name: bbl-up
     serial: true
     serial_groups: [deploy-test-destroy]
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -169,7 +169,7 @@ jobs:
   - name: deploy-cf
     serial: true
     serial_groups: [deploy-test-destroy]
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -229,7 +229,7 @@ jobs:
   - name: cf-acceptance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-deployment-concourse-tasks
@@ -255,7 +255,7 @@ jobs:
   - name: run-performance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
-    <<: *alert_failure
+    # <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -287,10 +287,10 @@ jobs:
           CCDB: ((ccdb))
           CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
           GENERATED_CHARTS_FOLDER: ((generated-charts-folder))
-      # - put: cf-performance-tests-pipeline
-      #   params:
-      #     repository: performance-test-results
-      #     rebase: true
+      - put: cf-performance-tests-pipeline
+        params:
+          repository: performance-test-results
+          rebase: true
 
   - name: teardown
     serial: true
@@ -336,6 +336,5 @@ jobs:
         params:
           action: destroy
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-          vars: *base_infra_tf_vars
         get_params:
           action: destroy
