@@ -5,7 +5,7 @@ set -euo pipefail
 task_root="$(pwd)"
 cf_perf_tests_pipeline_repo="${task_root}/cf-performance-tests-pipeline"
 cf_perf_tests_repo="${task_root}/cf-performance-tests"
-test_results_absolute_path="${cf_perf_tests_pipeline_repo}/${TEST_RESULTS_FOLDER}"
+results_path="${cf_perf_tests_pipeline_repo}/results/${CLOUD_CONTROLLER_TYPE}/${CCDB}/results"
 cf_deployment_repo="${task_root}/cf-deployment"
 bbl_state="${task_root}/bbl-state/${BBL_STATE_DIR}"
 
@@ -31,16 +31,16 @@ cf api --skip-ssl-validation "api.${cf_domain}"
 cf auth admin "$cf_admin_password"
 cf create-user perf-test-user perf-test-password
 
-if [ "$DATABASE_TYPE" == 'postgres' ]; then
+if [ "$CCDB" == 'postgres' ]; then
   database_port=5524
   database_ccdb="postgres://cloud_controller:${ccdb_password}@localhost:${database_port}/cloud_controller?sslmode=disable"
   database_uaadb="postgres://uaa:${uaadb_password}@localhost:${database_port}/uaa?sslmode=disable"
-elif [ "$DATABASE_TYPE" == 'mysql' ]; then
+elif [ "$CCDB" == 'mysql' ]; then
   database_port=3306
   database_ccdb="cloud_controller:${ccdb_password}@tcp(localhost:${database_port})/cloud_controller?multiStatements=true"
   database_uaadb="uaa:${uaadb_password}@tcp(localhost:${database_port})/uaa?multiStatements=true"
 else
-  echo "Task parameter 'DATABASE_TYPE' must be one of 'postgres' or 'mysql' (is: ${DATABASE_TYPE})."
+  echo "Task parameter 'CCDB' must be one of 'postgres' or 'mysql' (is: ${CCDB})."
   exit 1
 fi
 
@@ -64,11 +64,11 @@ users:
   admin:
     username: "admin"
     password: "$cf_admin_password"
-database_type: "$DATABASE_TYPE"
+CCDB: "$CCDB"
 ccdb_connection: "$database_ccdb"
 uaadb_connection: "$database_uaadb"
 samples: 10
-results_folder: "$test_results_absolute_path"
+results_folder: "$results_path"
 EOF
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
     echo -e "\nRunning all tests..."
@@ -87,7 +87,7 @@ if [[ $(git -C "$cf_perf_tests_pipeline_repo" status --porcelain) ]]; then
   echo -e "\nCommitting test results..."
   git -C "$cf_perf_tests_pipeline_repo" config user.name "$GIT_COMMIT_USERNAME"
   git -C "$cf_perf_tests_pipeline_repo" config user.email "$GIT_COMMIT_EMAIL"
-  git -C "$cf_perf_tests_pipeline_repo" add --all "$test_results_absolute_path"
+  git -C "$cf_perf_tests_pipeline_repo" add --all "$results_path"
   git -C "$cf_perf_tests_pipeline_repo" commit -m "$GIT_COMMIT_MESSAGE"
 fi
 

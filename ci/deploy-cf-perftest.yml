@@ -276,16 +276,17 @@ jobs:
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
           GIT_COMMIT_MESSAGE: Performance tests results
-          TEST_RESULTS_FOLDER: ((test-results-folder))
+          CCDB: ((ccdb))
+          CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
           TEST_SUITE_FOLDER: ((test-suite-folder))
-          DATABASE_TYPE: ((database-type))
       - task: generate-chart
         file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
         params:
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
           GIT_COMMIT_MESSAGE: Generated Chart
-          TEST_RESULTS_FOLDER: ((test-results-folder))
+          CCDB: ((ccdb))
+          CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
           GENERATED_CHARTS_FOLDER: ((generated-charts-folder))
       # - put: cf-performance-tests-pipeline
       #   params:

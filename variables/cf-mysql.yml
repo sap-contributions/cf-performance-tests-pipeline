@@ -1,9 +1,6 @@
 env_name: cf-mysql
+cloud_controller_type: rails
+ccdb: mysql
 domain: cfmysqlperftest.bndl.sapcloud.io
-test-results-folder: test-results-mysql
-generated-charts-folder: test-charts-mysql
-results-branch: CFP-1806
-test-suite-folder: ""
 additional-ops-files: ""
-database-type: mysql
 cf_router_idle_timeout_secs: "60"

@@ -1,9 +1,6 @@
 env_name: cf-postgres
+cloud_controller_type: rails
+ccdb: postgres
 domain: cfperftest.bndl.sapcloud.io
-test-results-folder: test-results-postgres
-generated-charts-folder: test-charts-postres
-results-branch: CFP-1806
-test-suite-folder: ""
 additional-ops-files: " operations/use-postgres.yml"
-database-type: postgres
 cf_router_idle_timeout_secs: "60"
