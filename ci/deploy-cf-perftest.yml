@@ -1,8 +1,15 @@
+anchors:
+  alert_failure: &alert_failure
+    on_failure:
+      put: slack-notification
+      params:
+        alert_type: failed
+
 resource_types:
-# - name: slack-alert
-#   type: docker-image
-#   source:
-#     repository: arbourd/concourse-slack-alert-resource
+- name: slack-alert
+  type: docker-image
+  source:
+    repository: arbourd/concourse-slack-alert-resource
 - name: terraform
   type: docker-image
   source:
@@ -52,10 +59,10 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
       tag_filter: v*
-  # - name: slack-notification
-  #   type: slack-alert
-  #   source:
-  #     url: ((cf-perf-slack-notification-url))
+  - name: slack-notification
+    type: slack-alert
+    source:
+      url: ((cf-perf-slack-notification-url))
   - name: concourse-tasks
     type: git
     icon: github
@@ -83,6 +90,7 @@ resources:
 jobs:
   - name: detect-new-versions
     serial: true
+    <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
         trigger: true
@@ -97,6 +105,7 @@ jobs:
   - name: create-base-infra
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
         trigger: true
@@ -115,6 +124,7 @@ jobs:
   - name: bbl-up
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -153,10 +163,6 @@ jobs:
           DELETE_TERRAFORM_PLUGINS: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
         ensure:
           put: bbl-state-file
           params:
@@ -165,6 +171,7 @@ jobs:
   - name: deploy-cf
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -217,10 +224,6 @@ jobs:
           SYSTEM_DOMAIN: cf.((domain))
           VARS_FILES: cf-vars.yml
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
       - task: bosh-clean-up
         file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
         input_mapping:
@@ -231,6 +234,7 @@ jobs:
   - name: cf-acceptance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-deployment-concourse-tasks
@@ -250,15 +254,15 @@ jobs:
           bbl-state: bbl-state-file
         params:
           SYSTEM_DOMAIN: cf.((domain))
-      # - task: cf-acceptance-tests
-      #   file: cf-deployment-concourse-tasks/run-cats/task.yml
-      #   params:
-      #     NODES: 1
-        # <<: *slack_failure_alert
+      - task: cf-acceptance-tests
+        file: cf-deployment-concourse-tasks/run-cats/task.yml
+        params:
+          NODES: 1
 
   - name: run-performance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -291,10 +295,6 @@ jobs:
           GIT_COMMIT_MESSAGE: Generated Chart
           TEST_RESULTS_FOLDER: ((test-results-folder))
           GENERATED_CHARTS_FOLDER: ((generated-charts-folder))
-        # on_failure:
-        #   put: slack-notification
-        #   params:
-        #     alert_type: failed
       # - put: cf-performance-tests-pipeline
       #   params:
       #     repository: performance-test-results
@@ -303,6 +303,7 @@ jobs:
   - name: teardown
     serial: true
     serial_groups: [deploy-test-destroy]
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
