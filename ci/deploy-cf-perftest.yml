@@ -31,7 +31,7 @@ resources:
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
       branch: ((results-branch))
-  - name: bbl-state-file
+  - name: bbl-state
     type: s3
     icon: aws
     source:
@@ -134,7 +134,7 @@ jobs:
           trigger: true
           passed: [create-base-infra]
         - get: cf-deployment-concourse-tasks
-        - get: bbl-state-file
+        - get: bbl-state
           params:
             unpack: true
         - get: base-infra
@@ -145,7 +145,6 @@ jobs:
         file: cf-deployment-concourse-tasks/bbl-up/task.yml
         input_mapping:
           bbl-config: cf-performance-tests-pipeline
-          bbl-state: bbl-state-file
         params:
           BBL_IAAS: aws
           BBL_ENV_NAME: ((env_name))
@@ -164,7 +163,7 @@ jobs:
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
         ensure:
-          put: bbl-state-file
+          put: bbl-state
           params:
             file: updated-bbl-state/bbl-state.tgz
 
@@ -181,7 +180,7 @@ jobs:
           trigger: true
           passed: [bbl-up]
         - get: cf-deployment-concourse-tasks
-        - get: bbl-state-file
+        - get: bbl-state
           params:
             unpack: true
           passed: [bbl-up]
@@ -215,7 +214,6 @@ jobs:
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
-          bbl-state: bbl-state-file
           ops-files: combined-ops-files
           vars-files: cf-vars-file
         params:
@@ -226,8 +224,6 @@ jobs:
           OPS_FILES: "operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml operations/speed-up-dynamic-asgs.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml"
       - task: bosh-clean-up
         file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
 
@@ -245,13 +241,11 @@ jobs:
         - get: cf-deployment
           trigger: true
           passed: [deploy-cf]
-        - get: bbl-state-file
+        - get: bbl-state
           params:
             unpack: true
       - task: generate-cats-config
         file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
         params:
           SYSTEM_DOMAIN: cf.((domain))
       - task: cf-acceptance-tests
@@ -271,14 +265,12 @@ jobs:
         - get: cf-deployment
           trigger: true
           passed: [cf-acceptance-tests]
-        - get: bbl-state-file
+        - get: bbl-state
           params:
             unpack: true
         - get: cf-performance-tests
       - task: run-performance-tests
         file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
@@ -313,7 +305,7 @@ jobs:
           trigger: true
           passed: [run-performance-tests]
         - get: cf-deployment-concourse-tasks
-        - get: bbl-state-file
+        - get: bbl-state
           params:
             unpack: true
         - get: base-infra
@@ -322,15 +314,12 @@ jobs:
         format: json
       - task: bosh-delete-deployments
         file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
-        input_mapping:
-          bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
           IGNORE_ERRORS: true
       - task: bbl-destroy
         file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
         input_mapping:
-          bbl-state: bbl-state-file
         params:
           BBL_STATE_DIR: state
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
@@ -340,7 +329,7 @@ jobs:
           TF_VAR_parent_zone_id: ((parent_zone_id))
           TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
         ensure:
-          put: bbl-state-file
+          put: bbl-state
           params:
             file: updated-bbl-state/bbl-state.tgz
       - put: base-infra
