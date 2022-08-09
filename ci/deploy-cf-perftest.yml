@@ -29,8 +29,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-      username: ((cf-perf-github-username))
-      password: ((cf-perf-github-user-token))
+      username: ((temporary-github-token))
+      password: x-oauth-basic
       branch: ((results-branch))
   - name: bbl-state
     type: s3
