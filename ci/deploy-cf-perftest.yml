@@ -319,7 +319,6 @@ jobs:
           IGNORE_ERRORS: true
       - task: bbl-destroy
         file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
-        input_mapping:
         params:
           BBL_STATE_DIR: state
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
