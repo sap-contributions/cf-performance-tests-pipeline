@@ -2,7 +2,7 @@ additional-ops-files: ' operations/use-bionic-stemcell-for-addons.yml operations
 ccdb: postgres
 cf_acceptance_tests_tag_filter: v7.4.0
 cf_deployment_concourse_tasks_tag_filter: v12.2.0
-cf_deployment_tag_filter: 16.12.0
+cf_deployment_tag_filter: v16.12.0
 cf_perf_tests_pipeline_source_branch: cfd-16-12-0-postgres
 cf_router_idle_timeout_secs: '60'
 cloud_controller_type: rails

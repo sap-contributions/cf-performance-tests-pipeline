@@ -88,7 +88,7 @@ if __name__ == '__main__':
                 "cloud_controller_type": "rails",
                 "cf_acceptance_tests_tag_filter": cf_acceptance_tests_tag_filter,
                 "cf_deployment_concourse_tasks_tag_filter": cf_deployment_concourse_tasks_tag_filter,
-                "cf_deployment_tag_filter": cfd_version,
+                "cf_deployment_tag_filter": f'v{cfd_version}',
                 "cf_router_idle_timeout_secs": "60",
                 "ccdb": db_name,
                 "test_prefix": f"cf-deployment-{cfd_version_with_hyphens}-",
