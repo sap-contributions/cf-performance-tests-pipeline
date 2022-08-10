@@ -9,7 +9,6 @@ jobs:
 - name: detect-new-versions
   plan:
   - get: cf-performance-tests-pipeline
-    trigger: true
   - get: cf-deployment
     trigger: true
   serial: true
@@ -18,7 +17,6 @@ jobs:
   - get: cf-performance-tests-pipeline
     passed:
     - detect-new-versions
-    trigger: true
   - get: cf-deployment
     passed:
     - detect-new-versions
@@ -35,7 +33,6 @@ jobs:
     - get: cf-performance-tests-pipeline
       passed:
       - create-base-infra
-      trigger: true
     - get: cf-deployment
       passed:
       - create-base-infra
@@ -80,7 +77,6 @@ jobs:
     - get: cf-performance-tests-pipeline
       passed:
       - bbl-up
-      trigger: true
     - get: cf-deployment
       passed:
       - bbl-up
@@ -145,7 +141,6 @@ jobs:
     - get: cf-performance-tests-pipeline
       passed:
       - deploy-cf
-      trigger: true
     - get: cf-deployment
       passed:
       - deploy-cf
@@ -170,7 +165,6 @@ jobs:
     - get: cf-performance-tests-pipeline
       passed:
       - cf-acceptance-tests
-      trigger: true
     - get: cf-deployment
       passed:
       - cf-acceptance-tests
@@ -214,7 +208,6 @@ jobs:
     - get: cf-performance-tests-pipeline
       passed:
       - run-performance-tests
-      trigger: true
     - get: cf-deployment
       passed:
       - run-performance-tests
