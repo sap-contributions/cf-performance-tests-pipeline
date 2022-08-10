@@ -277,7 +277,7 @@ jobs:
           force: true
           repository: cf-performance-tests-pipeline
         put: cf-performance-tests-pipeline-target
-      - file: cf-performance-tests-pipeline/ci/backfill-pipeline.yml
+      - file: cf-performance-tests-pipeline/ci/generated-backfill-pipeline.yml
         set_pipeline: cf-perf-test-((next_test_name))
         var_files:
         - cf-performance-tests-pipeline/variables/common.yml

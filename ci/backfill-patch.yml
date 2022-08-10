@@ -1,4 +1,4 @@
-# apply with `bosh interpolate ci/deploy-cf-perftest.yml -o ci/backfill-patch.yml > ci/backfill-pipeline.yml`
+# apply with `bosh interpolate ci/deploy-cf-perftest.yml -o ci/backfill-patch.yml > ci/generated-backfill-pipeline.yml`
 - type: replace
   path: /resources/name=cf-performance-tests-pipeline/source/branch?
   value: ((cf_perf_tests_pipeline_source_branch))
@@ -54,7 +54,7 @@
                 repository: cf-performance-tests-pipeline
                 force: true
             - set_pipeline: cf-perf-test-((next_test_name))
-              file: cf-performance-tests-pipeline/ci/backfill-pipeline.yml
+              file: cf-performance-tests-pipeline/ci/generated-backfill-pipeline.yml
               var_files:
                 - cf-performance-tests-pipeline/variables/common.yml
                 - cf-performance-tests-pipeline/variables/cf-d-backfill/((next_test_name)).yml
