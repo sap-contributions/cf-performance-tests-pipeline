@@ -4,7 +4,6 @@ variable "parent_zone_id" {
 }
 
 resource "aws_route53_record" "perf-test" {
-  allow_overwrite = true
   name            = "${var.system_domain}"
   ttl             = 172800
   type            = "NS"
