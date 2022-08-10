@@ -262,6 +262,10 @@ jobs:
       passed:
       - teardown
       trigger: true
+    - get: cf-deployment
+      passed:
+      - teardown
+      trigger: true
     - get: concourse-tasks
   - try:
       do:

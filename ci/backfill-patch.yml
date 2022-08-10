@@ -40,6 +40,9 @@
           - get: cf-performance-tests-pipeline
             trigger: true
             passed: [teardown]
+          - get: cf-deployment
+            trigger: true
+            passed: [teardown]
           - get: concourse-tasks
       - try:
           do:
