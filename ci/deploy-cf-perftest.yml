@@ -98,6 +98,7 @@ jobs:
     # <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
+        trigger: true
       - get: cf-deployment
         trigger: true
       - set_pipeline: self
@@ -112,6 +113,7 @@ jobs:
     # <<: *alert_failure
     plan:
       - get: cf-performance-tests-pipeline
+        trigger: true
         passed: [detect-new-versions]
       - get: cf-deployment
         trigger: true
@@ -127,6 +129,7 @@ jobs:
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
+          trigger: true
           passed: [create-base-infra]
         - get: cf-deployment
           trigger: true
@@ -170,6 +173,7 @@ jobs:
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
+          trigger: true
           passed: [bbl-up]
         - get: cf-deployment
           trigger: true
@@ -231,6 +235,7 @@ jobs:
         - get: cf-deployment-concourse-tasks
         - get: cf-acceptance-tests
         - get: cf-performance-tests-pipeline
+          trigger: true
           passed: [deploy-cf]
         - get: cf-deployment
           trigger: true
@@ -254,6 +259,7 @@ jobs:
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
+          trigger: true
           passed: [cf-acceptance-tests]
         - get: cf-deployment
           trigger: true
@@ -292,6 +298,7 @@ jobs:
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
+          trigger: true
           passed: [run-performance-tests]
         - get: cf-deployment
           trigger: true
