@@ -330,7 +330,7 @@ resources:
 - icon: github
   name: cf-acceptance-tests
   source:
-    tag_filter: v*
+    tag_filter: ((cf_acceptance_tests_tag_filter))
     uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
   type: git
 - name: slack-notification
