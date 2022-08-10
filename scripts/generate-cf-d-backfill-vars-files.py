@@ -70,14 +70,16 @@ if __name__ == '__main__':
             else:
                 cf_perf_tests_pipeline_source_branch = test_name
 
-            cf_acceptance_tests_tag_filter = 'v*'
             if Version(cfd_version) <= Version("16.14.0"):
                 additional_ops_files = ' operations/use-bionic-stemcell-for-addons.yml'
             if Version(cfd_version) <= Version("19.0.0"):
                 cf_acceptance_tests_tag_filter = 'v7.4.0'
+                cf_deployment_concourse_tasks_tag_filter = 'v12.2.0'
+            else:
+                cf_acceptance_tests_tag_filter = 'v*'
+                cf_deployment_concourse_tasks_tag_filter = 'v*'
             if Version(cfd_version) >= Version("20.0.0"):
                 additional_ops_files = ' operations/speed-up-dynamic-asgs.yml'
-
             if "postgres" in db_name:
                 additional_ops_files += ' operations/use-postgres.yml'
 
@@ -85,10 +87,11 @@ if __name__ == '__main__':
                 "additional-ops-files": additional_ops_files,
                 "cloud_controller_type": "rails",
                 "cf_acceptance_tests_tag_filter": cf_acceptance_tests_tag_filter,
+                "cf_deployment_concourse_tasks_tag_filter": cf_deployment_concourse_tasks_tag_filter,
+                "cf_deployment_tag_filter": cfd_version,
                 "cf_router_idle_timeout_secs": "60",
                 "ccdb": db_name,
                 "test_prefix": f"cf-deployment-{cfd_version_with_hyphens}-",
-                "cfd_version": cfd_version,
                 "more_tests": more_tests,
                 "cf_perf_tests_pipeline_source_branch": cf_perf_tests_pipeline_source_branch,
                 "next_test_name": next_test

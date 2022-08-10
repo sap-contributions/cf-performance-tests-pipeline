@@ -4,8 +4,16 @@
   value: ((cf_perf_tests_pipeline_source_branch))
 
 - type: replace
-  path: /resources/name=cf-deployment/source/branch?
-  value: v((cfd_version))
+  path: /resources/name=cf-deployment/source/tag_filter
+  value: ((cf_deployment_tag_filter))
+
+- type: replace
+  path: /resources/name=cf-deployment-concourse-tasks/source/tag_filter
+  value: ((cf_deployment_concourse_tasks_tag_filter))
+
+- type: replace
+  path: /resources/name=cf-acceptance-tests/source/tag_filter
+  value: ((cf_acceptance_tests_tag_filter))
 
 - type: replace
   path: /resources/-
