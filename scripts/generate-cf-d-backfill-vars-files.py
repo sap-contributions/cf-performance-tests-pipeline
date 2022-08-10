@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 cf_perf_tests_pipeline_source_branch = test_name
 
             if Version(cfd_version) <= Version("16.14.0"):
-                additional_ops_files = ' operations/use-bionic-stemcell-for-addons.yml'
+                additional_ops_files += ' operations/use-bionic-stemcell-for-addons.yml'
             if Version(cfd_version) <= Version("19.0.0"):
                 cf_acceptance_tests_tag_filter = 'v7.4.0'
                 cf_deployment_concourse_tasks_tag_filter = 'v12.2.0'
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 cf_acceptance_tests_tag_filter = 'v*'
                 cf_deployment_concourse_tasks_tag_filter = 'v*'
             if Version(cfd_version) >= Version("20.0.0"):
-                additional_ops_files = ' operations/speed-up-dynamic-asgs.yml'
+                additional_ops_files += ' operations/speed-up-dynamic-asgs.yml'
             if "postgres" in db_name:
                 additional_ops_files += ' operations/use-postgres.yml'
 
