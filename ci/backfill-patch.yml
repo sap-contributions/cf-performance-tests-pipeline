@@ -23,13 +23,17 @@
       password: x-oauth-basic
       branch: ((next_test_name))
 
+- type: replace
+  path: /groups/name=test/jobs/-
+  value: set-next-pipeline
+
 - type: remove
   path: /jobs/name=detect-new-versions/plan/set_pipeline=self?
 
 - type: replace
   path: /jobs/-
   value:
-    name: set-next-pipeline-((next_test_name))
+    name: set-next-pipeline
     serial: true
     plan:
       - in_parallel:

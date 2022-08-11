@@ -94,6 +94,7 @@ groups:
   - cf-acceptance-tests
   - run-performance-tests
   - teardown
+  - set-next-pipeline
   name: test
 - jobs:
   - manual-teardown-cf-only
@@ -452,7 +453,7 @@ jobs:
   serial: true
   serial_groups:
   - deploy-test-destroy
-- name: set-next-pipeline-((next_test_name))
+- name: set-next-pipeline
   plan:
   - in_parallel:
     - get: cf-performance-tests-pipeline
