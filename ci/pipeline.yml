@@ -54,7 +54,7 @@ anchors:
     do: [*bbl_destroy, *destroy_base_infra]
   destroy_all: &destroy_all
     do: [*delete_cf, *destroy_director_and_base_infra]
-  system_domain: &system_domain cf.perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
+  system_domain: &system_domain cf.perf-test-((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
 
 resource_types:
 - name: slack-alert
