@@ -23,7 +23,6 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-      tag_filter: v*
   - name: cf-performance-tests-pipeline
     type: git
     icon: github
@@ -88,7 +87,7 @@ resources:
         AWS_SECRET_ACCESS_KEY: ((aws-pipeline-user-secret))
         AWS_DEFAULT_REGION: ((region))
       vars:
-        test_environment: perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+        test_environment: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
         system_domain: *system_domain
         region: ((region))
 

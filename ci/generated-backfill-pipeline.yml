@@ -297,7 +297,6 @@ resources:
 - icon: github
   name: cf-deployment-concourse-tasks
   source:
-    tag_filter: ((cf_deployment_concourse_tasks_tag_filter))
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
   type: git
 - icon: github
@@ -365,7 +364,7 @@ resources:
     vars:
       region: ((region))
       system_domain: cf.perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
-      test_environment: perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+      test_environment: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
   type: terraform
 - icon: github
   name: cf-performance-tests-pipeline-target
