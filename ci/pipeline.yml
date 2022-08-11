@@ -1,9 +1,59 @@
+groups:
+- name: test
+  jobs:
+  - detect-new-versions
+  - create-base-infra
+  - bbl-up
+  - deploy-cf
+  - cf-acceptance-tests
+  - run-performance-tests
+  - teardown
+- name: manual-teardown
+  jobs:
+  - manual-teardown-cf-only
+  - manual-teardown-bbl-only
+  - manual-teardown-base-infra-only
+  - manual-teardown-all
+
 anchors:
   alert_failure: &alert_failure
     on_failure:
       put: slack-notification
       params:
         alert_type: failed
+  delete_cf: &delete_cf
+    task: bosh-delete-deployments
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    params:
+      BBL_STATE_DIR: state
+      DELETE_ALL_DEPLOYMENTS: true
+      IGNORE_ERRORS: true
+  bbl_destroy: &bbl_destroy
+    task: bbl-destroy
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: state
+      BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+      BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+      BBL_AWS_REGION: ((region))
+      STORE_BBL_STATE_AS_TARBALL: true
+      TF_VAR_parent_zone_id: ((parent_zone_id))
+      TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+    ensure:
+      put: bbl-state
+      params:
+        file: updated-bbl-state/bbl-state.tgz
+  destroy_base_infra: &destroy_base_infra
+    put: base-infra
+    params:
+      action: destroy
+      terraform_source: cf-performance-tests-pipeline/base-infra/terraform
+    get_params:
+      action: destroy
+  destroy_director_and_base_infra: &destroy_director_and_base_infra
+    do: [*bbl_destroy, *destroy_base_infra]
+  destroy_all: &destroy_all
+    do: [*delete_cf, *destroy_director_and_base_infra]
   system_domain: &system_domain cf.perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
 
 resource_types:
@@ -310,28 +360,51 @@ jobs:
       - load_var: base-infra
         file: base-infra/metadata
         format: json
-      - task: bosh-delete-deployments
-        file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+      - *destroy_all
+
+  - name: manual-teardown-cf-only
+    serial: true
+    serial_groups: [deploy-test-destroy]
+    plan:
+    - in_parallel:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
         params:
-          BBL_STATE_DIR: state
-          IGNORE_ERRORS: true
-      - task: bbl-destroy
-        file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          unpack: true
+    - *delete_cf
+
+  - name: manual-teardown-bbl-only
+    serial: true
+    serial_groups: [deploy-test-destroy]
+    plan:
+    - in_parallel:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
         params:
-          BBL_STATE_DIR: state
-          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
-          BBL_AWS_REGION: ((region))
-          STORE_BBL_STATE_AS_TARBALL: true
-          TF_VAR_parent_zone_id: ((parent_zone_id))
-          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
-        ensure:
-          put: bbl-state
-          params:
-            file: updated-bbl-state/bbl-state.tgz
-      - put: base-infra
+          unpack: true
+      - get: base-infra
+    - load_var: base-infra
+      file: base-infra/metadata
+      format: json
+    - *bbl_destroy
+
+  - name: manual-teardown-base-infra-only
+    serial: true
+    serial_groups: [deploy-test-destroy]
+    plan:
+    - *destroy_base_infra
+
+  - name: manual-teardown-all
+    serial: true
+    serial_groups: [deploy-test-destroy]
+    plan:
+    - in_parallel:
+      - get: cf-deployment-concourse-tasks
+      - get: bbl-state
         params:
-          action: destroy
-          terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-        get_params:
-          action: destroy
+          unpack: true
+      - get: base-infra
+    - load_var: base-infra
+      file: base-infra/metadata
+      format: json
+    - *destroy_all
