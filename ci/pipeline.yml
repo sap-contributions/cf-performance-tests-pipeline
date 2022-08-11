@@ -80,6 +80,16 @@ resources:
       username: ((temporary-github-token))
       password: x-oauth-basic
       branch: ((results-branch))
+      ignore_paths: [results/**]
+  - name: results
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+      username: ((temporary-github-token))
+      password: x-oauth-basic
+      branch: ((results-branch))
+
   - name: bbl-state
     type: s3
     icon: aws
@@ -302,7 +312,7 @@ jobs:
           GIT_COMMIT_MESSAGE: Generated Chart
           CCDB: ((ccdb))
           CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
-      - put: cf-performance-tests-pipeline
+      - put: results
         params:
           repository: cf-performance-tests-pipeline
           rebase: true

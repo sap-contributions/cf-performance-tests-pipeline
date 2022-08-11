@@ -269,7 +269,7 @@ jobs:
   - params:
       rebase: true
       repository: cf-performance-tests-pipeline
-    put: cf-performance-tests-pipeline
+    put: results
   serial: true
   serial_groups:
   - deploy-test-destroy
@@ -473,6 +473,16 @@ resources:
   name: cf-performance-tests-pipeline
   source:
     branch: ((cf_perf_tests_pipeline_source_branch))
+    ignore_paths:
+    - results/**
+    password: x-oauth-basic
+    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    username: ((temporary-github-token))
+  type: git
+- icon: github
+  name: results
+  source:
+    branch: ((results-branch))
     password: x-oauth-basic
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
     username: ((temporary-github-token))
