@@ -85,7 +85,7 @@ if __name__ == '__main__':
             if "postgres" in db_name:
                 additional_ops_files += ' operations/use-postgres.yml'
 
-            random_string = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+            random_string = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
 
             vars_dict = {
                 "additional-ops-files": additional_ops_files,

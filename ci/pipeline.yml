@@ -4,7 +4,7 @@ anchors:
       put: slack-notification
       params:
         alert_type: failed
-  system_domain: &system_domain cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
+  system_domain: &system_domain cf.perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
 
 resource_types:
 - name: slack-alert
@@ -88,7 +88,7 @@ resources:
         AWS_SECRET_ACCESS_KEY: ((aws-pipeline-user-secret))
         AWS_DEFAULT_REGION: ((region))
       vars:
-        test_environment: cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+        test_environment: perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
         system_domain: *system_domain
         region: ((region))
 
@@ -148,7 +148,7 @@ jobs:
           bbl-config: cf-performance-tests-pipeline
         params:
           BBL_IAAS: aws
-          BBL_ENV_NAME: cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+          BBL_ENV_NAME: perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))

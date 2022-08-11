@@ -9,4 +9,4 @@ cloud_controller_type: rails
 more_tests: true
 next_test_name: cfd-16-13-0-mysql
 test_prefix: cfd-16-12-0-
-test_suffix: -KGJSP
+test_suffix: -5R55

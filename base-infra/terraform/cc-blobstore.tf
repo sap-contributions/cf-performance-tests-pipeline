@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "cc-blobstore-packages" {
-  bucket        = "${var.test_environment}-perf-tests-packages"
+  bucket        = "perf-tests-pkgs-${var.test_environment}"
   force_destroy = true
 }
 
@@ -23,7 +23,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "packages" {
 }
 
 resource "aws_s3_bucket" "cc-blobstore-buildpacks" {
-  bucket        = "${var.test_environment}-perf-tests-buildpacks"
+  bucket        = "perf-tests-bldpks-${var.test_environment}"
   force_destroy = true
 }
 
@@ -47,7 +47,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "buildpacks" {
 }
 
 resource "aws_s3_bucket" "cc-blobstore-droplets" {
-  bucket        = "${var.test_environment}-perf-tests-droplets"
+  bucket        = "perf-tests-drops-${var.test_environment}"
   force_destroy = true
 }
 
@@ -71,7 +71,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "droplets" {
 }
 
 resource "aws_s3_bucket" "cc-blobstore-resources" {
-  bucket        = "${var.test_environment}-perf-tests-resources"
+  bucket        = "perf-tests-rsrcs-${var.test_environment}"
   force_destroy = true
 }
 

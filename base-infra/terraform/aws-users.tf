@@ -1,5 +1,5 @@
 resource "aws_iam_user" "bbl" {
-  name = "${var.test_environment}-bbl-perf-tests"
+  name = "perf-tests-bbl-${var.test_environment}"
 }
 
 resource "aws_iam_access_key" "bbl" {
@@ -7,7 +7,7 @@ resource "aws_iam_access_key" "bbl" {
 }
 
 resource "aws_iam_user_policy" "bbl" {
-  name = "${var.test_environment}-bbl"
+  name = "perf-tests-bbl-${var.test_environment}"
   user = aws_iam_user.bbl.name
 
   policy = jsonencode({
@@ -67,7 +67,7 @@ resource "aws_iam_user_policy" "bbl" {
 }
 
 resource "aws_iam_user" "cloud_controller" {
-  name = "${var.test_environment}-cc-perf-tests"
+  name = "perf-tests-${var.test_environment}"
 }
 
 resource "aws_iam_access_key" "cloud_controller" {
@@ -75,7 +75,7 @@ resource "aws_iam_access_key" "cloud_controller" {
 }
 
 resource "aws_iam_user_policy" "cloud_controller" {
-  name = "${var.test_environment}-cloud_controller"
+  name = "perf-tests-cc-${var.test_environment}"
   user = aws_iam_user.cloud_controller.name
 
   policy = jsonencode({
