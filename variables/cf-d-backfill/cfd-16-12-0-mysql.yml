@@ -1,6 +1,5 @@
 additional-ops-files: ' operations/use-bionic-stemcell-for-addons.yml'
 ccdb: mysql
-cf_acceptance_tests_tag_filter: v7.4.0
 cf_deployment_tag_filter: v16.12.0
 cf_perf_tests_pipeline_source_branch: CFP-1806
 cf_router_idle_timeout_secs: '60'

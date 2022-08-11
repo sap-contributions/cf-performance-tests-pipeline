@@ -8,10 +8,6 @@
   value: ((cf_deployment_tag_filter))
 
 - type: replace
-  path: /resources/name=cf-acceptance-tests/source/tag_filter
-  value: ((cf_acceptance_tests_tag_filter))
-
-- type: replace
   path: /resources/-
   value:
     name: cf-performance-tests-pipeline-target

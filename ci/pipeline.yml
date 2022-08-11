@@ -5,7 +5,6 @@ groups:
   - create-base-infra
   - bbl-up
   - deploy-cf
-  - cf-acceptance-tests
   - run-performance-tests
   - teardown
 - name: manual-teardown
@@ -103,12 +102,6 @@ resources:
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests.git
       branch: CFP-1806
-  - name: cf-acceptance-tests
-    type: git
-    icon: github
-    source:
-      uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
-      tag_filter: v*
   - name: slack-notification
     type: slack-alert
     source:
@@ -275,32 +268,6 @@ jobs:
         params:
           BBL_STATE_DIR: state
 
-  - name: cf-acceptance-tests
-    serial: true
-    serial_groups: [deploy-test-destroy]
-    # <<: *alert_failure
-    plan:
-      - in_parallel:
-        - get: cf-deployment-concourse-tasks
-        - get: cf-acceptance-tests
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [deploy-cf]
-        - get: cf-deployment
-          trigger: true
-          passed: [deploy-cf]
-        - get: bbl-state
-          params:
-            unpack: true
-      - task: generate-cats-config
-        file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
-        params:
-          SYSTEM_DOMAIN: *system_domain
-      - task: cf-acceptance-tests
-        file: cf-deployment-concourse-tasks/run-cats/task.yml
-        params:
-          NODES: 1
-
   - name: run-performance-tests
     serial: true
     serial_groups: [deploy-test-destroy]
@@ -309,10 +276,10 @@ jobs:
       - in_parallel:
         - get: cf-performance-tests-pipeline
           trigger: true
-          passed: [cf-acceptance-tests]
+          passed: [deploy-cf]
         - get: cf-deployment
           trigger: true
-          passed: [cf-acceptance-tests]
+          passed: [deploy-cf]
         - get: bbl-state
           params:
             unpack: true

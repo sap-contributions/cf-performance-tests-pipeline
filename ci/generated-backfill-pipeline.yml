@@ -91,7 +91,6 @@ groups:
   - create-base-infra
   - bbl-up
   - deploy-cf
-  - cf-acceptance-tests
   - run-performance-tests
   - teardown
   - set-next-pipeline
@@ -234,43 +233,16 @@ jobs:
   serial: true
   serial_groups:
   - deploy-test-destroy
-- name: cf-acceptance-tests
-  plan:
-  - in_parallel:
-    - get: cf-deployment-concourse-tasks
-    - get: cf-acceptance-tests
-    - get: cf-performance-tests-pipeline
-      passed:
-      - deploy-cf
-      trigger: true
-    - get: cf-deployment
-      passed:
-      - deploy-cf
-      trigger: true
-    - get: bbl-state
-      params:
-        unpack: true
-  - file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
-    params:
-      SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
-    task: generate-cats-config
-  - file: cf-deployment-concourse-tasks/run-cats/task.yml
-    params:
-      NODES: 1
-    task: cf-acceptance-tests
-  serial: true
-  serial_groups:
-  - deploy-test-destroy
 - name: run-performance-tests
   plan:
   - in_parallel:
     - get: cf-performance-tests-pipeline
       passed:
-      - cf-acceptance-tests
+      - deploy-cf
       trigger: true
     - get: cf-deployment
       passed:
-      - cf-acceptance-tests
+      - deploy-cf
       trigger: true
     - get: bbl-state
       params:
@@ -526,12 +498,6 @@ resources:
   source:
     branch: CFP-1806
     uri: https://github.com/cloudfoundry/cf-performance-tests.git
-  type: git
-- icon: github
-  name: cf-acceptance-tests
-  source:
-    tag_filter: ((cf_acceptance_tests_tag_filter))
-    uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
   type: git
 - name: slack-notification
   source:
