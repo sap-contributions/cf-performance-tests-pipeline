@@ -1,4 +1,4 @@
-# apply with `bosh interpolate ci/deploy-cf-perftest.yml -o ci/backfill-patch.yml > ci/generated-backfill-pipeline.yml`
+# apply with `bosh interpolate ci/pipeline.yml -o ci/backfill-patch.yml > ci/generated-backfill-pipeline.yml`
 - type: replace
   path: /resources/name=cf-performance-tests-pipeline/source/branch?
   value: ((cf_perf_tests_pipeline_source_branch))

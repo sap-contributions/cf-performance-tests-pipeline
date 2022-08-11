@@ -37,6 +37,8 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:AttachRolePolicy",
           "iam:CreateInstanceProfile",
           "iam:CreatePolicy",
+          "iam:CreatePolicyVersion",
+          "iam:DeletePolicyVersion",
           "iam:CreateRole",
           "iam:DeleteInstanceProfile",
           "iam:DeletePolicy",

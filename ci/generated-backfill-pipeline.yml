@@ -4,7 +4,7 @@ anchors:
       params:
         alert_type: failed
       put: slack-notification
-  system_domain: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
+  system_domain: cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
 jobs:
 - name: detect-new-versions
   plan:
@@ -60,12 +60,12 @@ jobs:
       BBL_AWS_REGION: ((region))
       BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
       BBL_CONFIG_DIR: bbl-patches
-      BBL_ENV_NAME: ((test_prefix))((cloud_controller_type))-((ccdb))
+      BBL_ENV_NAME: cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
       BBL_IAAS: aws
       BBL_LB_CERT: ((.:base-infra.cert_pem))
       BBL_LB_KEY: ((.:base-infra.private_key))
       BBL_STATE_DIR: state
-      LB_DOMAIN: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
+      LB_DOMAIN: cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
       SKIP_LB_CREATION: false
       STORE_BBL_STATE_AS_TARBALL: true
       TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
@@ -127,7 +127,7 @@ jobs:
       MANIFEST_FILE: cf-deployment.yml
       OPS_FILES: operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml
         operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
-      SYSTEM_DOMAIN: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
+      SYSTEM_DOMAIN: cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf
   - file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
@@ -155,7 +155,7 @@ jobs:
         unpack: true
   - file: cf-performance-tests-pipeline/ci/tasks/generate-cats-config/task.yml
     params:
-      SYSTEM_DOMAIN: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
+      SYSTEM_DOMAIN: cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
     task: generate-cats-config
   - file: cf-deployment-concourse-tasks/run-cats/task.yml
     params:
@@ -316,7 +316,7 @@ resources:
     initial_version: "0"
     region_name: ((region))
     secret_access_key: ((aws-pipeline-user-secret))
-    versioned_file: ((test_prefix))((cloud_controller_type))-((ccdb))/bbl-state.tar.gz
+    versioned_file: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))/bbl-state.tar.gz
   type: s3
 - icon: github
   name: cf-deployment
@@ -355,7 +355,7 @@ resources:
       key: base-infra.tfstate
       region: ((region))
       secret_key: ((aws-pipeline-user-secret))
-      workspace_key_prefix: ((test_prefix))((cloud_controller_type))-((ccdb))
+      workspace_key_prefix: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
     backend_type: s3
     env:
       AWS_ACCESS_KEY_ID: ((aws-pipeline-user-id))
@@ -364,8 +364,8 @@ resources:
     env_name: terraform
     vars:
       region: ((region))
-      system_domain: cf.((test_prefix))((cloud_controller_type))-((ccdb)).((parent_zone_domain))
-      test_environment: ((test_prefix))((cloud_controller_type))-((ccdb))
+      system_domain: cf.cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix)).((parent_zone_domain))
+      test_environment: cf-perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
   type: terraform
 - icon: github
   name: cf-performance-tests-pipeline-target

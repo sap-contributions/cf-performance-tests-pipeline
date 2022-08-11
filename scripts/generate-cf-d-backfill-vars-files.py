@@ -1,5 +1,7 @@
 from packaging.version import Version
 from pathlib import Path
+import random
+import string
 
 import yaml
 
@@ -83,6 +85,8 @@ if __name__ == '__main__':
             if "postgres" in db_name:
                 additional_ops_files += ' operations/use-postgres.yml'
 
+            random_string = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+
             vars_dict = {
                 "additional-ops-files": additional_ops_files,
                 "cloud_controller_type": "rails",
@@ -91,7 +95,8 @@ if __name__ == '__main__':
                 "cf_deployment_tag_filter": f'v{cfd_version}',
                 "cf_router_idle_timeout_secs": "60",
                 "ccdb": db_name,
-                "test_prefix": f"cf-deployment-{cfd_version_with_hyphens}-",
+                "test_prefix": f"cfd-{cfd_version_with_hyphens}-",
+                "test_suffix": f"-{random_string}",
                 "more_tests": more_tests,
                 "cf_perf_tests_pipeline_source_branch": cf_perf_tests_pipeline_source_branch,
                 "next_test_name": next_test
