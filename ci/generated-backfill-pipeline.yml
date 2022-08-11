@@ -400,6 +400,7 @@ jobs:
   - deploy-test-destroy
 - name: manual-teardown-base-infra-only
   plan:
+  - get: cf-performance-tests-pipeline
   - get_params:
       action: destroy
     params:

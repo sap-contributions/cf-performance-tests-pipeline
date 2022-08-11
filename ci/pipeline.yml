@@ -392,6 +392,7 @@ jobs:
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
+    - get: cf-performance-tests-pipeline
     - *destroy_base_infra
 
   - name: manual-teardown-all
