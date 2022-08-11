@@ -87,7 +87,7 @@ resources:
     source:
       region_name: ((region))
       bucket: ((state-bucket-name))
-      versioned_file: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))/bbl-state.tar.gz
+      versioned_file: ((cloud_controller_type))-((ccdb))((test_suffix))/bbl-state.tar.gz
       initial_version: "0"
       access_key_id: ((aws-pipeline-user-id))
       secret_access_key: ((aws-pipeline-user-secret))
@@ -127,7 +127,7 @@ resources:
       backend_type: s3
       backend_config:
         bucket: ((state-bucket-name))
-        workspace_key_prefix: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+        workspace_key_prefix: ((cloud_controller_type))-((ccdb))((test_suffix))
         key: base-infra.tfstate
         region: ((region))
         access_key: ((aws-pipeline-user-id))
@@ -137,7 +137,7 @@ resources:
         AWS_SECRET_ACCESS_KEY: ((aws-pipeline-user-secret))
         AWS_DEFAULT_REGION: ((region))
       vars:
-        test_environment: ((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+        test_environment: ((cloud_controller_type))-((ccdb))((test_suffix))
         system_domain: *system_domain
         region: ((region))
 
@@ -197,7 +197,7 @@ jobs:
           bbl-config: cf-performance-tests-pipeline
         params:
           BBL_IAAS: aws
-          BBL_ENV_NAME: perf-test-((test_prefix))((cloud_controller_type))-((ccdb))((test_suffix))
+          BBL_ENV_NAME: perf-test-((cloud_controller_type))-((ccdb))((test_suffix))
           BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_AWS_REGION: ((region))

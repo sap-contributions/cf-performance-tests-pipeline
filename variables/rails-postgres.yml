@@ -2,5 +2,4 @@ cloud_controller_type: rails
 ccdb: postgres
 additional-ops-files: " operations/use-postgres.yml operations/speed-up-dynamic-asgs.yml"
 cf_router_idle_timeout_secs: "60"
-test_prefix: ""
 test_suffix: ""

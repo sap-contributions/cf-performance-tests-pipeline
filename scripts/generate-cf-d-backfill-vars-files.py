@@ -92,7 +92,6 @@ if __name__ == '__main__':
                 "cf_deployment_tag_filter": f'v{cfd_version}',
                 "cf_router_idle_timeout_secs": "60",
                 "ccdb": db_name,
-                "test_prefix": f"cfd-{cfd_version_with_hyphens}-",
                 "test_suffix": f"-{random_string}",
                 "more_tests": more_tests,
                 "cf_perf_tests_pipeline_source_branch": cf_perf_tests_pipeline_source_branch,

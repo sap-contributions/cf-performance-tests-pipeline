@@ -2,5 +2,4 @@ cloud_controller_type: go
 ccdb: postgres
 additional-ops-files: " operations/use-postgres.yml operations/deploy-go-cf-api.yml"
 cf_router_idle_timeout_secs: "60"
-test_prefix: ""
 test_suffix: ""
