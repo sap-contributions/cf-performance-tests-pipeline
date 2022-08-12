@@ -112,7 +112,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests.git
-      branch: CFP-1806
+      branch: main
   - name: slack-notification
     type: slack-alert
     source:
