@@ -10,7 +10,7 @@ charts_path="${cf_perf_tests_pipeline_repo}/results/${CLOUD_CONTROLLER_TYPE}/${C
 echo -e "\nInstalling matplotlib..."
 pip install matplotlib
 
-mkdir -p "$charts_path" "$results_path"
+mkdir -p "$charts_path"
 
 echo -e "\nGenerating charts..."
 python "${cf_perf_tests_pipeline_repo}/ci/tasks/generate-charts/generate_charts.py" \

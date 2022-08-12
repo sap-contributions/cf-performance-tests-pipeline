@@ -9,6 +9,8 @@ results_path="${cf_perf_tests_pipeline_repo}/results/${CLOUD_CONTROLLER_TYPE}/${
 cf_deployment_repo="${task_root}/cf-deployment"
 bbl_state="${task_root}/bbl-state/${BBL_STATE_DIR}"
 
+mkdir -p "$results_path"
+
 echo -e "\nGetting test landscape configuration from bbl state..."
 pushd "$bbl_state" >/dev/null
   eval "$(bbl print-env)"
@@ -29,7 +31,6 @@ capi_version="$(<"${cf_deployment_repo}"/cf-deployment.yml grep -A 1 capi | grep
 echo -e "\nLogging in to CF and creating a test user..."
 cf api --skip-ssl-validation "api.${cf_domain}"
 cf auth admin "$cf_admin_password"
-cf create-user perf-test-user perf-test-password
 
 if [ "$CCDB" == 'postgres' ]; then
   database_port=5524
@@ -64,9 +65,6 @@ users:
   admin:
     username: "admin"
     password: "$cf_admin_password"
-  existing:
-    username: perf-test-user
-    password: perf-test-password
 database_type: "$CCDB"
 ccdb_connection: "$database_ccdb"
 uaadb_connection: "$database_uaadb"

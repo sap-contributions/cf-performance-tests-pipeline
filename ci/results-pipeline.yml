@@ -7,8 +7,8 @@ resources:
     username: ((cf-perf-github-username))
     password: ((cf-perf-github-user-token))
     branch: ((results-branch))
-    paths: [ci/charts-pipeline.yml, ci/tasks/generate-charts/*, variables/common.yml]
-    ignore_paths: [results/**/*.json]
+    paths: [ci/results-pipeline.yml, ci/tasks/generate-charts/*, ci/tasks/generate-coverage-table/*, variables/common.yml]
+    ignore_paths: [results/**/*.json, results/coverage.md]
 - name: results
   type: git
   icon: github
@@ -19,7 +19,7 @@ resources:
     branch: ((results-branch))
     paths: [results/**/*.json]
 
-- name: charts
+- name: cf-performance-tests-pipeline-push
   type: git
   icon: github
   source:
@@ -35,7 +35,7 @@ jobs:
   - get: cf-performance-tests-pipeline
     trigger: true
   - set_pipeline: self
-    file: cf-performance-tests-pipeline/ci/charts-pipeline.yml
+    file: cf-performance-tests-pipeline/ci/results-pipeline.yml
     var_files:
       - cf-performance-tests-pipeline/variables/common.yml
 
@@ -50,37 +50,66 @@ jobs:
   - in_parallel:
     - task: generate-chart
       file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      input_mapping:
+        cf-performance-tests-pipeline: results
       params:
         GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
         GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generated Chart
+        GIT_COMMIT_MESSAGE: Generate charts for rails cc with postgres ccdb
         CCDB: postgres
         CLOUD_CONTROLLER_TYPE: rails
     - task: generate-chart
       file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      input_mapping:
+        cf-performance-tests-pipeline: results
       params:
         GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
         GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generated Chart
+        GIT_COMMIT_MESSAGE: Generate charts for rails cc with mysql ccdb
         CCDB: mysql
         CLOUD_CONTROLLER_TYPE: rails
     - task: generate-chart
       file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      input_mapping:
+        cf-performance-tests-pipeline: results
       params:
         GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
         GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generated Chart
+        GIT_COMMIT_MESSAGE: Generate charts for go cc with postgres ccdb
         CCDB: postgres
         CLOUD_CONTROLLER_TYPE: go
     - task: generate-chart
       file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+      input_mapping:
+        cf-performance-tests-pipeline: results
       params:
         GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
         GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generated Chart
+        GIT_COMMIT_MESSAGE: Generate charts for go cc with mysql ccdb
         CCDB: mysql
         CLOUD_CONTROLLER_TYPE: go
-  - put: charts
+  - put: cf-performance-tests-pipeline-push
+    params:
+      repository: cf-performance-tests-pipeline
+      rebase: true
+- name: generate-coverage-table
+  serial: true
+  plan:
+  - get: cf-performance-tests-pipeline
+    trigger: true
+    passed: [set-pipeline]
+  - get: results
+    trigger: true
+  - task: generate-coverage-table
+    input_mapping:
+      cf-performance-tests-pipeline: results
+    file: cf-performance-tests-pipeline/ci/tasks/generate-coverage-table/task.yml
+    params:
+      COVERAGE_TABLE_FILE: results/coverage.md
+      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_MESSAGE: Update test coverage table
+  - put: cf-performance-tests-pipeline-push
     params:
       repository: cf-performance-tests-pipeline
       rebase: true

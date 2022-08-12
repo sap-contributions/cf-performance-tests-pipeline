@@ -219,6 +219,9 @@ jobs:
           droplet_directory_key: ((.:base-infra.droplets_bucket_name))
           resource_directory_key: ((.:base-infra.resources_bucket_name))
       task: write-bosh-vars-file
+    - file: cf-deployment/.git/short_ref
+      format: trim
+      load_var: cf-deployment-version
   - file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       ops-files: combined-ops-files
@@ -241,7 +244,8 @@ jobs:
       CCDB: postgres
       CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
       GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_MESSAGE: Performance tests results
+      GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type))
+        cc with postgres ccdb
       GIT_COMMIT_USERNAME: ((cf-perf-github-username))
       TEST_SUITE_FOLDER: ((test-suite-folder))
     task: run-performance-tests
@@ -297,6 +301,9 @@ jobs:
           droplet_directory_key: ((.:base-infra.droplets_bucket_name))
           resource_directory_key: ((.:base-infra.resources_bucket_name))
       task: write-bosh-vars-file
+    - file: cf-deployment/.git/short_ref
+      format: trim
+      load_var: cf-deployment-version
   - file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       ops-files: combined-ops-files
@@ -319,7 +326,8 @@ jobs:
       CCDB: mysql
       CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
       GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_MESSAGE: Performance tests results
+      GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type))
+        cc with mysql ccdb
       GIT_COMMIT_USERNAME: ((cf-perf-github-username))
       TEST_SUITE_FOLDER: ((test-suite-folder))
     task: run-performance-tests

@@ -37,7 +37,7 @@ if __name__ == '__main__':
             next_cf_d_version_with_hyphens = cf_deployment_releases[idx_ver+1].replace('.', '-')
             next_test = f'cfd-{next_cf_d_version_with_hyphens}'
         else:
-            next_test = None
+            next_test = 'none'
             more_tests = False
 
         first_test = idx_ver == 0

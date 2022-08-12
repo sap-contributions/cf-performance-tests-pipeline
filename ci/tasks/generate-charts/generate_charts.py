@@ -164,6 +164,9 @@ def main(test_results: str, generated_charts: str):
                                                   os.path.basename(os.path.normpath(test_result_version_folder)))
 
             test_result_file_paths = glob.glob(os.path.join(test_result_version_folder, '*-test-results-*.json'))
+            if len(test_result_file_paths) == 0:
+                logging.info(f"no test results found in {test_result_version_folder}, skipping...")
+                continue
             test_suite_naming_pattern = re.compile('(.+?)-test-results-.+.json')
             test_suite = re.match(test_suite_naming_pattern, os.path.basename(test_result_file_paths[0])).group(1)
 

@@ -265,6 +265,9 @@ jobs:
               buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
               droplet_directory_key: ((.:base-infra.droplets_bucket_name))
               resource_directory_key: ((.:base-infra.resources_bucket_name))
+        - load_var: cf-deployment-version
+          file: cf-deployment/.git/short_ref
+          format: trim
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
@@ -286,7 +289,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Performance tests results
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type)) cc with postgres ccdb
           CCDB: postgres
           CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
           TEST_SUITE_FOLDER: ((test-suite-folder))
@@ -340,6 +343,9 @@ jobs:
               buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
               droplet_directory_key: ((.:base-infra.droplets_bucket_name))
               resource_directory_key: ((.:base-infra.resources_bucket_name))
+        - load_var: cf-deployment-version
+          file: cf-deployment/.git/short_ref
+          format: trim
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
@@ -361,7 +367,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Performance tests results
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type)) cc with mysql ccdb
           CCDB: mysql
           CLOUD_CONTROLLER_TYPE: ((cloud_controller_type))
           TEST_SUITE_FOLDER: ((test-suite-folder))
