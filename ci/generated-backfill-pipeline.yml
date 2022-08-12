@@ -536,17 +536,17 @@ resources:
     branch: ((cf_perf_tests_pipeline_source_branch))
     ignore_paths:
     - results/**
-    password: x-oauth-basic
+    password: ((cf-perf-github-user-token))
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
+    username: ((cf-perf-github-username))
   type: git
 - icon: github
   name: results
   source:
     branch: ((results-branch))
-    password: x-oauth-basic
+    password: ((cf-perf-github-user-token))
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
+    username: ((cf-perf-github-username))
   type: git
 - icon: aws
   name: bbl-state
@@ -605,7 +605,7 @@ resources:
   name: cf-performance-tests-pipeline-target
   source:
     branch: perf-test-old-((next_test_name))
-    password: x-oauth-basic
+    password: ((cf-perf-github-user-token))
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
+    username: ((cf-perf-github-username))
   type: git

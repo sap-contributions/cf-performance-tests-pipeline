@@ -78,8 +78,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-      username: ((temporary-github-token))
-      password: x-oauth-basic
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
       branch: ((results-branch))
       ignore_paths: [results/**]
   - name: results
@@ -87,8 +87,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-      username: ((temporary-github-token))
-      password: x-oauth-basic
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
       branch: ((results-branch))
 
   - name: bbl-state

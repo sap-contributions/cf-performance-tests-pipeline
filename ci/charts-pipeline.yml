@@ -4,8 +4,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
-    password: x-oauth-basic
+    username: ((cf-perf-github-username))
+    password: ((cf-perf-github-user-token))
     branch: ((results-branch))
     paths: [ci/charts-pipeline.yml, ci/tasks/generate-charts/*, variables/common.yml]
     ignore_paths: [results/**/*.json]
@@ -14,8 +14,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
-    password: x-oauth-basic
+    username: ((cf-perf-github-username))
+    password: ((cf-perf-github-user-token))
     branch: ((results-branch))
     paths: [results/**/*.json]
 
@@ -24,8 +24,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-    username: ((temporary-github-token))
-    password: x-oauth-basic
+    username: ((cf-perf-github-username))
+    password: ((cf-perf-github-user-token))
     branch: ((results-branch))
 
 jobs:
