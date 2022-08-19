@@ -1,0 +1,56 @@
+# apply with `bosh interpolate ci/pipeline.yml -o ci/backfill-patch.yml > ci/generated-backfill-pipeline.yml`
+- type: replace
+  path: /resources/name=cf-performance-tests-pipeline/source/branch?
+  value: ((cf_perf_tests_pipeline_source_branch))
+
+- type: replace
+  path: /resources/name=cf-deployment/source/tag_filter
+  value: ((cf_deployment_tag_filter))
+
+- type: replace
+  path: /resources/-
+  value:
+    name: cf-performance-tests-pipeline-target
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
+      branch: perf-test-old-((next_test_name))
+
+- type: replace
+  path: /groups/name=test/jobs/-
+  value: set-next-pipeline
+
+- type: remove
+  path: /jobs/name=detect-new-versions/plan/set_pipeline=self?
+
+- type: replace
+  path: /jobs/-
+  value:
+    name: set-next-pipeline
+    serial: true
+    plan:
+      - in_parallel:
+          - get: cf-performance-tests-pipeline
+            trigger: true
+            passed: [teardown]
+          - get: cf-deployment
+            trigger: true
+            passed: [teardown]
+          - get: concourse-tasks
+      - try:
+          do:
+            - task: toggle
+              file: concourse-tasks/toggle/task.yml
+              params: { TOGGLE: ((more_tests)) }
+            - put: cf-performance-tests-pipeline-target
+              params:
+                repository: cf-performance-tests-pipeline
+                force: true
+            - set_pipeline: perf-test-old-((next_test_name))
+              file: cf-performance-tests-pipeline/ci/generated-backfill-pipeline.yml
+              var_files:
+                - cf-performance-tests-pipeline/variables/common.yml
+                - cf-performance-tests-pipeline/variables/cf-d-backfill/((next_test_name)).yml

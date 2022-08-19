@@ -1,1 +1,0 @@
-We tried to use a symlink to 'cf-deployment/operations/use-postgres.yml', but that didn't work on Concourse.

@@ -1,0 +1,25 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: cloudfoundry/cf-deployment-concourse-tasks
+
+inputs:
+  - name: cf-performance-tests-pipeline
+  - name: cf-performance-tests
+  - name: bbl-state
+  - name: cf-deployment
+
+outputs:
+  - name: cf-performance-tests-pipeline
+
+run:
+  path: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.sh
+
+params:
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_MESSAGE:
+  CLOUD_CONTROLLER_TYPE:
+  CCDB: postgres

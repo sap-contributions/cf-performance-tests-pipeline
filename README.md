@@ -1,22 +1,34 @@
 # CF Performance Tests Pipeline
 
-This repository contains all artifacts for the CF performance tests pipeline including bootstrapping of the CF foundation, which tests run against and the [test results](test-results) and generated [charts](test-charts). It is based on [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader) and [cf-deployment](https://github.com/cloudfoundry/cf-deployment). The deployment pipeline runs on this public Concourse instance: https://bosh.ci.cloudfoundry.org/. You can log on with your github.com account.
+This repository defines a Concourse pipeline that automatically runs the [cf-performance-tests](https://github.com/cloudfoundry/cf-performance-tests) against new releases of [cf-deployment](https://github.com/cloudfoundry/cf-deployment) and stores the [results](results) in this repo. The pipeline also generates .png charts that show how performance varies across different cf-deployment releases. These are regenerated each time a new results file is added, along with a [coverage table](results/coverage.md) that gives an overview of releases that have been tested.
 
-The performance tests can be found [here](https://github.com/cloudfoundry/cf-performance-tests)
+The pipeline is triggered by new cf-deployment releases. It uses [bbl](https://github.com/cloudfoundry/bosh-bootloader) to stand a bosh director, and then uses that director to deploy a Cloud Foundry foundation. Each pipeline run will run the tests twice against a specific release of cf-deployment - once with a Cloud Controller that has a postgres CCDB, and once with a mysql CCDB. After completion, the test environment is torn down.
 
-## Test Results / Test Charts
+See the [docs](docs) subdirectory for instructions on one-off manual setup steps that need to be run before running any tests, along with guidance on configuring new automated tests and manual setup steps for triggering a series of tests against old releases of cf-deployment.
 
-After finishing running the concourse pipeline, all results and charts are saved in the corresponding directories in this repo. You can visually observe the regressions/improvements of performance from the charts.
+## Test results and charts
 
-[domains-test-results](test-results/domains-test-results/v1/) / [domains-test-charts](test-charts/domains-test-results/v1/)
+Results are stored automatically in the following paths in this repo, according to the Cloud Controller that was tested (the go proof-of-concept or the regular CC written in rails) and whether a postgres or mysql CCDB was used.
 
-[security-groups-test-results](test-results/security-groups-test-results/v1) / [security-groups-test-charts](test-charts/security-groups-test-results/v1/)
+```bash
+results
+├── go #tests that swap in a proof-of-concept Cloud Controller written in go: https://github.com/cloudfoundry/go-cf-api
+│   ├── mysql
+│   │   ├── charts
+│   │   └── results
+│   └── postgres
+│       ├── charts
+│       └── results
+└── rails #tests using the regular Cloud Controller
+    ├── mysql
+    │   ├── charts
+    │   └── results
+    └── postgres
+        ├── charts
+        └── results
+```
 
-[isolation-segments-test-results](test-results/isolation-segments-test-results/v1/) / [isolation-segments-test-charts](test-charts/isolation-segments-test-results/v1/)
-
-[service-keys-test-results](test-results/service-keys-test-results/v1/) / [service-keys-test-charts](test-charts/service-keys-test-results/v1/)
-
-Several types of chart data will be generated:
+Four types of chart are generated:
 
 1. Detailed: contains the largest, shortest and average cf api execution time.
 2. Detailed with most recent runs. Same as 1, but only contains the last 15 runs.
@@ -24,72 +36,72 @@ Several types of chart data will be generated:
 4. Simplified with most recent runs: same as 3, only contains the last 15 runs.
 
 ## General information
-The AWS account and domain used to host the BBL and CF foundation is currently owned by SAP. It might move to a community owned account in the future. A description of how this was set up can be found [here](docs/manual-setup.md).
+The AWS account and domain used to host the BBL and CF foundation is controlled by SAP, but may move to a community owned account in the future. See [here](docs/manual-setup.md) for information on the manual steps that were followed to get the tests automated.
 
-## Automatic Setup / Destruction
+The pipeline currently runs on [bosh.ci.cloudfoundry.org](https://bosh.ci.cloudfoundry.org/), but it is planned to migrate this in the near future to a Concourse controlled by the Cloud Foundry Foundation's [App Runtime Interfaces Working Group](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-interfaces.md).
 
-There are two Concourse pipelines for the automatic deployment and destruction of a CF foundation. Log on to Concourse with the "fly" CLI and upload the pipelines. The "cf-perf-test" variables configure the pipelines for the default CF deployment. The "go-perf-test" variables are for the CF deployment with the new go-cf-api reimplementation.
+Secrets referenced by the pipeline (e.g. `((aws-pipeline-user-secret))`) are stored in a CredHub server deployed alongside Concourse. Contributors who need access must contact the CFF's [Foundational Infrastructure Working Group](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/foundational-infrastructure.md) in order to get approval to be added to the working group's Google Cloud account. Once access is granted, you can login to CredHub with [this script](https://github.com/cloudfoundry/bosh-community-stemcell-ci-infra/blob/main/start-credhub-cli.sh).
 
-**NOTE**: The credentials which are referenced in the pipeline yaml are stored in Concourse Credhub (and SAP internal).
+### Access a performance test environment
+Although the test environments are torn down automatically at the end of a successful run, you might need to access one to debug a failure.
 
-### CF Performance Tests Pipeline
+1. Follow [these instructions](https://github.com/cloudfoundry/bosh-bootloader#prerequisites) to install `bbl` locally.
+1. Navigate to the s3 bucket `cf-performance-tests` and find the subfolder for the test environment you want to connect to and download the tarball `bbl-state.tgz`.
+1. Extract the archive locally, and `cd` into the `state` directory.
+1. Run `eval "$(bbl print-env)"`
+1. Confirm you can now communicate with the bosh director by running `bosh env`
+1. You should also now be able to access the director's CredHub with the `credhub` CLI.
 
-#### Deploy-Pipeline
+### Connect to the CCDB: MySQL
+If you have deployed a test environment with MySQL as the Cloud Controller's database, you can open a tunnel to the jumpbox and then connect from there. Initialise `bbl` as explained above and then run:
 ```bash
-fly -t <target> set-pipeline -p deploy-cf-performance-test
-  --load-vars-from=variables/vars-cf-perf-common.yml \
-  -c ./concourse/deploy-cf-perftest.yml
+ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" \
+  -i "$JUMPBOX_PRIVATE_KEY" -L "3306:10.0.16.5:3306" jumpbox@<jumpbox ip from $BOSH_ALL_PROXY> &
+# copy mysql client from "database" vm
+bosh -d cf scp database:/usr/local/bin/mysql .
+./mysql --host=127.0.0.1 --port=3306 --user=cloud_controller cloud_controller --password=<cc_database_password from credhub>
 ```
-#### Destroy-Pipeline
-
-```bash
-fly -t <target> set-pipeline -p destroy-cf-performance-test
-  --load-vars-from=variables/vars-cf-perf-common.yml \
-  -c ./concourse/destroy-cf-perftest.yml
-```
-### Go Performance Tests Pipeline
-
-**Note:** The following variable references in `variables/vars-go-perf-common.yml` need to be replaced:
-- `cf-perf-aws-access-key-secret` with `go-perf-aws-access-key-secret`
-- `cf-perf-aws-access-key-id` with `go-perf-aws-access-key-id`
-- `cf-perf-bbl-state-bucket-access-key-id` with `go-perf-bbl-state-bucket-access-key-id`
-- `cf-perf-bbl-state-bucket-access-key-secret` with `go-perf-bbl-state-bucket-access-key-secret`
-
-#### Deploy-Pipeline
-```bash
-fly -t <target> set-pipeline -p deploy-go-performance-test
-  --load-vars-from=variables/vars-go-perf-common.yml \
-  -c ./concourse/deploy-cf-perftest.yml
-```
-
-#### Destroy-Pipeline
-
-```bash
-fly -t <target> set-pipeline -p destroy-go-performance-test
-  --load-vars-from=variables/vars-cf-perf-common.yml \
-  -c ./concourse/destroy-cf-perftest.yml
-```
-
-
-The deploy pipeline runs `bbl up` followed by a `bosh deploy` for the CF deployment. Then it executes the performance tests and generates visual charts. Test results and charts are automatically uploaded to github. The pipeline also runs the CF Acceptance Tests and finally destroys the "cf" BOSH deployment to save cost.
-
-The destroy pipeline first deletes all BOSH deployments and then runs `bbl destroy` to delete all IaaS resources. Use this only if you want to tear down the complete environment.
-
+From the mysql command prompt, you can e.g. use `source db.sql` to read and execute statements from a file.
 
 ## Troubleshooting
-### Login to Concourse with `fly`
-```bash
-fly login  -t bosh-cf  -c https://bosh.ci.cloudfoundry.org/ -n cf-controlplane
-```
 
-### Access performance test landscape
-Follow those steps to access the performance test landscape. The landscape is deployed with [bbl](https://github.com/cloudfoundry/bosh-bootloader) 
-- Download state from IaaS account (s3)
-- Unpack state
-- Copy `state` into this repo
-- Setup bbl with `eval "$(bbl print-env)"`
-- `bosh deployments` etc. should work now
+The tests are fully automated, but some of the following techniques might help if you need to debug a failure:
 
-### Connect to Concourse Credhub
+### A pipeline task fails
 
-Run [this script](https://github.com/cloudfoundry/bosh-community-stemcell-ci-infra/blob/main/start-credhub-cli.sh), it requires access to the Bosh-CI Concourse GCP project.
+1. Login to Concourse on the commandline with `fly --target bosh-cf login --concourse-url https://bosh.ci.cloudfoundry.org/`
+1. In your web browser, navigate to the latest failed build (only the container for the latest build is preserved), and copy the URL.
+1. In your terminal, run `fly --target bosh-cf hijack --url <BUILD_URL>`. You should connect to the container.
+
+If the step that failed was a [task](https://concourse-ci.org/tasks.html), a consider re-running its script from the container with `-x` to log out all commands that are run. For example, if the `deploy-cf` task fails, get the name of its yaml configuration file from the pipeline file (`cf-deployment-concourse-tasks/bosh-deploy/task.yml`), and look at for the path to the script. In this case, you'll need to run `bash -x cf-deployment-concourse-tasks/bosh-deploy/task.sh`
+
+### `bbl-up` or `bbl-destroy` fail
+
+You can retrieve the debug logs of `bbl`, which include `terraform` logs and `bosh` CLI output, by [hijacking the appropriate task container](#a-pipeline-task-fails). The directory that your session starts in should contain a number of log files - `bbl_plan.log`, `bbl_up.log` or `bbl_destroy.txt` depending on the task.
+
+If you're not sure whether the director actually exists, as a sanity check you might consider navigating to the AWS console and checking in eu-central-1 to see if a VM named `bosh/0` with the appropriate tags for the test environment exists and is in a `started` state.
+
+### `deploy-cf` or `bosh-delete-deployments` fail
+
+1. Access the director by following [these instructions](#access-a-performance-test-environment)
+1. When debugging a failure it's often useful to run `bosh tasks --recent=<NUMBER>` to find the number of a failed task, and then retrieve its debug logs with `bosh task <TASK_NUMBER> --debug`.
+1. Also consider setting `BOSH_LOG_LEVEL=debug` when running other commands.
+
+### Automated teardown fails
+
+Aside from the several dozen bosh-managed VMs created as part of a cf deployment, the pipeline creates a total of about 100 AWS resources per test in environment. Although the pipeline is written to destroy these resources upon successfully completing the tests, it also has a series of jobs that can be manually triggered to separately delete the cf bosh deployment, the bosh director, the base infrastructure (upon which the former both depend) - or all three reverse-order. These are defined in a pipeline group that you can view by clicking the `manual-teardown` button in the top-left of the Concourse UI when viewing the pipeline in question.
+
+> Warning: If you run `manual-teardown-base-infra-only` deletes the IAM user and associated policy that `bbl` depends on to manage resources in AWS. You should not run this before `bbl` has destroyed those resources.
+
+If these manual jobs fail to clean up an environment, you will need to locate the test environment's subfolder in the `cf-performance-tests` S3 bucket and, depending on the failure, download either `bbl-state.tgz` or `base-infra/terraform.tfstate`.
+- `bbl-state.tgz`:
+    1. Extract the archive and change into the state directory
+    1. Run `eval "$(bbl print-env)"` and then `bosh vms` to check if any bosh-managed vms still exist. If they do, try to delete them with bosh (if this fails, you'll have to do this manually in AWS)
+    1. If there are no bosh-managed VMs left but you've still got a director, try to delete it with `bbl destroy`. If this fails, you'll have to delete the director and jumpbox VMs manually in AWS.
+    1. If `bbl destroy` is unable to delete the director, or succeeds but then fails while destroying terraform resources, you'll have to try to delete these yourself.
+    1. Download version 0.11.x of the `terraform` CLI, and move `vars/terraform.tfstate` and `vars/bbl.tfvars` into the `terraform` subdirectory.
+    1. Run `terraform init` and provide the values for any required variables, then `terraform destroy -var-file=bbl.tfvars`. You may need to remove resources from the tls provider from the state file.
+- `base-infra/terraform.tfstate`
+    1. Download the file, place it in [base-infra/terraform](../base-infra/terraform), and run `terraform init` with whatever version of the terraform CLI matches that used by the latest commit of the [Concourse terraform resource](https://github.com/ljfranklin/terraform-resource) when the pipeline last ran the `base-infra` job. Then `terraform destroy`.
+
+In both cases, the last resort - and this should almost never be necessary - will be to manually delete any remaining resources from AWS
