@@ -49,22 +49,3 @@ fly --target bosh-cf set-pipeline \
 ```
 
 Strictly speaking you're free to choose any pipeline name you like. Just use a name that's consistent with those for other test configurations.
-
-### Manual destruction
-
-Aside from the several dozen bosh-managed VMs created as part of a cf deployment, the pipeline creates a total of about 100 AWS resources per test in environment. Although the pipeline is written to destroy these resources upon successfully completing the tests, it also has a series of jobs that can be manually triggered to separately delete the cf bosh deployment, the bosh director, the base infrastructure (upon which the former both depend) - or all three reverse-order. These are defined in a pipeline group that you can view by clicking the `manual-teardown` button in the top-left of the Concourse UI when viewing the pipeline in question.
-
-> Warning: If you run `manual-teardown-base-infra-only` deletes the IAM user and associated policy that `bbl` depends on to manage resources in AWS. You should not run this before `bbl` has destroyed those resources.
-
-If these manual jobs fail to clean up an environment, you will need to locate the test environment's subfolder in the `cf-performance-tests` S3 bucket and, depending on the failure, download either `bbl-state.tgz` or `base-infra/terraform.tfstate`.
-- `bbl-state.tgz`:
-    1. Extract the archive and change into the state directory
-    1. Run `eval "$(bbl print-env)"` and then `bosh vms` to check if any bosh-managed vms still exist. If they do, try to delete them with bosh (if this fails, you'll have to do this manually in AWS)
-    1. If there are no bosh-managed VMs left but you've still got a director, try to delete it with `bbl destroy`. If this fails, you'll have to delete the director and jumpbox VMs manually in AWS.
-    1. If `bbl destroy` is unable to delete the director, or succeeds but then fails while destroying terraform resources, you'll have to try to delete these yourself.
-    1. Download version 0.11.x of the `terraform` CLI, and move `vars/terraform.tfstate` and `vars/bbl.tfvars` into the `terraform` subdirectory.
-    1. Run `terraform init` and provide the values for any required variables, then `terraform destroy -var-file=bbl.tfvars`. You may need to remove resources from the tls provider from the state file.
-- `base-infra/terraform.tfstate`
-    1. Download the file, place it in [base-infra/terraform](../base-infra/terraform), and run `terraform init` with whatever version of the terraform CLI matches that used by the latest commit of the [Concourse terraform resource](https://github.com/ljfranklin/terraform-resource) when the pipeline last ran the `base-infra` job. Then `terraform destroy`.
-
-In both cases, the last resort - and this should almost never be necessary - will be to manually delete any remaining resources from AWS
