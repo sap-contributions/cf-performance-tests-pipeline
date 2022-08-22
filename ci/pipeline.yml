@@ -77,7 +77,7 @@ resources:
     type: git
     icon: github
     source:
-      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
       branch: ((results-branch))
@@ -86,7 +86,7 @@ resources:
     type: git
     icon: github
     source:
-      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
       username: ((cf-perf-github-username))
       password: ((cf-perf-github-user-token))
       branch: ((results-branch))

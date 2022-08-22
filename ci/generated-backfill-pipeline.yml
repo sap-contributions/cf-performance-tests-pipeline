@@ -545,7 +545,7 @@ resources:
     ignore_paths:
     - results/**
     password: ((cf-perf-github-user-token))
-    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
     username: ((cf-perf-github-username))
   type: git
 - icon: github
@@ -553,7 +553,7 @@ resources:
   source:
     branch: ((results-branch))
     password: ((cf-perf-github-user-token))
-    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
     username: ((cf-perf-github-username))
   type: git
 - icon: aws
@@ -614,6 +614,6 @@ resources:
   source:
     branch: perf-test-old-((next_test_name))
     password: ((cf-perf-github-user-token))
-    uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+    uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
     username: ((cf-perf-github-username))
   type: git
