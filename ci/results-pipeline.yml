@@ -47,50 +47,57 @@ jobs:
     passed: [set-pipeline]
   - get: results
     trigger: true
-  - in_parallel:
-    - task: generate-chart
-      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
-      input_mapping:
-        cf-performance-tests-pipeline: results
-      params:
-        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generate charts for rails cc with postgres ccdb
-        CCDB: postgres
-        CLOUD_CONTROLLER_TYPE: rails
-    - task: generate-chart
-      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
-      input_mapping:
-        cf-performance-tests-pipeline: results
-      params:
-        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generate charts for rails cc with mysql ccdb
-        CCDB: mysql
-        CLOUD_CONTROLLER_TYPE: rails
-    - task: generate-chart
-      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
-      input_mapping:
-        cf-performance-tests-pipeline: results
-      params:
-        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generate charts for go cc with postgres ccdb
-        CCDB: postgres
-        CLOUD_CONTROLLER_TYPE: go
-    - task: generate-chart
-      file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
-      input_mapping:
-        cf-performance-tests-pipeline: results
-      params:
-        GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-        GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-        GIT_COMMIT_MESSAGE: Generate charts for go cc with mysql ccdb
-        CCDB: mysql
-        CLOUD_CONTROLLER_TYPE: go
+  - task: generate-charts-rails-postgres
+    file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+    input_mapping:
+      cf-performance-tests-pipeline: results
+    output_mapping:
+      cf-performance-tests-pipeline: results-with-rails-postgres-charts
+    params:
+      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_MESSAGE: Generate charts for rails cc with postgres ccdb
+      CCDB: postgres
+      CLOUD_CONTROLLER_TYPE: rails
+  - task: generate-charts-rails-mysql
+    file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+    input_mapping:
+      cf-performance-tests-pipeline: results-with-rails-postgres-charts
+    output_mapping:
+      cf-performance-tests-pipeline: results-with-rails-mysql-charts
+    params:
+      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_MESSAGE: Generate charts for rails cc with mysql ccdb
+      CCDB: mysql
+      CLOUD_CONTROLLER_TYPE: rails
+  - task: generate-charts-go-postgres
+    file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+    input_mapping:
+      cf-performance-tests-pipeline: results-with-rails-mysql-charts
+    output_mapping:
+      cf-performance-tests-pipeline: results-with-go-postgres-charts
+    params:
+      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_MESSAGE: Generate charts for go cc with postgres ccdb
+      CCDB: postgres
+      CLOUD_CONTROLLER_TYPE: go
+  - task: generate-charts-go-mysql
+    file: cf-performance-tests-pipeline/ci/tasks/generate-charts/task.yml
+    input_mapping:
+      cf-performance-tests-pipeline: results-with-go-postgres-charts
+    output_mapping:
+      cf-performance-tests-pipeline: results-with-all-charts
+    params:
+      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_MESSAGE: Generate charts for go cc with mysql ccdb
+      CCDB: mysql
+      CLOUD_CONTROLLER_TYPE: go
   - put: cf-performance-tests-pipeline-push
     params:
-      repository: cf-performance-tests-pipeline
+      repository: results-with-all-charts
       rebase: true
 - name: generate-coverage-table
   serial: true
