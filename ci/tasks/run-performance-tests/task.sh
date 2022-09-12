@@ -73,10 +73,10 @@ results_folder: "$results_path"
 EOF
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
     echo -e "\nRunning all tests..."
-    ginkgo ./...
+    go run github.com/onsi/ginkgo/v2/ginkgo ./...
   else
     echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
-    ginkgo -r "$TEST_SUITE_FOLDER"
+    go run github.com/onsi/ginkgo/v2/ginkgo -r "$TEST_SUITE_FOLDER"
   fi
 popd >/dev/null
 
