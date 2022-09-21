@@ -8,7 +8,7 @@
 | v21.4.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
 | v21.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
 | v21.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
-| v21.10.0  | :white_check_mark: | :x:                | :x:                | :x:        |
+| v21.10.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
 | v21.1.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
 | v21.0.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:        |
 | v20.4.0   | :white_check_mark: | :x:                | :x:                | :x:        |
