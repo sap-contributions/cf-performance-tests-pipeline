@@ -47,8 +47,8 @@ def get_from_files(test_executions: list, test_results: dict, file_paths: list) 
                     test_results[test_name][test_execution] = results_from_file['measurements'][test_name][
                         'request time']
     logger.info(f'Found {len(test_executions)} test executions with a total of {len(test_results)} tests.')
-    # sorts by test_result_key with cf version as first and timestamp as second key
-    return sorted(test_executions), test_results
+    # sorts the test executions by their timestamps
+    return sorted(test_executions, key=lambda test_execution: test_execution[1]), test_results
 
 
 def is_valid_result(result: dict) -> bool:
