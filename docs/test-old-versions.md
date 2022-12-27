@@ -15,8 +15,8 @@ In some cases, such as when adding new performance test configurations, it might
 1. Manually set the pipeline for **the first test environment only** (each environment's pipeline will set the next pipeline after completing its tests):
       ```bash
       fly --target bosh-cf set-pipeline \
-        --pipeline cf-perf-test-cfd-16-12-0-mysql \
-        --load-vars-from=variables/variables/cf-d-backfill/cfd-16-12-0-mysql.yml \
+        --pipeline cf-perf-test-cfd-16-12-0 \
+        --load-vars-from=variables/cf-d-backfill/cfd-16-12-0.yml \
         --load-vars-from variables/common.yml \
         --config ci/generated-backfill-pipeline.yml
       ```
