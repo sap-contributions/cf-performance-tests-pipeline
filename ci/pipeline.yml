@@ -363,6 +363,7 @@ jobs:
           BBL_STATE_DIR: state
       - task: run-performance-tests
         file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
+        timeout: 2h30m
         params:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
