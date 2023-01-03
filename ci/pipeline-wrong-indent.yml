@@ -1,18 +1,18 @@
 groups:
-- name: test
-  jobs:
-  - detect-new-versions
-  - create-base-infra
-  - deploy-director
-  - run-perf-tests-postgres
-  - run-perf-tests-mysql
-  - teardown
-- name: manual-teardown
-  jobs:
-  - manual-teardown-cf-only
-  - manual-teardown-bbl-only
-  - manual-teardown-base-infra-only
-  - manual-teardown-all
+  - name: test
+    jobs:
+      - detect-new-versions
+      - create-base-infra
+      - deploy-director
+      - run-perf-tests-postgres
+      - run-perf-tests-mysql
+      - teardown
+  - name: manual-teardown
+    jobs:
+      - manual-teardown-cf-only
+      - manual-teardown-bbl-only
+      - manual-teardown-base-infra-only
+      - manual-teardown-all
 
 anchors:
   alert_failure: &alert_failure
@@ -57,15 +57,15 @@ anchors:
   system_domain: &system_domain cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
 
 resource_types:
-- name: slack-alert
-  type: docker-image
-  source:
-    repository: arbourd/concourse-slack-alert-resource
-- name: terraform
-  type: docker-image
-  source:
-    repository: ljfranklin/terraform-resource
-    tag: latest
+  - name: slack-alert
+    type: docker-image
+    source:
+      repository: arbourd/concourse-slack-alert-resource
+  - name: terraform
+    type: docker-image
+    source:
+      repository: ljfranklin/terraform-resource
+      tag: latest
 
 resources:
   - name: cf-deployment-concourse-tasks
@@ -181,17 +181,17 @@ jobs:
     # <<: *alert_failure
     plan:
       - in_parallel:
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [create-base-infra]
-        - get: cf-deployment
-          trigger: true
-          passed: [create-base-infra]
-        - get: cf-deployment-concourse-tasks
-        - get: bbl-state
-          params:
-            unpack: true
-        - get: base-infra
+          - get: cf-performance-tests-pipeline
+            trigger: true
+            passed: [create-base-infra]
+          - get: cf-deployment
+            trigger: true
+            passed: [create-base-infra]
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+          - get: base-infra
       - load_var: base-infra
         file: base-infra/metadata
         format: json
@@ -226,48 +226,48 @@ jobs:
     # <<: *alert_failure
     plan:
       - in_parallel:
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [deploy-director]
-        - get: cf-deployment
-          trigger: true
-          passed: [deploy-director]
-        - get: cf-deployment-concourse-tasks
-        - get: bbl-state
-          params:
-            unpack: true
-          passed: [deploy-director]
-        - get: base-infra
-        - get: concourse-tasks
-        - get: cf-performance-tests
+          - get: cf-performance-tests-pipeline
+            trigger: true
+            passed: [deploy-director]
+          - get: cf-deployment
+            trigger: true
+            passed: [deploy-director]
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+            passed: [deploy-director]
+          - get: base-infra
+          - get: concourse-tasks
+          - get: cf-performance-tests
       - load_var: base-infra
         file: base-infra/metadata
         format: json
       - in_parallel:
-        - task: combine-ops-file-directories
-          file: concourse-tasks/combine-directories/task.yml
-          input_mapping:
-            src-1: cf-deployment
-            src-2: cf-performance-tests-pipeline
-          params:
-            SRC_1_GLOB: operations/*.yml
-            SRC_2_GLOB: operations/*.yml
-          output_mapping:
-            target: combined-ops-files
-        - task: write-bosh-vars-file
-          file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
-          params:
-            VARS:
-              aws_region: ((region))
-              blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
-              blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
-              app_package_directory_key: ((.:base-infra.packages_bucket_name))
-              buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
-              droplet_directory_key: ((.:base-infra.droplets_bucket_name))
-              resource_directory_key: ((.:base-infra.resources_bucket_name))
-        - load_var: cf-deployment-version
-          file: cf-deployment/.git/short_ref
-          format: trim
+          - task: combine-ops-file-directories
+            file: concourse-tasks/combine-directories/task.yml
+            input_mapping:
+              src-1: cf-deployment
+              src-2: cf-performance-tests-pipeline
+            params:
+              SRC_1_GLOB: operations/*.yml
+              SRC_2_GLOB: operations/*.yml
+            output_mapping:
+              target: combined-ops-files
+          - task: write-bosh-vars-file
+            file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+            params:
+              VARS:
+                aws_region: ((region))
+                blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
+                blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
+                app_package_directory_key: ((.:base-infra.packages_bucket_name))
+                buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
+                droplet_directory_key: ((.:base-infra.droplets_bucket_name))
+                resource_directory_key: ((.:base-infra.resources_bucket_name))
+          - load_var: cf-deployment-version
+            file: cf-deployment/.git/short_ref
+            format: trim
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
@@ -304,48 +304,48 @@ jobs:
     # <<: *alert_failure
     plan:
       - in_parallel:
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [run-perf-tests-postgres]
-        - get: cf-deployment
-          trigger: true
-          passed: [run-perf-tests-postgres]
-        - get: cf-deployment-concourse-tasks
-        - get: bbl-state
-          params:
-            unpack: true
-          passed: [run-perf-tests-postgres]
-        - get: base-infra
-        - get: concourse-tasks
-        - get: cf-performance-tests
+          - get: cf-performance-tests-pipeline
+            trigger: true
+            passed: [run-perf-tests-postgres]
+          - get: cf-deployment
+            trigger: true
+            passed: [run-perf-tests-postgres]
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+            passed: [run-perf-tests-postgres]
+          - get: base-infra
+          - get: concourse-tasks
+          - get: cf-performance-tests
       - load_var: base-infra
         file: base-infra/metadata
         format: json
       - in_parallel:
-        - task: combine-ops-file-directories
-          file: concourse-tasks/combine-directories/task.yml
-          input_mapping:
-            src-1: cf-deployment
-            src-2: cf-performance-tests-pipeline
-          params:
-            SRC_1_GLOB: operations/*.yml
-            SRC_2_GLOB: operations/*.yml
-          output_mapping:
-            target: combined-ops-files
-        - task: write-bosh-vars-file
-          file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
-          params:
-            VARS:
-              aws_region: ((region))
-              blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
-              blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
-              app_package_directory_key: ((.:base-infra.packages_bucket_name))
-              buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
-              droplet_directory_key: ((.:base-infra.droplets_bucket_name))
-              resource_directory_key: ((.:base-infra.resources_bucket_name))
-        - load_var: cf-deployment-version
-          file: cf-deployment/.git/short_ref
-          format: trim
+          - task: combine-ops-file-directories
+            file: concourse-tasks/combine-directories/task.yml
+            input_mapping:
+              src-1: cf-deployment
+              src-2: cf-performance-tests-pipeline
+            params:
+              SRC_1_GLOB: operations/*.yml
+              SRC_2_GLOB: operations/*.yml
+            output_mapping:
+              target: combined-ops-files
+          - task: write-bosh-vars-file
+            file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+            params:
+              VARS:
+                aws_region: ((region))
+                blobstore_access_key_id: ((.:base-infra.cloud_controller_aws_creds.aws_access_key_id))
+                blobstore_secret_access_key: ((.:base-infra.cloud_controller_aws_creds.aws_secret_access_key))
+                app_package_directory_key: ((.:base-infra.packages_bucket_name))
+                buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
+                droplet_directory_key: ((.:base-infra.droplets_bucket_name))
+                resource_directory_key: ((.:base-infra.resources_bucket_name))
+          - load_var: cf-deployment-version
+            file: cf-deployment/.git/short_ref
+            format: trim
       - task: deploy-cf
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
@@ -363,7 +363,6 @@ jobs:
           BBL_STATE_DIR: state
       - task: run-performance-tests
         file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
-        timeout: 2h30m
         params:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
@@ -383,17 +382,17 @@ jobs:
     <<: *alert_failure
     plan:
       - in_parallel:
-        - get: cf-performance-tests-pipeline
-          trigger: true
-          passed: [run-perf-tests-mysql]
-        - get: cf-deployment
-          trigger: true
-          passed: [run-perf-tests-mysql]
-        - get: cf-deployment-concourse-tasks
-        - get: bbl-state
-          params:
-            unpack: true
-        - get: base-infra
+          - get: cf-performance-tests-pipeline
+            trigger: true
+            passed: [run-perf-tests-mysql]
+          - get: cf-deployment
+            trigger: true
+            passed: [run-perf-tests-mysql]
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+          - get: base-infra
       - load_var: base-infra
         file: base-infra/metadata
         format: json
@@ -403,47 +402,47 @@ jobs:
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
-    - in_parallel:
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        params:
-          unpack: true
-    - *delete_cf
+      - in_parallel:
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+      - *delete_cf
 
   - name: manual-teardown-bbl-only
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
-    - in_parallel:
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        params:
-          unpack: true
-      - get: base-infra
-    - load_var: base-infra
-      file: base-infra/metadata
-      format: json
-    - *bbl_destroy
+      - in_parallel:
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+          - get: base-infra
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
+      - *bbl_destroy
 
   - name: manual-teardown-base-infra-only
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
-    - get: cf-performance-tests-pipeline
-    - *destroy_base_infra
+      - get: cf-performance-tests-pipeline
+      - *destroy_base_infra
 
   - name: manual-teardown-all
     serial: true
     serial_groups: [deploy-test-destroy]
     plan:
-    - in_parallel:
-      - get: cf-performance-tests-pipeline
-      - get: cf-deployment-concourse-tasks
-      - get: bbl-state
-        params:
-          unpack: true
-      - get: base-infra
-    - load_var: base-infra
-      file: base-infra/metadata
-      format: json
-    - *destroy_all
+      - in_parallel:
+          - get: cf-performance-tests-pipeline
+          - get: cf-deployment-concourse-tasks
+          - get: bbl-state
+            params:
+              unpack: true
+          - get: base-infra
+      - load_var: base-infra
+        file: base-infra/metadata
+        format: json
+      - *destroy_all
