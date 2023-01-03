@@ -331,6 +331,7 @@ jobs:
       GIT_COMMIT_USERNAME: ((cf-perf-github-username))
       TEST_SUITE_FOLDER: ((test-suite-folder))
     task: run-performance-tests
+    timeout: 2h30m
   - params:
       rebase: true
       repository: cf-performance-tests-pipeline
