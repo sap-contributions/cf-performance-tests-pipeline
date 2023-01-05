@@ -6,7 +6,7 @@ import string
 import yaml
 
 if __name__ == '__main__':
-    root_branch_cf_perf_tests_pipeline = "main"
+    root_branch_cf_perf_tests_pipeline = "v23.0.0"
 
     # Can be obtained with `git tag -l | sort -V | sed 's/v//g' | xargs -I {} echo \'{}\'` in `cf-deployment`
     cf_deployment_releases = [
