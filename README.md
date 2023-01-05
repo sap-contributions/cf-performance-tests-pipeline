@@ -63,6 +63,21 @@ bosh -d cf scp database:/usr/local/bin/mysql .
 ```
 From the mysql command prompt, you can e.g. use `source db.sql` to read and execute statements from a file.
 
+### Connect to the CCDB: PostgreSQL
+If you have deployed a test environment with PostgreSQL as the Cloud Controller's database, you can open a tunnel to the jumpbox and then connect from there. Initialise `bbl` as explained above and then run:
+```bash
+ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" \
+  -i "$JUMPBOX_PRIVATE_KEY" -L "5524:10.0.16.5:5524" jumpbox@<jumpbox ip from $BOSH_ALL_PROXY> &
+```
+To get PostgreSQL run:
+```bash
+apt-get update
+apt-get install postgresql
+```
+To connect to psql run:
+```bash
+psql --host=127.0.0.1 --port=5524 --user=cloud_controller cloud_controller 
+```
 ## Troubleshooting
 
 The tests are fully automated, but some of the following techniques might help if you need to debug a failure:
