@@ -38,9 +38,7 @@ Four types of chart are generated:
 ## General information
 The AWS account and domain used to host the BBL and CF foundation is controlled by SAP, but may move to a community owned account in the future. See [here](docs/manual-setup.md) for information on the manual steps that were followed to get the tests automated.
 
-The pipeline currently runs on [bosh.ci.cloudfoundry.org](https://bosh.ci.cloudfoundry.org/), but it is planned to migrate this in the near future to a Concourse controlled by the Cloud Foundry Foundation's [App Runtime Interfaces Working Group](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-interfaces.md).
-
-Secrets referenced by the pipeline (e.g. `((aws-pipeline-user-secret))`) are stored in a CredHub server deployed alongside Concourse. Contributors who need access must contact the CFF's [Foundational Infrastructure Working Group](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/foundational-infrastructure.md) in order to get approval to be added to the working group's Google Cloud account. Once access is granted, you can login to CredHub with [this script](https://github.com/cloudfoundry/bosh-community-stemcell-ci-infra/blob/main/start-credhub-cli.sh).
+The pipelines are running on [concourse.app-runtime-interfaces.ci.cloudfoundry.org](https://concourse.app-runtime-interfaces.ci.cloudfoundry.org/). All secrets referenced by the pipelines (e.g. `((aws-pipeline-user-secret))`) are stored in a CredHub server deployed alongside Concourse. Contributors who need access must contact the [App Runtime Interfaces Working Group](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-interfaces.md) in order to get approval to be added to the working group's Google Cloud account. Once access is granted, you can login to CredHub with [this script](https://github.com/cloudfoundry/bosh-community-stemcell-ci-infra/blob/main/start-credhub-cli.sh).
 
 ### Access a performance test environment
 Although the test environments are torn down automatically at the end of a successful run, you might need to access one to debug a failure.
