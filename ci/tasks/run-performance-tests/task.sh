@@ -76,7 +76,7 @@ EOF
     go run github.com/onsi/ginkgo/v2/ginkgo ./...
   else
     echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
-    go run github.com/onsi/ginkgo/v2/ginkgo -r "$TEST_SUITE_FOLDER"
+    go run github.com/onsi/ginkgo/v2/ginkgo -r "$TEST_SUITE_FOLDER" --timeout 3h --grace-period 5m
   fi
 popd >/dev/null
 
