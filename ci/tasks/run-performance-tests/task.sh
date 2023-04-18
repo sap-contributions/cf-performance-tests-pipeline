@@ -73,10 +73,10 @@ results_folder: "$results_path"
 EOF
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
     echo -e "\nRunning all tests..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout 3h ./...
+    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT ./...
   else
     echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout 3h -r "$TEST_SUITE_FOLDER" 
+    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT -r "$TEST_SUITE_FOLDER"
   fi
 popd >/dev/null
 
