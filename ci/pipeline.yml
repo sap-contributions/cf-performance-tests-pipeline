@@ -178,7 +178,7 @@ jobs:
   - name: deploy-director
     serial: true
     serial_groups: [deploy-test-destroy]
-    # <<: *alert_failure
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -223,7 +223,7 @@ jobs:
   - name: run-perf-tests-postgres
     serial: true
     serial_groups: [deploy-test-destroy]
-    # <<: *alert_failure
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
@@ -301,7 +301,7 @@ jobs:
   - name: run-perf-tests-mysql
     serial: true
     serial_groups: [deploy-test-destroy]
-    # <<: *alert_failure
+    <<: *alert_failure
     plan:
       - in_parallel:
         - get: cf-performance-tests-pipeline
