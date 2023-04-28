@@ -73,7 +73,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-      tag: 'v14.0.0'
+      tag_filter: 'v14.0.0'
   - name: cf-performance-tests-pipeline
     type: git
     icon: github
