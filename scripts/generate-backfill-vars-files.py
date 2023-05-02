@@ -50,7 +50,7 @@ if __name__ == '__main__':
             cf_perf_tests_pipeline_source_branch = f'perf-test-old-{test_name}'
 
         if Version(cfd_version) <= Version("16.14.0"):
-            additional_ops_files += ' operations/use-bionic-stemcell-for-addons.yml'
+            additional_ops_files += ' operations/use-bionic-stemcell.yml operations/use-bionic-stemcell-for-addons.yml'
         if Version(cfd_version) >= Version("20.0.0"):
             additional_ops_files += ' operations/speed-up-dynamic-asgs.yml'
 

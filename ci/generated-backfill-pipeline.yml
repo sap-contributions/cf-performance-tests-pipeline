@@ -229,7 +229,7 @@ jobs:
     params:
       BBL_STATE_DIR: state
       MANIFEST_FILE: cf-deployment.yml
-      OPS_FILES: operations/use-postgres.yml operations/use-bionic-stemcell.yml((additional-ops-files))
+      OPS_FILES: operations/use-postgres.yml operations/use-compiled-releases.yml((additional-ops-files))
         operations/scale-up-vms.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
@@ -311,7 +311,7 @@ jobs:
     params:
       BBL_STATE_DIR: state
       MANIFEST_FILE: cf-deployment.yml
-      OPS_FILES: operations/use-bionic-stemcell.yml((additional-ops-files)) operations/scale-up-vms.yml
+      OPS_FILES: operations/use-compiled-releases.yml((additional-ops-files)) operations/scale-up-vms.yml
         operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
