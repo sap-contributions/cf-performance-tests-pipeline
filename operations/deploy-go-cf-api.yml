@@ -2,16 +2,16 @@
   path: /releases/-
   value:
     name: "haproxy"
-    version: "11.8.1"
-    url: "https://bosh.io/d/github.com/cloudfoundry-community/haproxy-boshrelease?v=11.8.1"
-    sha1: "80c160b8c91cc9bd3d50dd2e9b2a32b247e49b5d"
+    version: "11.17.4"
+    url: "https://github.com/cloudfoundry/haproxy-boshrelease/releases/download/v11.17.4/haproxy-11.17.4.tgz"
+    sha1: "5a81f0539ed0e8010df3226b18ec453e64e46eb7"
 - type: replace
   path: /releases/-
   value:
     name: go-cf-api
-    version: 0.1.3
-    url: https://github.com/cloudfoundry/go-cf-api-release/releases/download/v0.1.3/go-cf-api-boshrelease-0.1.3.tgz
-    sha1: 14bef36e62a9f961c601c8559d2378e9aa6765d6
+    version: 0.1.4
+    url: https://github.com/cloudfoundry/go-cf-api-release/releases/download/v0.1.4/go-cf-api-boshrelease-0.1.4.tgz
+    sha1: 80ba1235a04a6141f1308aef21ca9eb4f369c36b
 - type: replace
   path: /instance_groups/-
   value:
