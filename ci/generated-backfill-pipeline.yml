@@ -17,7 +17,7 @@ anchors:
       BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
       BBL_STATE_DIR: state
       STORE_BBL_STATE_AS_TARBALL: true
-      TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
       TF_VAR_parent_zone_id: ((parent_zone_id))
     task: bbl-destroy
   delete_cf:
@@ -48,7 +48,7 @@ anchors:
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_STATE_DIR: state
           STORE_BBL_STATE_AS_TARBALL: true
-          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
       - get_params:
@@ -78,7 +78,7 @@ anchors:
         BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
         BBL_STATE_DIR: state
         STORE_BBL_STATE_AS_TARBALL: true
-        TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+        TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
         TF_VAR_parent_zone_id: ((parent_zone_id))
       task: bbl-destroy
     - get_params:
@@ -168,7 +168,7 @@ jobs:
       LB_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       SKIP_LB_CREATION: false
       STORE_BBL_STATE_AS_TARBALL: true
-      TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
       TF_VAR_parent_zone_id: ((parent_zone_id))
     task: bbl-up
   serial: true
@@ -382,7 +382,7 @@ jobs:
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_STATE_DIR: state
           STORE_BBL_STATE_AS_TARBALL: true
-          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
       - get_params:
@@ -433,7 +433,7 @@ jobs:
       BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
       BBL_STATE_DIR: state
       STORE_BBL_STATE_AS_TARBALL: true
-      TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
       TF_VAR_parent_zone_id: ((parent_zone_id))
     task: bbl-destroy
   serial: true
@@ -483,7 +483,7 @@ jobs:
           BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
           BBL_STATE_DIR: state
           STORE_BBL_STATE_AS_TARBALL: true
-          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
       - get_params:
