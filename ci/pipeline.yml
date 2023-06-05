@@ -37,7 +37,7 @@ anchors:
       BBL_AWS_REGION: ((region))
       STORE_BBL_STATE_AS_TARBALL: true
       TF_VAR_parent_zone_id: ((parent_zone_id))
-      TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
     ensure:
       put: bbl-state
       attempts: 3
@@ -73,7 +73,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-      tag_filter: 'v14.0.0'
+      tag_filter: 'v16.1.0'
   - name: cf-performance-tests-pipeline
     type: git
     icon: github
@@ -214,7 +214,7 @@ jobs:
           SKIP_LB_CREATION: false
           STORE_BBL_STATE_AS_TARBALL: true
           TF_VAR_parent_zone_id: ((parent_zone_id))
-          TF_VAR_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
         ensure:
           put: bbl-state
           attempts: 3
