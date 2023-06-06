@@ -2,7 +2,7 @@
 
 This repository defines a Concourse pipeline that automatically runs the [cf-performance-tests](https://github.com/cloudfoundry/cf-performance-tests) against new releases of [cf-deployment](https://github.com/cloudfoundry/cf-deployment) and stores the [results](results) in this repo. The pipeline also generates .png charts that show how performance varies across different cf-deployment releases. These are regenerated each time a new results file is added, along with a [coverage table](results/coverage.md) that gives an overview of releases that have been tested.
 
-The pipeline is triggered by new cf-deployment releases. It uses [bbl](https://github.com/cloudfoundry/bosh-bootloader) to stand a bosh director, and then uses that director to deploy a Cloud Foundry foundation. Each pipeline run will run the tests twice against a specific release of cf-deployment - once with a Cloud Controller that has a postgres CCDB, and once with a mysql CCDB. After completion, the test environment is torn down.
+The pipeline is triggered by new cf-deployment releases. It uses [bbl](https://github.com/cloudfoundry/bosh-bootloader) to stand a bosh director, and then uses that director to deploy a Cloud Foundry foundation. Each pipeline run will run the tests twice against a specific release of cf-deployment - once with a Cloud Controller that has a postgres CCDB, and once with a mysql CCDB. After completion, the bbl test environment is torn down.
 
 See the [docs](docs) subdirectory for instructions on one-off manual setup steps that need to be run before running any tests, along with guidance on configuring new automated tests and manual setup steps for triggering a series of tests against old releases of cf-deployment.
 
