@@ -55,6 +55,7 @@ resource "aws_iam_user_policy" "bbl" {
           "iam:ListAttachedRolePolicies",
           "iam:ListInstanceProfilesForRole",
           "iam:ListPolicyVersions",
+          "iam:ListRolePolicies",
           "iam:PutRolePolicy",
           "iam:PassRole",
           "iam:RemoveRoleFromInstanceProfile",
