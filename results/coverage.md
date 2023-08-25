@@ -1,5 +1,6 @@
 | version   | rails-postgres     | rails-mysql        | go-postgres        | go-mysql           |
 |:----------|:-------------------|:-------------------|:-------------------|:-------------------|
+| v32.3.0   | :white_check_mark: | :x:                | :x:                | :x:                |
 | v32.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v32.1.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v32.0.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
