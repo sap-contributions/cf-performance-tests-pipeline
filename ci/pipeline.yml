@@ -58,11 +58,11 @@ anchors:
 
 resource_types:
 - name: slack-alert
-  type: docker-image
+  type: registry-image
   source:
     repository: arbourd/concourse-slack-alert-resource
 - name: terraform
-  type: docker-image
+  type: registry-image
   source:
     repository: ljfranklin/terraform-resource
     tag: latest
