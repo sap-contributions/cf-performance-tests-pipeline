@@ -527,12 +527,12 @@ resource_types:
 - name: slack-alert
   source:
     repository: arbourd/concourse-slack-alert-resource
-  type: docker-image
+  type: registry-image
 - name: terraform
   source:
     repository: ljfranklin/terraform-resource
     tag: latest
-  type: docker-image
+  type: registry-image
 resources:
 - icon: github
   name: cf-deployment-concourse-tasks
