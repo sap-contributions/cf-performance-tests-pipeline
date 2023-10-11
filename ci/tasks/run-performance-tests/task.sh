@@ -5,7 +5,7 @@ set -euo pipefail
 task_root="$(pwd)"
 cf_perf_tests_pipeline_repo="${task_root}/cf-performance-tests-pipeline"
 cf_perf_tests_repo="${task_root}/cf-performance-tests"
-results_path="${cf_perf_tests_pipeline_repo}/results/${CLOUD_CONTROLLER_TYPE}/${CCDB}/results"
+results_path="/tmp/results/${CLOUD_CONTROLLER_TYPE}/${CCDB}/results"
 cf_deployment_repo="${task_root}/cf-deployment"
 bbl_state="${task_root}/bbl-state/${BBL_STATE_DIR}"
 
@@ -34,33 +34,24 @@ cf auth admin "$cf_admin_password"
 
 if [ "$CCDB" == 'postgres' ]; then
   database_port=5524
-  database_ccdb="postgres://cloud_controller:${ccdb_password}@localhost:${database_port}/cloud_controller?sslmode=disable"
-  database_uaadb="postgres://uaa:${uaadb_password}@localhost:${database_port}/uaa?sslmode=disable"
+  database_ccdb="postgres://cloud_controller:${ccdb_password}@${database_ip}:${database_port}/cloud_controller?sslmode=disable"
+  database_uaadb="postgres://uaa:${uaadb_password}@${database_ip}:${database_port}/uaa?sslmode=disable"
 elif [ "$CCDB" == 'mysql' ]; then
   database_port=3306
-  database_ccdb="cloud_controller:${ccdb_password}@tcp(localhost:${database_port})/cloud_controller?multiStatements=true"
-  database_uaadb="uaa:${uaadb_password}@tcp(localhost:${database_port})/uaa?multiStatements=true"
+  database_ccdb="cloud_controller:${ccdb_password}@tcp(${database_ip}:${database_port})/cloud_controller?multiStatements=true"
+  database_uaadb="uaa:${uaadb_password}@tcp(${database_ip}:${database_port})/uaa?multiStatements=true"
 else
   echo "Task parameter 'CCDB' must be one of 'postgres' or 'mysql' (is: ${CCDB})."
   exit 1
 fi
 
-jumpbox_private_key_file="$(mktemp)"
-chmod 0600 "$jumpbox_private_key_file"
-cat <<EOF > "$jumpbox_private_key_file"
-$jumpbox_private_key
-EOF
-
-echo -e "\nOpening SSH tunnel to CF database..."
-ssh -4 -N -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "ServerAliveInterval=30" -o "ServerAliveCountMax=10" -o "IPQoS=throughput" -i "$jumpbox_private_key_file" -L "$database_port":"$database_ip":"$database_port" jumpbox@"$jumpbox_url" &
-ssh_pid=$!
-
 pushd "$cf_perf_tests_repo" >/dev/null
   cat << EOF > ./config.yml
-api: "api.${cf_domain}"
+api: "localhost:9022"
+use_http: true
 skip_ssl_validation: true
-cf_deployment_version: "$cf_deployment_version"
-capi_version: "$capi_version"
+cf_deployment_version: test_ssh_execution
+capi_version: test_ssh_execution
 users:
   admin:
     username: "admin"
@@ -68,16 +59,26 @@ users:
 database_type: "$CCDB"
 ccdb_connection: "$database_ccdb"
 uaadb_connection: "$database_uaadb"
-samples: 10
+samples: 30
 results_folder: "$results_path"
 EOF
-  if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
-    echo -e "\nRunning all tests..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT ./...
-  else
-    echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT -r "$TEST_SUITE_FOLDER"
-  fi
+popd >/dev/null
+
+# Cleanup
+rm -rf cf-performance-tests.tar.gz
+bosh -d cf ssh -c 'sudo rm -rf /tmp/*' api/0
+
+# Copy Tests to VM and execute them
+tar -czvf cf-performance-tests.tar.gz "$cf_perf_tests_repo"
+bosh -d cf scp "${PWD}/cf-performance-tests.tar.gz" api/0:/tmp/
+bosh -d cf scp "${cf_perf_tests_pipeline_repo}/ci/tasks/run-performance-tests/task_on_vm.sh" api/0:/tmp/
+bosh -d cf ssh -c "cd /tmp/ && TEST_SUITE_FOLDER=${TEST_SUITE_FOLDER} GINKGO_TIMEOUT=${GINKGO_TIMEOUT} ./task_on_vm.sh" api/0
+
+# Copy back results and extract them
+bosh -d cf scp api/0:/tmp/results.tar.gz "${cf_perf_tests_pipeline_repo}/results.tar.gz"
+pushd "$cf_perf_tests_pipeline_repo" >/dev/null
+  tar -xzvf results.tar.gz
+  rm -rf results.tar.gz
 popd >/dev/null
 
 echo -e "\n Installing git lfs"
@@ -91,8 +92,5 @@ if [[ $(git -C "$cf_perf_tests_pipeline_repo" status --porcelain) ]]; then
   git -C "$cf_perf_tests_pipeline_repo" add --all "$results_path"
   git -C "$cf_perf_tests_pipeline_repo" commit -m "$GIT_COMMIT_MESSAGE"
 fi
-
-echo "Killing background ssh tunnel..."
-kill "$ssh_pid"
 
 echo -e "\nFinished."
