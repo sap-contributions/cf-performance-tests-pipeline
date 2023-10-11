@@ -64,9 +64,9 @@ results_folder: "$results_path"
 EOF
 popd >/dev/null
 
-# Cleanup
+# Cleanup/Prepare
 rm -rf cf-performance-tests.tar.gz
-bosh -d cf ssh -c 'sudo rm -rf /tmp/*' api/0
+bosh -d cf ssh -c 'sudo rm -rf /tmp/* && sudo mount -o remount,exec /tmp' api/0
 
 # Copy Tests to VM and execute them
 tar -czvf cf-performance-tests.tar.gz "$cf_perf_tests_repo"
