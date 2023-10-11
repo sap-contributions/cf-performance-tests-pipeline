@@ -7,7 +7,6 @@ sudo apt update && sudo apt install golang git cf8-cli -y
 
 sudo tar -xzvf cf-performance-tests.tar.gz
 sudo chown -R $(whoami):$(whoami) .
-sudo mount -o remount,exec /tmp
 
 ## THIS IS EXECUTEN IN VM
 pushd "cf-performance-tests" >/dev/null
