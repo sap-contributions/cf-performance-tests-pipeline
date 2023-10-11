@@ -91,7 +91,7 @@ if [[ $(git -C "$cf_perf_tests_pipeline_repo" status --porcelain) ]]; then
   echo -e "\nCommitting test results..."
   git -C "$cf_perf_tests_pipeline_repo" config user.name "$GIT_COMMIT_USERNAME"
   git -C "$cf_perf_tests_pipeline_repo" config user.email "$GIT_COMMIT_EMAIL"
-  git -C "$cf_perf_tests_pipeline_repo" add --all "$cf_perf_tests_pipeline_repo/results"
+  git -C "$cf_perf_tests_pipeline_repo" add --all "$results_path"
   git -C "$cf_perf_tests_pipeline_repo" commit -m "$GIT_COMMIT_MESSAGE"
 fi
 
