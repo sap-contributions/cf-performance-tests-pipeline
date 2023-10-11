@@ -96,4 +96,4 @@
 | v16.14.0           | :white_check_mark: | :x:                | :x:                | :x:                |
 | v16.13.0           | :white_check_mark: | :x:                | :x:                | :x:                |
 | v16.12.0           | :white_check_mark: | :x:                | :x:                | :x:                |
-| test_ssh_execution | :white_check_mark: | :x:                | :x:                | :x:                |
+| test_ssh_execution | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
