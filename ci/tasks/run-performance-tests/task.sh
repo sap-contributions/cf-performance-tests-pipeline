@@ -69,8 +69,10 @@ rm -rf cf-performance-tests.tar.gz
 bosh -d cf ssh -c 'sudo rm -rf /tmp/* && sudo mount -o remount,exec /tmp' api/0
 
 # Copy Tests to VM and execute them
-tar -czvf cf-performance-tests.tar.gz "$cf_perf_tests_repo"
-bosh -d cf scp "${PWD}/cf-performance-tests.tar.gz" api/0:/tmp/
+pushd ${task_root}
+  tar -czvf cf-performance-tests.tar.gz cf-performance-tests
+  bosh -d cf scp "${PWD}/cf-performance-tests.tar.gz" api/0:/tmp/
+popd
 bosh -d cf scp "${cf_perf_tests_pipeline_repo}/ci/tasks/run-performance-tests/task_on_vm.sh" api/0:/tmp/
 bosh -d cf ssh -c "cd /tmp/ && TEST_SUITE_FOLDER=${TEST_SUITE_FOLDER} GINKGO_TIMEOUT=${GINKGO_TIMEOUT} ./task_on_vm.sh" api/0
 
