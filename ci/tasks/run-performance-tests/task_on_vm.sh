@@ -12,10 +12,10 @@ sudo chown -R $(whoami):$(whoami) .
 pushd "cf-performance-tests" >/dev/null
   if [ -z "${TEST_SUITE_FOLDER:-}" ]; then
     echo -e "\nRunning all tests..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT ./...
+    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT --seed 1234 ./...
   else
     echo -e "\nRunning tests in ${TEST_SUITE_FOLDER}..."
-    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT -r "$TEST_SUITE_FOLDER"
+    go run github.com/onsi/ginkgo/v2/ginkgo run --timeout $GINKGO_TIMEOUT --seed 1234 -r "$TEST_SUITE_FOLDER"
   fi
 popd >/dev/null
 
