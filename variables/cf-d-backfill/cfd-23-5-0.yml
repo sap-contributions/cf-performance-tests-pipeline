@@ -5,4 +5,4 @@ cf_router_idle_timeout_secs: '60'
 cloud_controller_type: rails
 more_tests: true
 next_test_name: cfd-24-0-0
-test_suffix: -6d7m
+test_suffix: -a4ro

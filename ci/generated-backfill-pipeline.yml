@@ -129,6 +129,10 @@ jobs:
   serial_groups:
   - deploy-test-destroy
 - name: deploy-director
+  on_failure:
+    params:
+      alert_type: failed
+    put: slack-notification
   plan:
   - in_parallel:
     - get: cf-performance-tests-pipeline
@@ -175,6 +179,10 @@ jobs:
   serial_groups:
   - deploy-test-destroy
 - name: run-perf-tests-postgres
+  on_failure:
+    params:
+      alert_type: failed
+    put: slack-notification
   plan:
   - in_parallel:
     - get: cf-performance-tests-pipeline
@@ -231,6 +239,7 @@ jobs:
       MANIFEST_FILE: cf-deployment.yml
       OPS_FILES: operations/use-postgres.yml operations/use-compiled-releases.yml((additional-ops-files))
         operations/scale-up-vms.yml operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
+        operations/log-db-queries.yml
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf
@@ -257,6 +266,10 @@ jobs:
   serial_groups:
   - deploy-test-destroy
 - name: run-perf-tests-mysql
+  on_failure:
+    params:
+      alert_type: failed
+    put: slack-notification
   plan:
   - in_parallel:
     - get: cf-performance-tests-pipeline
@@ -312,7 +325,7 @@ jobs:
       BBL_STATE_DIR: state
       MANIFEST_FILE: cf-deployment.yml
       OPS_FILES: operations/use-compiled-releases.yml((additional-ops-files)) operations/scale-up-vms.yml
-        operations/use-external-blobstore.yml operations/use-s3-blobstore.yml
+        operations/use-external-blobstore.yml operations/use-s3-blobstore.yml operations/log-db-queries.yml
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf
@@ -537,8 +550,8 @@ resources:
 - icon: github
   name: cf-deployment-concourse-tasks
   source:
+    tag_filter: v16.1.0
     uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
-    tag_filter: 'v16.1.0'
   type: git
 - icon: github
   name: cf-performance-tests-pipeline
