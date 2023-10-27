@@ -10,41 +10,7 @@ if __name__ == '__main__':
 
     # Can be obtained with `git tag -l | sort -V | sed 's/v//g' | xargs -I {} echo \'{}\'` in `cf-deployment`
     cf_deployment_releases = [
-        '16.12.0',
-        '16.13.0',
-        '16.14.0',
-        '16.15.0',
-        '16.16.0',
-        '16.17.0',
-        '16.18.0',
-        '16.19.0',
-        '16.20.0',
-        '16.21.0',
-        '16.22.0',
-        '16.23.0',
-        '16.24.0',
-        '16.25.0',
-        '17.0.0',
-        '17.1.0',
-        '18.0.0',
-        '19.0.0',
-        '20.0.0',
-        '20.1.0',
-        '20.2.0',
-        '20.3.0',
-        '20.4.0',
-        '21.0.0',
-        '21.1.0',
-        '21.2.0',
-        '21.3.0',
-        '21.4.0',
-        '21.5.0',
-        '21.6.0',
-        '21.7.0',
-        '21.8.0',
-        '21.9.0',
-        '21.10.0',
-        '21.11.0',
+        # Everything before 22.0.0 is broken because Bionic is not available as a base image on AWS
         '22.0.0',
         '22.1.0',
         '22.2.0',
@@ -152,8 +118,6 @@ if __name__ == '__main__':
         else:
             cf_perf_tests_pipeline_source_branch = f'perf-test-old-{test_name}'
 
-        if Version(cfd_version) <= Version("16.14.0"):
-            additional_ops_files += ' operations/use-bionic-stemcell.yml operations/use-bionic-stemcell-for-addons.yml'
         if Version(cfd_version) >= Version("20.0.0"):
             additional_ops_files += ' operations/speed-up-dynamic-asgs.yml'
 
