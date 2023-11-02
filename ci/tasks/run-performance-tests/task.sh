@@ -50,8 +50,8 @@ pushd "$cf_perf_tests_repo" >/dev/null
 api: "localhost:9022"
 use_http: true
 skip_ssl_validation: true
-cf_deployment_version: test_ssh_execution
-capi_version: test_ssh_execution
+cf_deployment_version: "$cf_deployment_version"
+capi_version: "$capi_version"
 users:
   admin:
     username: "admin"
