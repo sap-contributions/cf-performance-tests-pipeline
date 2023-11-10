@@ -5,6 +5,7 @@ anchors:
         alert_type: failed
       put: slack-notification
   bbl_destroy:
+    attempts: 3
     ensure:
       attempts: 3
       params:
@@ -21,6 +22,7 @@ anchors:
       TF_VAR_parent_zone_id: ((parent_zone_id))
     task: bbl-destroy
   delete_cf:
+    attempts: 3
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     params:
       BBL_STATE_DIR: state
@@ -29,14 +31,16 @@ anchors:
     task: bosh-delete-deployments
   destroy_all:
     do:
-    - file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    - attempts: 3
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: state
         DELETE_ALL_DEPLOYMENTS: true
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
-      - ensure:
+      - attempts: 3
+        ensure:
           attempts: 3
           params:
             file: updated-bbl-state/bbl-state.tgz
@@ -66,7 +70,8 @@ anchors:
     put: base-infra
   destroy_director_and_base_infra:
     do:
-    - ensure:
+    - attempts: 3
+      ensure:
         attempts: 3
         params:
           file: updated-bbl-state/bbl-state.tgz
@@ -151,7 +156,8 @@ jobs:
   - file: base-infra/metadata
     format: json
     load_var: base-infra
-  - ensure:
+  - attempts: 3
+    ensure:
       attempts: 3
       params:
         file: updated-bbl-state/bbl-state.tgz
@@ -206,7 +212,8 @@ jobs:
     format: json
     load_var: base-infra
   - in_parallel:
-    - file: concourse-tasks/combine-directories/task.yml
+    - attempts: 3
+      file: concourse-tasks/combine-directories/task.yml
       input_mapping:
         src-1: cf-deployment
         src-2: cf-performance-tests-pipeline
@@ -216,7 +223,8 @@ jobs:
         SRC_1_GLOB: operations/*.yml
         SRC_2_GLOB: operations/*.yml
       task: combine-ops-file-directories
-    - file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+    - attempts: 3
+      file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
       params:
         VARS:
           app_package_directory_key: ((.:base-infra.packages_bucket_name))
@@ -230,7 +238,8 @@ jobs:
     - file: cf-deployment/.git/short_ref
       format: trim
       load_var: cf-deployment-version
-  - file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+  - attempts: 3
+    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       ops-files: combined-ops-files
       vars-files: cf-vars-file
@@ -243,11 +252,13 @@ jobs:
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf
-  - file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+  - attempts: 3
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
     params:
       BBL_STATE_DIR: state
     task: bosh-clean-up
-  - file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
+  - attempts: 3
+    file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
     params:
       BBL_STATE_DIR: state
       CCDB: postgres
@@ -293,7 +304,8 @@ jobs:
     format: json
     load_var: base-infra
   - in_parallel:
-    - file: concourse-tasks/combine-directories/task.yml
+    - attempts: 3
+      file: concourse-tasks/combine-directories/task.yml
       input_mapping:
         src-1: cf-deployment
         src-2: cf-performance-tests-pipeline
@@ -303,7 +315,8 @@ jobs:
         SRC_1_GLOB: operations/*.yml
         SRC_2_GLOB: operations/*.yml
       task: combine-ops-file-directories
-    - file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
+    - attempts: 3
+      file: cf-performance-tests-pipeline/ci/tasks/write-bosh-vars-file/task.yml
       params:
         VARS:
           app_package_directory_key: ((.:base-infra.packages_bucket_name))
@@ -317,7 +330,8 @@ jobs:
     - file: cf-deployment/.git/short_ref
       format: trim
       load_var: cf-deployment-version
-  - file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
+  - attempts: 3
+    file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
     input_mapping:
       ops-files: combined-ops-files
       vars-files: cf-vars-file
@@ -329,11 +343,13 @@ jobs:
       SYSTEM_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
       VARS_FILES: cf-vars.yml
     task: deploy-cf
-  - file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+  - attempts: 3
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
     params:
       BBL_STATE_DIR: state
     task: bosh-clean-up
-  - file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
+  - attempts: 3
+    file: cf-performance-tests-pipeline/ci/tasks/run-performance-tests/task.yml
     params:
       BBL_STATE_DIR: state
       CCDB: mysql
@@ -376,14 +392,16 @@ jobs:
     format: json
     load_var: base-infra
   - do:
-    - file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    - attempts: 3
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: state
         DELETE_ALL_DEPLOYMENTS: true
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
-      - ensure:
+      - attempts: 3
+        ensure:
           attempts: 3
           params:
             file: updated-bbl-state/bbl-state.tgz
@@ -414,7 +432,8 @@ jobs:
     - get: bbl-state
       params:
         unpack: true
-  - file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+  - attempts: 3
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
     params:
       BBL_STATE_DIR: state
       DELETE_ALL_DEPLOYMENTS: true
@@ -434,7 +453,8 @@ jobs:
   - file: base-infra/metadata
     format: json
     load_var: base-infra
-  - ensure:
+  - attempts: 3
+    ensure:
       attempts: 3
       params:
         file: updated-bbl-state/bbl-state.tgz
@@ -477,14 +497,16 @@ jobs:
     format: json
     load_var: base-infra
   - do:
-    - file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    - attempts: 3
+      file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
       params:
         BBL_STATE_DIR: state
         DELETE_ALL_DEPLOYMENTS: true
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
-      - ensure:
+      - attempts: 3
+        ensure:
           attempts: 3
           params:
             file: updated-bbl-state/bbl-state.tgz
