@@ -5,7 +5,6 @@ anchors:
         alert_type: failed
       put: slack-notification
   bbl_destroy:
-    attempts: 3
     ensure:
       attempts: 3
       params:
@@ -21,6 +20,36 @@ anchors:
       TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
       TF_VAR_parent_zone_id: ((parent_zone_id))
     task: bbl-destroy
+  bbl_state_upload:
+    attempts: 3
+    params:
+      file: updated-bbl-state/bbl-state.tgz
+    put: bbl-state
+  bbl_up:
+    ensure:
+      attempts: 3
+      params:
+        file: updated-bbl-state/bbl-state.tgz
+      put: bbl-state
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-config: cf-performance-tests-pipeline
+    params:
+      BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+      BBL_AWS_REGION: ((region))
+      BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+      BBL_CONFIG_DIR: bbl-patches
+      BBL_ENV_NAME: perf-test-((cloud_controller_type))((test_suffix))
+      BBL_IAAS: aws
+      BBL_LB_CERT: ((.:base-infra.cert_pem))
+      BBL_LB_KEY: ((.:base-infra.private_key))
+      BBL_STATE_DIR: state
+      LB_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
+      SKIP_LB_CREATION: false
+      STORE_BBL_STATE_AS_TARBALL: true
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+      TF_VAR_parent_zone_id: ((parent_zone_id))
+    task: bbl-up
   delete_cf:
     attempts: 3
     file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
@@ -39,7 +68,71 @@ anchors:
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - ensure:
+          attempts: 3
+          params:
+            file: updated-bbl-state/bbl-state.tgz
+          put: bbl-state
+        file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+        params:
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+          BBL_AWS_REGION: ((region))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+          BBL_STATE_DIR: state
+          STORE_BBL_STATE_AS_TARBALL: true
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_parent_zone_id: ((parent_zone_id))
+        task: bbl-destroy
       - attempts: 3
+        get_params:
+          action: destroy
+        params:
+          action: destroy
+          terraform_source: cf-performance-tests-pipeline/base-infra/terraform
+        put: base-infra
+  destroy_base_infra:
+    attempts: 3
+    get_params:
+      action: destroy
+    params:
+      action: destroy
+      terraform_source: cf-performance-tests-pipeline/base-infra/terraform
+    put: base-infra
+  destroy_director_and_base_infra:
+    do:
+    - try:
         ensure:
           attempts: 3
           params:
@@ -55,23 +148,23 @@ anchors:
           TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
-      - get_params:
-          action: destroy
+    - try:
+        ensure:
+          attempts: 3
+          params:
+            file: updated-bbl-state/bbl-state.tgz
+          put: bbl-state
+        file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
         params:
-          action: destroy
-          terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-        put: base-infra
-  destroy_base_infra:
-    get_params:
-      action: destroy
-    params:
-      action: destroy
-      terraform_source: cf-performance-tests-pipeline/base-infra/terraform
-    put: base-infra
-  destroy_director_and_base_infra:
-    do:
-    - attempts: 3
-      ensure:
+          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+          BBL_AWS_REGION: ((region))
+          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+          BBL_STATE_DIR: state
+          STORE_BBL_STATE_AS_TARBALL: true
+          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+          TF_VAR_parent_zone_id: ((parent_zone_id))
+        task: bbl-destroy
+    - ensure:
         attempts: 3
         params:
           file: updated-bbl-state/bbl-state.tgz
@@ -86,7 +179,8 @@ anchors:
         TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
         TF_VAR_parent_zone_id: ((parent_zone_id))
       task: bbl-destroy
-    - get_params:
+    - attempts: 3
+      get_params:
         action: destroy
       params:
         action: destroy
@@ -127,7 +221,8 @@ jobs:
     passed:
     - detect-new-versions
     trigger: true
-  - params:
+  - attempts: 3
+    params:
       terraform_source: cf-performance-tests-pipeline/base-infra/terraform
     put: base-infra
   serial: true
@@ -156,8 +251,57 @@ jobs:
   - file: base-infra/metadata
     format: json
     load_var: base-infra
-  - attempts: 3
-    ensure:
+  - try:
+      ensure:
+        attempts: 3
+        params:
+          file: updated-bbl-state/bbl-state.tgz
+        put: bbl-state
+      file: cf-deployment-concourse-tasks/bbl-up/task.yml
+      input_mapping:
+        bbl-config: cf-performance-tests-pipeline
+      params:
+        BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+        BBL_AWS_REGION: ((region))
+        BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+        BBL_CONFIG_DIR: bbl-patches
+        BBL_ENV_NAME: perf-test-((cloud_controller_type))((test_suffix))
+        BBL_IAAS: aws
+        BBL_LB_CERT: ((.:base-infra.cert_pem))
+        BBL_LB_KEY: ((.:base-infra.private_key))
+        BBL_STATE_DIR: state
+        LB_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
+        SKIP_LB_CREATION: false
+        STORE_BBL_STATE_AS_TARBALL: true
+        TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+        TF_VAR_parent_zone_id: ((parent_zone_id))
+      task: bbl-up
+  - try:
+      ensure:
+        attempts: 3
+        params:
+          file: updated-bbl-state/bbl-state.tgz
+        put: bbl-state
+      file: cf-deployment-concourse-tasks/bbl-up/task.yml
+      input_mapping:
+        bbl-config: cf-performance-tests-pipeline
+      params:
+        BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+        BBL_AWS_REGION: ((region))
+        BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+        BBL_CONFIG_DIR: bbl-patches
+        BBL_ENV_NAME: perf-test-((cloud_controller_type))((test_suffix))
+        BBL_IAAS: aws
+        BBL_LB_CERT: ((.:base-infra.cert_pem))
+        BBL_LB_KEY: ((.:base-infra.private_key))
+        BBL_STATE_DIR: state
+        LB_DOMAIN: cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
+        SKIP_LB_CREATION: false
+        STORE_BBL_STATE_AS_TARBALL: true
+        TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+        TF_VAR_parent_zone_id: ((parent_zone_id))
+      task: bbl-up
+  - ensure:
       attempts: 3
       params:
         file: updated-bbl-state/bbl-state.tgz
@@ -400,8 +544,39 @@ jobs:
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
-      - attempts: 3
-        ensure:
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - ensure:
           attempts: 3
           params:
             file: updated-bbl-state/bbl-state.tgz
@@ -416,7 +591,8 @@ jobs:
           TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
-      - get_params:
+      - attempts: 3
+        get_params:
           action: destroy
         params:
           action: destroy
@@ -453,8 +629,7 @@ jobs:
   - file: base-infra/metadata
     format: json
     load_var: base-infra
-  - attempts: 3
-    ensure:
+  - ensure:
       attempts: 3
       params:
         file: updated-bbl-state/bbl-state.tgz
@@ -475,7 +650,8 @@ jobs:
 - name: manual-teardown-base-infra-only
   plan:
   - get: cf-performance-tests-pipeline
-  - get_params:
+  - attempts: 3
+    get_params:
       action: destroy
     params:
       action: destroy
@@ -505,8 +681,39 @@ jobs:
         IGNORE_ERRORS: true
       task: bosh-delete-deployments
     - do:
-      - attempts: 3
-        ensure:
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - try:
+          ensure:
+            attempts: 3
+            params:
+              file: updated-bbl-state/bbl-state.tgz
+            put: bbl-state
+          file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+          params:
+            BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+            BBL_AWS_REGION: ((region))
+            BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+            BBL_STATE_DIR: state
+            STORE_BBL_STATE_AS_TARBALL: true
+            TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+            TF_VAR_parent_zone_id: ((parent_zone_id))
+          task: bbl-destroy
+      - ensure:
           attempts: 3
           params:
             file: updated-bbl-state/bbl-state.tgz
@@ -521,7 +728,8 @@ jobs:
           TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
           TF_VAR_parent_zone_id: ((parent_zone_id))
         task: bbl-destroy
-      - get_params:
+      - attempts: 3
+        get_params:
           action: destroy
         params:
           action: destroy

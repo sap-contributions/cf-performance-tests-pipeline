@@ -9,19 +9,7 @@ if __name__ == '__main__':
     root_branch_cf_perf_tests_pipeline = "main"
 
     # Can be obtained with `git tag -l | sort -V | sed 's/v//g' | xargs -I {} echo \'{}\'` in `cf-deployment`
-    cf_deployment_releases = [
-        '33.2.0',
-        '33.3.0',
-        '33.4.0',
-        '33.5.0',
-        '33.6.0',
-        '33.7.0',
-        '33.8.0',
-        '33.9.0',
-        '33.10.0',
-        '33.11.0',
-        '33.12.0',
-        '34.0.0']
+    cf_deployment_releases = ['34.1.0', '35.0.0']
 
     vars_dir_path = Path(Path.cwd(), "variables")
     cf_d_rerun_vars_path = Path(vars_dir_path, "cf-d-backfill")

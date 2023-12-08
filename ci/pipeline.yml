@@ -15,6 +15,7 @@ groups:
   - manual-teardown-all
 
 anchors:
+  system_domain: &system_domain cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
   alert_failure: &alert_failure
     on_failure:
       put: slack-notification
@@ -28,9 +29,13 @@ anchors:
       BBL_STATE_DIR: state
       DELETE_ALL_DEPLOYMENTS: true
       IGNORE_ERRORS: true
+  bbl_state_upload: &bbl_state_upload
+    put: bbl-state
+    attempts: 3
+    params:
+      file: updated-bbl-state/bbl-state.tgz
   bbl_destroy: &bbl_destroy
     task: bbl-destroy
-    attempts: 3
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
       BBL_STATE_DIR: state
@@ -41,22 +46,47 @@ anchors:
       TF_VAR_parent_zone_id: ((parent_zone_id))
       TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
     ensure:
-      put: bbl-state
-      attempts: 3
-      params:
-        file: updated-bbl-state/bbl-state.tgz
+      <<: *bbl_state_upload
+  bbl_up: &bbl_up
+    task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-config: cf-performance-tests-pipeline
+    params:
+      BBL_IAAS: aws
+      BBL_ENV_NAME: perf-test-((cloud_controller_type))((test_suffix))
+      BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
+      BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
+      BBL_AWS_REGION: ((region))
+      BBL_STATE_DIR: state
+      BBL_CONFIG_DIR: bbl-patches
+      BBL_LB_CERT: ((.:base-infra.cert_pem))
+      BBL_LB_KEY: ((.:base-infra.private_key))
+      LB_DOMAIN: *system_domain
+      SKIP_LB_CREATION: false
+      STORE_BBL_STATE_AS_TARBALL: true
+      TF_VAR_parent_zone_id: ((parent_zone_id))
+      TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
+    ensure:
+      <<: *bbl_state_upload
   destroy_base_infra: &destroy_base_infra
     put: base-infra
+    attempts: 3
     params:
       action: destroy
       terraform_source: cf-performance-tests-pipeline/base-infra/terraform
     get_params:
       action: destroy
   destroy_director_and_base_infra: &destroy_director_and_base_infra
-    do: [*bbl_destroy, *destroy_base_infra]
+    do:
+      - try:
+          <<: *bbl_destroy
+      - try:
+          <<: *bbl_destroy
+      - *bbl_destroy
+      - *destroy_base_infra
   destroy_all: &destroy_all
     do: [*delete_cf, *destroy_director_and_base_infra]
-  system_domain: &system_domain cf.perf-test-((cloud_controller_type))((test_suffix)).((parent_zone_domain))
 
 resource_types:
 - name: slack-alert
@@ -175,6 +205,7 @@ jobs:
         trigger: true
         passed: [detect-new-versions]
       - put: base-infra
+        attempts: 3
         params:
           terraform_source: cf-performance-tests-pipeline/base-infra/terraform
 
@@ -198,31 +229,11 @@ jobs:
       - load_var: base-infra
         file: base-infra/metadata
         format: json
-      - task: bbl-up
-        attempts: 3
-        file: cf-deployment-concourse-tasks/bbl-up/task.yml
-        input_mapping:
-          bbl-config: cf-performance-tests-pipeline
-        params:
-          BBL_IAAS: aws
-          BBL_ENV_NAME: perf-test-((cloud_controller_type))((test_suffix))
-          BBL_AWS_ACCESS_KEY_ID: ((.:base-infra.bbl_aws_creds.aws_access_key_id))
-          BBL_AWS_SECRET_ACCESS_KEY: ((.:base-infra.bbl_aws_creds.aws_secret_access_key))
-          BBL_AWS_REGION: ((region))
-          BBL_STATE_DIR: state
-          BBL_CONFIG_DIR: bbl-patches
-          BBL_LB_CERT: ((.:base-infra.cert_pem))
-          BBL_LB_KEY: ((.:base-infra.private_key))
-          LB_DOMAIN: *system_domain
-          SKIP_LB_CREATION: false
-          STORE_BBL_STATE_AS_TARBALL: true
-          TF_VAR_parent_zone_id: ((parent_zone_id))
-          TF_VAR_elb_idle_timeout: ((cf_router_idle_timeout_secs))
-        ensure:
-          put: bbl-state
-          attempts: 3
-          params:
-            file: updated-bbl-state/bbl-state.tgz
+      - try:
+          <<: *bbl_up
+      - try:
+          <<: *bbl_up
+      - *bbl_up
 
   - name: run-perf-tests-postgres
     serial: true
