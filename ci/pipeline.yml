@@ -79,10 +79,6 @@ anchors:
       action: destroy
   destroy_director_and_base_infra: &destroy_director_and_base_infra
     do:
-      - try:
-          <<: *bbl_destroy
-      - try:
-          <<: *bbl_destroy
       - *bbl_destroy
       - *destroy_base_infra
   destroy_all: &destroy_all
@@ -229,10 +225,6 @@ jobs:
       - load_var: base-infra
         file: base-infra/metadata
         format: json
-      - try:
-          <<: *bbl_up
-      - try:
-          <<: *bbl_up
       - *bbl_up
 
   - name: run-perf-tests-postgres
