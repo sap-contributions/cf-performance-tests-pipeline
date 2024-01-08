@@ -1,0 +1,23 @@
+- type: replace
+  path: /instance_groups/-
+  value:
+    name: cf-performance-tests-errand
+    azs:
+      - z1
+    instances: 1
+    jobs:
+      - name: cf-performance-tests
+        properties:
+          cf_deployment_version: ((cf_deployment_version))
+          capi_version: ((capi_version))
+          users:
+            admin:
+              username: admin
+              password: ((cf_admin_password))
+        release: cf-performance-tests
+    lifecycle: errand
+    networks:
+      - name: default
+    stemcell: default
+    vm_type: small
+
