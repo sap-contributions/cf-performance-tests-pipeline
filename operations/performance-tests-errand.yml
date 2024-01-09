@@ -8,6 +8,7 @@
     jobs:
       - name: cf-performance-tests
         properties:
+          test_suite_folder: "domains"
           cf_deployment_version: ((cf_deployment_version))
           capi_version: ((capi_version))
           users:
