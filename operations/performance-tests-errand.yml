@@ -15,6 +15,7 @@
             admin:
               username: admin
               password: ((cf_admin_password))
+          results_folder: ((results_folder))
         release: cf-performance-tests
     lifecycle: errand
     networks:
