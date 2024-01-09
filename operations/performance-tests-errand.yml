@@ -20,4 +20,8 @@
       - name: default
     stemcell: default
     vm_type: small
-
+- type: replace
+  path: /releases/-
+  value:
+    name: cf-performance-tests
+    version: latest
