@@ -12,3 +12,5 @@ capi_version="$(<"${cf_deployment_repo}"/cf-deployment.yml grep -A 1 capi | grep
 
 echo "cf_deployment_version: ${cf_deployment_version}" >> "${cf_versions_output}/cf_versions.yml"
 echo "capi_version: ${capi_version}" >> "${cf_versions_output}/cf_versions.yml"
+
+cat "${cf_versions_output}/cf_versions.yml"
