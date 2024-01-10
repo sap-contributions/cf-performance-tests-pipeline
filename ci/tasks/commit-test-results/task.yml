@@ -17,6 +17,7 @@ run:
   path: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.sh
 
 params:
+  BBL_STATE_DIR:
   GIT_COMMIT_EMAIL:
   GIT_COMMIT_USERNAME:
   GIT_COMMIT_MESSAGE:
