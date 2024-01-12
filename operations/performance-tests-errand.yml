@@ -8,7 +8,7 @@
     jobs:
       - name: cf-performance-tests
         properties:
-          test_suite_folder: "domains"
+          test_suite_folder: ((test-suite-folder))
           cf_deployment_version: ((cf_deployment_version))
           capi_version: ((capi_version))
           users:
@@ -22,8 +22,10 @@
       - name: default
     stemcell: default
     vm_type: small
+
 - type: replace
   path: /releases/-
   value:
+    # TODO add release.tgz URL
     name: cf-performance-tests
     version: latest
