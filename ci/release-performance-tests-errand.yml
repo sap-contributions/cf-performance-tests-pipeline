@@ -1,0 +1,88 @@
+resources:
+  - name: cf-performance-tests
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests.git
+      branch: main
+  - name: cf-performance-tests-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/sap-contributions/cf-performance-tests-release.git
+      username: ((perf-tests-pipeline-test-github-username))
+      password: ((perf-tests-pipeline-test-github-user-token))
+      branch: release_test
+  - name: cf-performance-tests-pipeline
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
+      branch: bosh_errand
+
+  - name: bosh-package-cf-cli-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/bosh-package-cf-cli-release.git
+  - name: bosh-package-golang-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
+
+  - name: cf-performance-tests-github-release
+    type: github-release
+    source:
+      owner: cloudfoundry
+      repository: cf-performance-tests-release
+      access_token: ((perf-tests-pipeline-test-github-user-token))
+
+jobs:
+  - name: update-cf-performance-tests
+    serial: true
+    plan:
+      - get: cf-performance-tests
+        trigger: true
+      - get: cf-performance-tests-release
+      - get: cf-performance-tests-pipeline
+      - task: update-submodule
+        file: cf-performance-tests-pipeline/ci/tasks/update-cf-performance-tests/task.yml
+        params:
+          GIT_COMMIT_EMAIL: jochen.ehret@sap.com
+          GIT_COMMIT_USERNAME: jochenehret
+      - put: cf-performance-tests-release
+        params:
+          repository: cf-performance-tests-release
+
+  - name: create-final-bosh-release
+    serial: true
+    plan:
+      - get: cf-performance-tests-release
+        trigger: true
+        passed: [update-cf-performance-tests]
+      - get: cf-performance-tests-pipeline
+      - get: bosh-package-cf-cli-release
+      - get: bosh-package-golang-release
+      - task: create-release
+        file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
+        params:
+          GIT_COMMIT_EMAIL: jochen.ehret@sap.com
+          GIT_COMMIT_USERNAME: jochenehret
+      - put: cf-performance-tests-release
+        params:
+          repository: cf-performance-tests-release
+          rebase: true
+
+  - name: upload-release
+    serial: true
+    plan:
+      - get: cf-performance-tests-release
+        trigger: true
+        passed: [create-final-bosh-release]
+      - put: cf-performance-tests-github-release
+        params:
+          repository: cf-performance-tests-release
+          name: cf-performance-tests-release/release_name
+          globs:
+            - releases/cf-performance-errand.tgz
