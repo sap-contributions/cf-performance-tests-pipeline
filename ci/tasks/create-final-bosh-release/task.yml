@@ -7,6 +7,8 @@ image_resource:
     tag: 'v16.1.0'
 
 inputs:
+  - name: bosh-package-cf-cli-release
+  - name: bosh-package-golang-release
   - name: cf-performance-tests-release
   - name: cf-performance-tests-pipeline
 
