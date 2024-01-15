@@ -34,7 +34,7 @@ resources:
   - name: cf-performance-tests-github-release
     type: github-release
     source:
-      owner: cloudfoundry
+      owner: sap-contributions
       repository: cf-performance-tests-release
       access_token: ((perf-tests-pipeline-test-github-user-token))
 
@@ -80,18 +80,13 @@ jobs:
         params:
           repository: cf-performance-tests-release
           rebase: true
-
-  - name: upload-release
-    serial: true
-    plan:
-      - get: cf-performance-tests-release
-        trigger: true
-        passed: [create-final-bosh-release]
       - put: cf-performance-tests-github-release
+        inputs:
+          - cf-performance-tests-release
+          - cf-performance-tests-release-output
         params:
-          repository: cf-performance-tests-release
           name: cf-performance-tests-release/release_name
           tag: cf-performance-tests-release/test_tag
           body: cf-performance-tests-release/test_body
           globs:
-            - releases/cf-performance-errand.tgz
+            - cf-performance-tests-release-output/releases/cf-performance-errand.tgz
