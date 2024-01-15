@@ -4,6 +4,8 @@ set -euo pipefail
 
 cd cf-performance-tests-release
 
+echo "$PRIVATE_YML" > config/private.yml
+
 bosh vendor-package cf-cli-8-linux ../bosh-package-cf-cli-release
 bosh vendor-package golang-1.21-linux ../bosh-package-golang-release
 if [ -z "$(git status --porcelain=v1 2>/dev/null)" ]; then

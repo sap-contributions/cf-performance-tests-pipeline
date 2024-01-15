@@ -69,6 +69,13 @@ jobs:
         params:
           GIT_COMMIT_EMAIL: jochen.ehret@sap.com
           GIT_COMMIT_USERNAME: jochenehret
+          PRIVATE_YML: |
+            ---
+            blobstore:
+              options:
+                credentials_source: static
+                json_key: |
+                  ((ari_test_gcp_service_account_json))
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
@@ -84,5 +91,7 @@ jobs:
         params:
           repository: cf-performance-tests-release
           name: cf-performance-tests-release/release_name
+          tag: cf-performance-tests-release/test_tag
+          body: cf-performance-tests-release/test_body
           globs:
             - releases/cf-performance-errand.tgz
