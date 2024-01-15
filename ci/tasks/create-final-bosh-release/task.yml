@@ -13,7 +13,7 @@ inputs:
   - name: cf-performance-tests-pipeline
 
 outputs:
-  - name: cf-performance-tests-release
+  - name: cf-performance-tests-release-output
 
 run:
   path: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.sh
