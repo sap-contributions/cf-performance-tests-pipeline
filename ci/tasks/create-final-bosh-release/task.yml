@@ -10,6 +10,7 @@ inputs:
   - name: bosh-package-cf-cli-release
   - name: bosh-package-golang-release
   - name: cf-performance-tests-release
+  - name: cf-performance-tests-version
   - name: cf-performance-tests-pipeline
 
 outputs:

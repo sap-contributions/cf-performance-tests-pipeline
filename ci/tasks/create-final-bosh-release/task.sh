@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+RELEASE_VERSION="$(cat cf-performance-tests-version/version)"
+
 cd cf-performance-tests-release
 
 echo "$PRIVATE_YML" > config/private.yml
@@ -18,10 +20,10 @@ else
   echo "Updated vendored packages."
 fi
 
-bosh create-release --final --tarball=../cf-performance-tests-release-output/cf-performance-tests.tgz
+bosh create-release --final --version=$RELEASE_VERSION --tarball=../cf-performance-tests-release-output/cf-performance-tests.tgz
 
 git add .
 git config --global user.name "$GIT_COMMIT_USERNAME"
 git config --global user.email "$GIT_COMMIT_EMAIL"
-git commit -m "Final BOSH release"
-echo "Finished creating BOSH release."
+git commit -m "Final BOSH release $RELEASE_VERSION"
+echo "Finished creating BOSH release $RELEASE_VERSION."
