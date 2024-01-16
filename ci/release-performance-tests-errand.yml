@@ -9,16 +9,16 @@ resources:
     type: git
     icon: github
     source:
-      uri: https://github.com/sap-contributions/cf-performance-tests-release.git
-      username: ((perf-tests-pipeline-test-github-username))
-      password: ((perf-tests-pipeline-test-github-user-token))
-      branch: release_test
+      uri: https://github.com/cloudfoundry/cf-performance-tests-release.git
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
+      branch: main
   - name: cf-performance-tests-pipeline
     type: git
     icon: github
     source:
-      uri: https://github.com/sap-contributions/cf-performance-tests-pipeline.git
-      branch: bosh_errand
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
+      branch: main
 
   - name: bosh-package-cf-cli-release
     type: git
@@ -34,18 +34,19 @@ resources:
   - name: cf-performance-tests-github-release
     type: github-release
     source:
-      owner: sap-contributions
+      owner: cloudfoundry
       repository: cf-performance-tests-release
-      access_token: ((perf-tests-pipeline-test-github-user-token))
+      access_token: ((cf-perf-github-user-token))
 
   - name: cf-performance-tests-version
     type: semver
     source:
-      driver: git
-      uri: git@github.com:cloudfoundry/cf-relint-ci-semver.git
-      branch: main
-      private_key: ((ard_wg_gitbot_ssh_key.private_key))
-      file: cf-performance-tests
+      access_key_id: ((app_runtime_interfaces_capi_ci_access_key))
+      secret_access_key: ((app_runtime_interfaces_capi_ci_secret_access_key))
+      initial_version: 0.0.0
+      bucket: capi-release-versions-app-runtime-interfaces
+      key: current-cf-performance-tests-release-version
+      region_name: us-east-2
 
 jobs:
   - name: update-cf-performance-tests
@@ -58,8 +59,8 @@ jobs:
       - task: update-submodule
         file: cf-performance-tests-pipeline/ci/tasks/update-cf-performance-tests/task.yml
         params:
-          GIT_COMMIT_EMAIL: jochen.ehret@sap.com
-          GIT_COMMIT_USERNAME: jochenehret
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
@@ -78,8 +79,8 @@ jobs:
       - task: create-release
         file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
         params:
-          GIT_COMMIT_EMAIL: jochen.ehret@sap.com
-          GIT_COMMIT_USERNAME: jochenehret
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
           PRIVATE_YML: |
             ---
             blobstore:
