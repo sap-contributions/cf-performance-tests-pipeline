@@ -18,7 +18,7 @@ else
   echo "Updated vendored packages."
 fi
 
-bosh create-release --final --tarball=../cf-performance-tests-release-output/releases/cf-performance-errand.tgz
+bosh create-release --final --tarball=../cf-performance-tests-release-output/cf-performance-errand.tgz
 
 git add .
 git config --global user.name "$GIT_COMMIT_USERNAME"
