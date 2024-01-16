@@ -26,6 +26,6 @@
 - type: replace
   path: /releases/-
   value:
-    # TODO add release.tgz URL
+    url: https://github.com/sap-contributions/cf-performance-tests-release/
     name: cf-performance-tests
     version: latest

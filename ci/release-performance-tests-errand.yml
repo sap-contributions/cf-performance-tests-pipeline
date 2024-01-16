@@ -89,4 +89,4 @@ jobs:
           tag: cf-performance-tests-release/test_tag
           body: cf-performance-tests-release/test_body
           globs:
-            - cf-performance-tests-release-output/releases/cf-performance-errand.tgz
+            - cf-performance-tests-release-output/cf-performance-errand.tgz
