@@ -38,6 +38,15 @@ resources:
       repository: cf-performance-tests-release
       access_token: ((perf-tests-pipeline-test-github-user-token))
 
+  - name: cf-performance-tests-version
+    type: semver
+    source:
+      driver: git
+      uri: git@github.com:cloudfoundry/cf-relint-ci-semver.git
+      branch: main
+      private_key: ((ard_wg_gitbot_ssh_key.private_key))
+      file: cf-performance-tests
+
 jobs:
   - name: update-cf-performance-tests
     serial: true
@@ -64,6 +73,8 @@ jobs:
       - get: cf-performance-tests-pipeline
       - get: bosh-package-cf-cli-release
       - get: bosh-package-golang-release
+      - get: cf-performance-tests-version
+        params: { bump: minor }
       - task: create-release
         file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
         params:
@@ -79,14 +90,20 @@ jobs:
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
+          tag: cf-performance-tests-version/version
+          tag_prefix: v
           rebase: true
       - put: cf-performance-tests-github-release
         inputs:
           - cf-performance-tests-release
+          - cf-performance-tests-version
           - cf-performance-tests-release-output
         params:
           name: cf-performance-tests-release/release_name
-          tag: cf-performance-tests-release/test_tag
-          body: cf-performance-tests-release/test_body
+          tag: cf-performance-tests-version/version
+          # TODO if needed, generate file with release notes for body
+          body: cf-performance-tests-version/version
           globs:
             - cf-performance-tests-release-output/cf-performance-tests.tgz
+      - put: cf-performance-tests-version
+        params: {bump: minor}
