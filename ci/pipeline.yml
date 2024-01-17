@@ -300,8 +300,6 @@ jobs:
       - task: run-performance-tests
         attempts: 3
         file: cf-deployment-concourse-tasks/run-errand/task.yml
-        input_mapping:
-          bbl-state: relint-envs
         params:
           BBL_STATE_DIR: state
           DEPLOYMENT_NAME: cf
@@ -393,8 +391,6 @@ jobs:
       - task: run-performance-tests
         attempts: 3
         file: cf-deployment-concourse-tasks/run-errand/task.yml
-        input_mapping:
-          bbl-state: relint-envs
         params:
           BBL_STATE_DIR: state
           DEPLOYMENT_NAME: cf
