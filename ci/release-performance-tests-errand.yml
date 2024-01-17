@@ -1,0 +1,110 @@
+resources:
+  - name: cf-performance-tests
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests.git
+      branch: main
+  - name: cf-performance-tests-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests-release.git
+      username: ((cf-perf-github-username))
+      password: ((cf-perf-github-user-token))
+      branch: main
+  - name: cf-performance-tests-pipeline
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
+      branch: main
+
+  - name: bosh-package-cf-cli-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/bosh-package-cf-cli-release.git
+  - name: bosh-package-golang-release
+    type: git
+    icon: github
+    source:
+      uri: https://github.com/cloudfoundry/bosh-package-golang-release.git
+
+  - name: cf-performance-tests-github-release
+    type: github-release
+    source:
+      owner: cloudfoundry
+      repository: cf-performance-tests-release
+      access_token: ((cf-perf-github-user-token))
+
+  - name: cf-performance-tests-version
+    type: semver
+    source:
+      access_key_id: ((app_runtime_interfaces_capi_ci_access_key))
+      secret_access_key: ((app_runtime_interfaces_capi_ci_secret_access_key))
+      initial_version: 0.0.0
+      bucket: capi-release-versions-app-runtime-interfaces
+      key: current-cf-performance-tests-release-version
+      region_name: us-east-2
+
+jobs:
+  - name: update-cf-performance-tests
+    serial: true
+    plan:
+      - get: cf-performance-tests
+        trigger: true
+      - get: cf-performance-tests-release
+      - get: cf-performance-tests-pipeline
+      - task: update-submodule
+        file: cf-performance-tests-pipeline/ci/tasks/update-cf-performance-tests/task.yml
+        params:
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      - put: cf-performance-tests-release
+        params:
+          repository: cf-performance-tests-release
+
+  - name: create-final-bosh-release
+    serial: true
+    plan:
+      - get: cf-performance-tests-release
+        trigger: true
+        passed: [update-cf-performance-tests]
+      - get: cf-performance-tests-pipeline
+      - get: bosh-package-cf-cli-release
+      - get: bosh-package-golang-release
+      - get: cf-performance-tests-version
+        params: { bump: minor }
+      - task: create-release
+        file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
+        params:
+          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
+          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          PRIVATE_YML: |
+            ---
+            blobstore:
+              options:
+                credentials_source: static
+                json_key: |
+                  ((ari_test_gcp_service_account_json))
+      - put: cf-performance-tests-release
+        params:
+          repository: cf-performance-tests-release
+          tag: cf-performance-tests-version/version
+          tag_prefix: v
+          rebase: true
+      - put: cf-performance-tests-github-release
+        inputs:
+          - cf-performance-tests-release
+          - cf-performance-tests-version
+          - cf-performance-tests-release-output
+        params:
+          name: cf-performance-tests-release/release_name
+          tag: cf-performance-tests-version/version
+          # TODO if needed, generate file with release notes for body
+          body: cf-performance-tests-version/version
+          globs:
+            - cf-performance-tests-release-output/cf-performance-tests.tgz
+      - put: cf-performance-tests-version
+        params: {bump: minor}

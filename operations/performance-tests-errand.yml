@@ -1,0 +1,31 @@
+- type: replace
+  path: /instance_groups/-
+  value:
+    name: cf-performance-tests-errand
+    azs:
+      - z1
+    instances: 1
+    jobs:
+      - name: cf-performance-tests
+        properties:
+          test_suite_folder: ((test-suite-folder))
+          cf_deployment_version: ((cf_deployment_version))
+          capi_version: ((capi_version))
+          users:
+            admin:
+              username: admin
+              password: ((cf_admin_password))
+          results_folder: ((results_folder))
+        release: cf-performance-tests
+    lifecycle: errand
+    networks:
+      - name: default
+    stemcell: default
+    vm_type: small
+
+- type: replace
+  path: /releases/-
+  value:
+    url: https://github.com/cloudfoundry/cf-performance-tests-release/releases/latest/download/cf-performance-tests.tgz
+    name: cf-performance-tests
+    version: latest

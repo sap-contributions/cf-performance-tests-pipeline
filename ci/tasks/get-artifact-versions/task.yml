@@ -1,0 +1,17 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: cloudfoundry/cf-deployment-concourse-tasks
+    tag: 'v16.1.0'
+
+inputs:
+  - name: cf-performance-tests-pipeline
+  - name: cf-deployment
+
+outputs:
+  - name: cf-versions
+
+run:
+  path: cf-performance-tests-pipeline/ci/tasks/get-artifact-versions/task.sh

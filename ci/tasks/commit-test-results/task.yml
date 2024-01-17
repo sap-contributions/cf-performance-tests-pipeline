@@ -1,0 +1,23 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: cloudfoundry/cf-deployment-concourse-tasks
+    tag: 'v16.1.0'
+
+inputs:
+  - name: cf-performance-tests-pipeline
+  - name: bbl-state
+
+outputs:
+  - name: cf-performance-tests-pipeline
+
+run:
+  path: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.sh
+
+params:
+  BBL_STATE_DIR:
+  GIT_COMMIT_EMAIL:
+  GIT_COMMIT_USERNAME:
+  GIT_COMMIT_MESSAGE:
