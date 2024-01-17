@@ -274,17 +274,22 @@ jobs:
               buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
               droplet_directory_key: ((.:base-infra.droplets_bucket_name))
               resource_directory_key: ((.:base-infra.resources_bucket_name))
-        - load_var: cf-deployment-version
-          file: cf-deployment/.git/short_ref
-          format: trim
         - task: get-artifacts-versions
           file: cf-performance-tests-pipeline/ci/tasks/get-artifact-versions/task.yml
+      - task: combine-vars-file-directories
+        attempts: 3
+        file: concourse-tasks/combine-directories/task.yml
+        input_mapping:
+          src-1: cf-vars-file
+          src-2: cf-versions
+        output_mapping:
+          target: combined-vars-files
       - task: deploy-cf
         attempts: 3
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           ops-files: combined-ops-files
-          vars-files: cf-vars-file
+          vars-files: combined-vars-files
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
@@ -365,17 +370,22 @@ jobs:
               buildpack_directory_key: ((.:base-infra.buildpacks_bucket_name))
               droplet_directory_key: ((.:base-infra.droplets_bucket_name))
               resource_directory_key: ((.:base-infra.resources_bucket_name))
-        - load_var: cf-deployment-version
-          file: cf-deployment/.git/short_ref
-          format: trim
         - task: get-artifacts-versions
           file: cf-performance-tests-pipeline/ci/tasks/get-artifact-versions/task.yml
+      - task: combine-vars-file-directories
+        attempts: 3
+        file: concourse-tasks/combine-directories/task.yml
+        input_mapping:
+          src-1: cf-vars-file
+          src-2: cf-versions
+        output_mapping:
+          target: combined-vars-files
       - task: deploy-cf
         attempts: 3
         file: cf-deployment-concourse-tasks/bosh-deploy/task.yml
         input_mapping:
           ops-files: combined-ops-files
-          vars-files: cf-vars-file
+          vars-files: combined-vars-files
         params:
           BBL_STATE_DIR: state
           MANIFEST_FILE: cf-deployment.yml
