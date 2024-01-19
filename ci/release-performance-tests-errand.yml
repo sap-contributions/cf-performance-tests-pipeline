@@ -38,15 +38,14 @@ resources:
       repository: cf-performance-tests-release
       access_token: ((ari-wg-gitbot-token))
 
-  - name: cf-performance-tests-version
+  - name: cf-performance-tests-release-version
     type: semver
     source:
-      access_key_id: ((app_runtime_interfaces_capi_ci_access_key))
-      secret_access_key: ((app_runtime_interfaces_capi_ci_secret_access_key))
+      driver: gcs
       initial_version: 0.0.0
-      bucket: capi-release-versions-app-runtime-interfaces
-      key: current-cf-performance-tests-release-version
-      region_name: us-east-2
+      bucket: cf-performance-tests-release-semver
+      key: performance-tests-release-version
+      json_key: ((cf_performance_tests_release_blobs_uploader_key))
 
 jobs:
   - name: update-cf-performance-tests
@@ -74,7 +73,7 @@ jobs:
       - get: cf-performance-tests-pipeline
       - get: bosh-package-cf-cli-release
       - get: bosh-package-golang-release
-      - get: cf-performance-tests-version
+      - get: cf-performance-tests-release-version
         params: { bump: minor }
       - task: create-release
         file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
@@ -91,20 +90,20 @@ jobs:
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
-          tag: cf-performance-tests-version/version
+          tag: cf-performance-tests-release-version/version
           tag_prefix: v
           rebase: true
       - put: cf-performance-tests-github-release
         inputs:
           - cf-performance-tests-release
-          - cf-performance-tests-version
+          - cf-performance-tests-release-version
           - cf-performance-tests-release-output
         params:
           name: cf-performance-tests-release/release_name
-          tag: cf-performance-tests-version/version
+          tag: cf-performance-tests-release-version/version
           # TODO if needed, generate file with release notes for body
-          body: cf-performance-tests-version/version
+          body: cf-performance-tests-release-version/version
           globs:
             - cf-performance-tests-release-output/cf-performance-tests.tgz
-      - put: cf-performance-tests-version
+      - put: cf-performance-tests-release-version
         params: {bump: minor}
