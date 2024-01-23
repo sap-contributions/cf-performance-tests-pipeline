@@ -10,8 +10,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests-release.git
-      username: ((cf-perf-github-username))
-      password: ((cf-perf-github-user-token))
+      username: ((ari-wg-gitbot-username))
+      password: ((ari-wg-gitbot-token))
       branch: main
   - name: cf-performance-tests-pipeline
     type: git
@@ -36,7 +36,7 @@ resources:
     source:
       owner: cloudfoundry
       repository: cf-performance-tests-release
-      access_token: ((cf-perf-github-user-token))
+      access_token: ((ari-wg-gitbot-token))
 
   - name: cf-performance-tests-version
     type: semver
@@ -59,8 +59,8 @@ jobs:
       - task: update-submodule
         file: cf-performance-tests-pipeline/ci/tasks/update-cf-performance-tests/task.yml
         params:
-          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+          GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
@@ -79,8 +79,8 @@ jobs:
       - task: create-release
         file: cf-performance-tests-pipeline/ci/tasks/create-final-bosh-release/task.yml
         params:
-          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+          GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
           PRIVATE_YML: |
             ---
             blobstore:
