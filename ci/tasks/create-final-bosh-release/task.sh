@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-RELEASE_VERSION="$(cat cf-performance-tests-version/version)"
+RELEASE_VERSION="$(cat cf-performance-tests-release-version/version)"
 
 cd cf-performance-tests-release
 
