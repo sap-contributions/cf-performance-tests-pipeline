@@ -86,7 +86,7 @@ jobs:
               options:
                 credentials_source: static
                 json_key: |
-                  ((ari_test_gcp_service_account_json))
+                  ((cf_performance_tests_release_blobs_uploader_key))
       - put: cf-performance-tests-release
         params:
           repository: cf-performance-tests-release
