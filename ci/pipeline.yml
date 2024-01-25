@@ -321,7 +321,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version.cf_deployment_version)), ((cloud_controller_type)) cc with postgres ccdb
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-versions.cf_deployment_version)), ((cloud_controller_type)) cc with postgres ccdb
       - put: results
         params:
           repository: cf-performance-tests-pipeline
@@ -421,7 +421,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version.cf_deployment_version)), ((cloud_controller_type)) cc with mysql ccdb
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-versions.cf_deployment_version)), ((cloud_controller_type)) cc with mysql ccdb
       - put: results
         params:
           repository: cf-performance-tests-pipeline
