@@ -311,6 +311,9 @@ jobs:
           DEPLOYMENT_NAME: cf
           ERRAND_NAME: cf-performance-tests-errand
           KEEP_ALIVE: true
+      - load_var: cf-versions
+        file: cf-versions/cf_versions.yml
+        format: yaml
       - task: commit-test-results
         attempts: 3
         file: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.yml
@@ -318,7 +321,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type)) cc with postgres ccdb
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version.cf_deployment_version)), ((cloud_controller_type)) cc with postgres ccdb
       - put: results
         params:
           repository: cf-performance-tests-pipeline
@@ -408,6 +411,9 @@ jobs:
           DEPLOYMENT_NAME: cf
           ERRAND_NAME: cf-performance-tests-errand
           KEEP_ALIVE: true
+      - load_var: cf-versions
+        file: cf-versions/cf_versions.yml
+        format: yaml
       - task: commit-test-results
         attempts: 3
         file: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.yml
@@ -415,7 +421,7 @@ jobs:
           BBL_STATE_DIR: state
           GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
           GIT_COMMIT_USERNAME: ((cf-perf-github-username))
-          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version)), ((cloud_controller_type)) cc with mysql ccdb
+          GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-deployment-version.cf_deployment_version)), ((cloud_controller_type)) cc with mysql ccdb
       - put: results
         params:
           repository: cf-performance-tests-pipeline
