@@ -107,8 +107,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-      username: ((cf-perf-github-username))
-      password: ((cf-perf-github-user-token))
+      username: ((ari-wg-gitbot-username))
+      password: ((ari-wg-gitbot-token))
       branch: ((results-branch))
       ignore_paths: [results/**]
   - name: results
@@ -116,8 +116,8 @@ resources:
     icon: github
     source:
       uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-      username: ((cf-perf-github-username))
-      password: ((cf-perf-github-user-token))
+      username: ((ari-wg-gitbot-username))
+      password: ((ari-wg-gitbot-token))
       branch: ((results-branch))
 
   - name: bbl-state
@@ -319,8 +319,8 @@ jobs:
         file: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.yml
         params:
           BBL_STATE_DIR: state
-          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+          GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
           GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-versions.cf_deployment_version)), ((cloud_controller_type)) cc with postgres ccdb
       - put: results
         params:
@@ -419,8 +419,8 @@ jobs:
         file: cf-performance-tests-pipeline/ci/tasks/commit-test-results/task.yml
         params:
           BBL_STATE_DIR: state
-          GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-          GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+          GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+          GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
           GIT_COMMIT_MESSAGE: Results for cf-deployment ((.:cf-versions.cf_deployment_version)), ((cloud_controller_type)) cc with mysql ccdb
       - put: results
         params:
