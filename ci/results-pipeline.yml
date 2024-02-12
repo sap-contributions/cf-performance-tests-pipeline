@@ -4,8 +4,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-    username: ((cf-perf-github-username))
-    password: ((cf-perf-github-user-token))
+    username: ((ari-wg-gitbot-username))
+    password: ((ari-wg-gitbot-token))
     branch: ((results-branch))
     paths: [ci/results-pipeline.yml, ci/tasks/generate-charts/*, ci/tasks/generate-coverage-table/*, variables/common.yml]
     ignore_paths: [results/**/*.json, results/coverage.md]
@@ -14,8 +14,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-    username: ((cf-perf-github-username))
-    password: ((cf-perf-github-user-token))
+    username: ((ari-wg-gitbot-username))
+    password: ((ari-wg-gitbot-token))
     branch: ((results-branch))
     paths: [results/**/*.json]
 
@@ -24,8 +24,8 @@ resources:
   icon: github
   source:
     uri: https://github.com/cloudfoundry/cf-performance-tests-pipeline.git
-    username: ((cf-perf-github-username))
-    password: ((cf-perf-github-user-token))
+    username: ((ari-wg-gitbot-username))
+    password: ((ari-wg-gitbot-token))
     branch: ((results-branch))
 
 jobs:
@@ -54,8 +54,8 @@ jobs:
     output_mapping:
       cf-performance-tests-pipeline: results-with-rails-postgres-charts
     params:
-      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+      GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Generate charts for rails cc with postgres ccdb
       CCDB: postgres
       CLOUD_CONTROLLER_TYPE: rails
@@ -66,8 +66,8 @@ jobs:
     output_mapping:
       cf-performance-tests-pipeline: results-with-rails-mysql-charts
     params:
-      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+      GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Generate charts for rails cc with mysql ccdb
       CCDB: mysql
       CLOUD_CONTROLLER_TYPE: rails
@@ -78,8 +78,8 @@ jobs:
     output_mapping:
       cf-performance-tests-pipeline: results-with-go-postgres-charts
     params:
-      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+      GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Generate charts for go cc with postgres ccdb
       CCDB: postgres
       CLOUD_CONTROLLER_TYPE: go
@@ -90,8 +90,8 @@ jobs:
     output_mapping:
       cf-performance-tests-pipeline: results-with-all-charts
     params:
-      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
+      GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Generate charts for go cc with mysql ccdb
       CCDB: mysql
       CLOUD_CONTROLLER_TYPE: go
@@ -113,8 +113,8 @@ jobs:
     file: cf-performance-tests-pipeline/ci/tasks/generate-coverage-table/task.yml
     params:
       COVERAGE_TABLE_FILE: results/coverage.md
-      GIT_COMMIT_EMAIL: ((cf-perf-github-user-email))
-      GIT_COMMIT_USERNAME: ((cf-perf-github-username))
+      GIT_COMMIT_EMAIL: ((ari-wg-gitbot-user-email))
+      GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Update test coverage table
   - put: cf-performance-tests-pipeline-push
     params:
