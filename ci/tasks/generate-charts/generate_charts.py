@@ -90,7 +90,7 @@ def generate_chart(prefix, chart_destination: str, file_paths: List[str], simpli
         width_per_test = 0.6
 
     width = max((width_per_test * len(test_executions)), 10)
-    fig.set_size_inches(width, 1.5 * len(test_results))
+    fig.set_size_inches(width, 3 * len(test_results))
 
     i = 0
     label_locations = np.arange(len(test_executions))
