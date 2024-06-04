@@ -7,7 +7,7 @@
 | v40.4.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
-| v40.16.0  | :white_check_mark: | :x:                | :x:                | :x:                |
+| v40.16.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.15.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.14.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.13.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
