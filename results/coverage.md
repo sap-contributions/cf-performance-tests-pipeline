@@ -1,5 +1,21 @@
 | version   | rails-postgres     | rails-mysql        | go-postgres        | go-mysql           |
 |:----------|:-------------------|:-------------------|:-------------------|:-------------------|
+| v43.4.0   | :white_check_mark: | :x:                | :x:                | :x:                |
+| v43.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v43.2.0   | :white_check_mark: | :x:                | :x:                | :x:                |
+| v43.1.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v43.0.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.6.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.5.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.4.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.1.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v42.0.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v41.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v41.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v41.1.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v41.0.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.9.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.8.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.7.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
@@ -7,6 +23,8 @@
 | v40.4.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.3.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.2.0   | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v40.19.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| v40.18.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.17.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.16.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
 | v40.15.0  | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
