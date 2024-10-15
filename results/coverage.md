@@ -1,154 +1,155 @@
-| version   | rails-postgres     | rails-mysql        | go-postgres   | go-mysql   |
-|:----------|:-------------------|:-------------------|:--------------|:-----------|
-| v44.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.2.0   | :white_check_mark: | :x:                | :x:           | :x:        |
-| v43.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v43.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v42.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v41.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v41.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v41.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v41.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.9.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.19.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.18.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.17.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.16.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.15.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.14.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.13.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.12.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.10.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v40.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v39.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v38.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v38.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v37.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v36.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v35.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v35.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v35.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v35.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v35.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v34.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v34.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.9.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.12.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.11.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.10.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v33.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.9.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.17.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.16.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.15.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.14.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.13.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.12.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.11.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.10.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v32.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v31.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.9.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.10.0  | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v30.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v29.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v29.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v28.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v28.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v28.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.8.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v27.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v26.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v25.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v25.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.7.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.6.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v24.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.5.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.4.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.3.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v23.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v22.2.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v22.1.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
-| v22.0.0   | :white_check_mark: | :white_check_mark: | :x:           | :x:        |
+| version   | rails-postgres     | rails-mysql        |
+|:----------|:-------------------|:-------------------|
+| v44.1.0   | :white_check_mark: | :x:                |
+| v44.0.0   | :white_check_mark: | :white_check_mark: |
+| v43.6.0   | :white_check_mark: | :white_check_mark: |
+| v43.5.0   | :white_check_mark: | :white_check_mark: |
+| v43.4.0   | :white_check_mark: | :white_check_mark: |
+| v43.3.0   | :white_check_mark: | :white_check_mark: |
+| v43.2.0   | :white_check_mark: | :x:                |
+| v43.1.0   | :white_check_mark: | :white_check_mark: |
+| v43.0.0   | :white_check_mark: | :white_check_mark: |
+| v42.6.0   | :white_check_mark: | :white_check_mark: |
+| v42.5.0   | :white_check_mark: | :white_check_mark: |
+| v42.4.0   | :white_check_mark: | :white_check_mark: |
+| v42.3.0   | :white_check_mark: | :white_check_mark: |
+| v42.2.0   | :white_check_mark: | :white_check_mark: |
+| v42.1.0   | :white_check_mark: | :white_check_mark: |
+| v42.0.0   | :white_check_mark: | :white_check_mark: |
+| v41.3.0   | :white_check_mark: | :white_check_mark: |
+| v41.2.0   | :white_check_mark: | :white_check_mark: |
+| v41.1.0   | :white_check_mark: | :white_check_mark: |
+| v41.0.0   | :white_check_mark: | :white_check_mark: |
+| v40.9.0   | :white_check_mark: | :white_check_mark: |
+| v40.8.0   | :white_check_mark: | :white_check_mark: |
+| v40.7.0   | :white_check_mark: | :white_check_mark: |
+| v40.6.0   | :white_check_mark: | :white_check_mark: |
+| v40.4.0   | :white_check_mark: | :white_check_mark: |
+| v40.3.0   | :white_check_mark: | :white_check_mark: |
+| v40.2.0   | :white_check_mark: | :white_check_mark: |
+| v40.19.0  | :white_check_mark: | :white_check_mark: |
+| v40.18.0  | :white_check_mark: | :white_check_mark: |
+| v40.17.0  | :white_check_mark: | :white_check_mark: |
+| v40.16.0  | :white_check_mark: | :white_check_mark: |
+| v40.15.0  | :white_check_mark: | :white_check_mark: |
+| v40.14.0  | :white_check_mark: | :white_check_mark: |
+| v40.13.0  | :white_check_mark: | :white_check_mark: |
+| v40.12.0  | :white_check_mark: | :white_check_mark: |
+| v40.10.0  | :white_check_mark: | :white_check_mark: |
+| v40.1.0   | :white_check_mark: | :white_check_mark: |
+| v40.0.0   | :white_check_mark: | :white_check_mark: |
+| v39.8.0   | :white_check_mark: | :white_check_mark: |
+| v39.7.0   | :white_check_mark: | :white_check_mark: |
+| v39.6.0   | :white_check_mark: | :white_check_mark: |
+| v39.5.0   | :white_check_mark: | :white_check_mark: |
+| v39.4.0   | :white_check_mark: | :white_check_mark: |
+| v39.3.0   | :white_check_mark: | :white_check_mark: |
+| v39.2.0   | :white_check_mark: | :white_check_mark: |
+| v39.1.0   | :white_check_mark: | :white_check_mark: |
+| v39.0.0   | :white_check_mark: | :white_check_mark: |
+| v38.1.0   | :white_check_mark: | :white_check_mark: |
+| v38.0.0   | :white_check_mark: | :white_check_mark: |
+| v37.5.0   | :white_check_mark: | :white_check_mark: |
+| v37.4.0   | :white_check_mark: | :white_check_mark: |
+| v37.3.0   | :white_check_mark: | :white_check_mark: |
+| v37.2.0   | :white_check_mark: | :white_check_mark: |
+| v37.1.0   | :white_check_mark: | :white_check_mark: |
+| v37.0.0   | :white_check_mark: | :white_check_mark: |
+| v36.0.0   | :white_check_mark: | :white_check_mark: |
+| v35.5.0   | :white_check_mark: | :white_check_mark: |
+| v35.4.0   | :white_check_mark: | :white_check_mark: |
+| v35.3.0   | :white_check_mark: | :white_check_mark: |
+| v35.2.0   | :white_check_mark: | :white_check_mark: |
+| v35.0.0   | :white_check_mark: | :white_check_mark: |
+| v34.1.0   | :white_check_mark: | :white_check_mark: |
+| v34.0.0   | :white_check_mark: | :white_check_mark: |
+| v33.9.0   | :white_check_mark: | :white_check_mark: |
+| v33.8.0   | :white_check_mark: | :white_check_mark: |
+| v33.7.0   | :white_check_mark: | :white_check_mark: |
+| v33.6.0   | :white_check_mark: | :white_check_mark: |
+| v33.5.0   | :white_check_mark: | :white_check_mark: |
+| v33.4.0   | :white_check_mark: | :white_check_mark: |
+| v33.3.0   | :white_check_mark: | :white_check_mark: |
+| v33.2.0   | :white_check_mark: | :white_check_mark: |
+| v33.12.0  | :white_check_mark: | :white_check_mark: |
+| v33.11.0  | :white_check_mark: | :white_check_mark: |
+| v33.10.0  | :white_check_mark: | :white_check_mark: |
+| v33.1.0   | :white_check_mark: | :white_check_mark: |
+| v33.0.0   | :white_check_mark: | :white_check_mark: |
+| v32.9.0   | :white_check_mark: | :white_check_mark: |
+| v32.8.0   | :white_check_mark: | :white_check_mark: |
+| v32.7.0   | :white_check_mark: | :white_check_mark: |
+| v32.6.0   | :white_check_mark: | :white_check_mark: |
+| v32.5.0   | :white_check_mark: | :white_check_mark: |
+| v32.4.0   | :white_check_mark: | :white_check_mark: |
+| v32.3.0   | :white_check_mark: | :white_check_mark: |
+| v32.2.0   | :white_check_mark: | :white_check_mark: |
+| v32.17.0  | :white_check_mark: | :white_check_mark: |
+| v32.16.0  | :white_check_mark: | :white_check_mark: |
+| v32.15.0  | :white_check_mark: | :white_check_mark: |
+| v32.14.0  | :white_check_mark: | :white_check_mark: |
+| v32.13.0  | :white_check_mark: | :white_check_mark: |
+| v32.12.0  | :white_check_mark: | :white_check_mark: |
+| v32.11.0  | :white_check_mark: | :white_check_mark: |
+| v32.10.0  | :white_check_mark: | :white_check_mark: |
+| v32.1.0   | :white_check_mark: | :white_check_mark: |
+| v32.0.0   | :white_check_mark: | :white_check_mark: |
+| v31.6.0   | :white_check_mark: | :white_check_mark: |
+| v31.5.0   | :white_check_mark: | :white_check_mark: |
+| v31.4.0   | :white_check_mark: | :white_check_mark: |
+| v31.3.0   | :white_check_mark: | :white_check_mark: |
+| v31.2.0   | :white_check_mark: | :white_check_mark: |
+| v31.1.0   | :white_check_mark: | :white_check_mark: |
+| v31.0.0   | :white_check_mark: | :white_check_mark: |
+| v30.9.0   | :white_check_mark: | :white_check_mark: |
+| v30.8.0   | :white_check_mark: | :white_check_mark: |
+| v30.7.0   | :white_check_mark: | :white_check_mark: |
+| v30.6.0   | :white_check_mark: | :white_check_mark: |
+| v30.5.0   | :white_check_mark: | :white_check_mark: |
+| v30.4.0   | :white_check_mark: | :white_check_mark: |
+| v30.3.0   | :white_check_mark: | :white_check_mark: |
+| v30.2.0   | :white_check_mark: | :white_check_mark: |
+| v30.10.0  | :white_check_mark: | :white_check_mark: |
+| v30.1.0   | :white_check_mark: | :white_check_mark: |
+| v30.0.0   | :white_check_mark: | :white_check_mark: |
+| v29.1.0   | :white_check_mark: | :white_check_mark: |
+| v29.0.0   | :white_check_mark: | :white_check_mark: |
+| v28.2.0   | :white_check_mark: | :white_check_mark: |
+| v28.1.0   | :white_check_mark: | :white_check_mark: |
+| v28.0.0   | :white_check_mark: | :white_check_mark: |
+| v27.8.0   | :white_check_mark: | :white_check_mark: |
+| v27.7.0   | :white_check_mark: | :white_check_mark: |
+| v27.6.0   | :white_check_mark: | :white_check_mark: |
+| v27.5.0   | :white_check_mark: | :white_check_mark: |
+| v27.4.0   | :white_check_mark: | :white_check_mark: |
+| v27.3.0   | :white_check_mark: | :white_check_mark: |
+| v27.2.0   | :white_check_mark: | :white_check_mark: |
+| v27.1.0   | :white_check_mark: | :white_check_mark: |
+| v27.0.0   | :white_check_mark: | :white_check_mark: |
+| v26.7.0   | :white_check_mark: | :white_check_mark: |
+| v26.6.0   | :white_check_mark: | :white_check_mark: |
+| v26.5.0   | :white_check_mark: | :white_check_mark: |
+| v26.4.0   | :white_check_mark: | :white_check_mark: |
+| v26.3.0   | :white_check_mark: | :white_check_mark: |
+| v26.2.0   | :white_check_mark: | :white_check_mark: |
+| v26.1.0   | :white_check_mark: | :white_check_mark: |
+| v26.0.0   | :white_check_mark: | :white_check_mark: |
+| v25.1.0   | :white_check_mark: | :white_check_mark: |
+| v25.0.0   | :white_check_mark: | :white_check_mark: |
+| v24.7.0   | :white_check_mark: | :white_check_mark: |
+| v24.6.0   | :white_check_mark: | :white_check_mark: |
+| v24.5.0   | :white_check_mark: | :white_check_mark: |
+| v24.4.0   | :white_check_mark: | :white_check_mark: |
+| v24.3.0   | :white_check_mark: | :white_check_mark: |
+| v24.2.0   | :white_check_mark: | :white_check_mark: |
+| v24.1.0   | :white_check_mark: | :white_check_mark: |
+| v24.0.0   | :white_check_mark: | :white_check_mark: |
+| v23.5.0   | :white_check_mark: | :white_check_mark: |
+| v23.4.0   | :white_check_mark: | :white_check_mark: |
+| v23.3.0   | :white_check_mark: | :white_check_mark: |
+| v23.2.0   | :white_check_mark: | :white_check_mark: |
+| v23.1.0   | :white_check_mark: | :white_check_mark: |
+| v23.0.0   | :white_check_mark: | :white_check_mark: |
+| v22.2.0   | :white_check_mark: | :white_check_mark: |
+| v22.1.0   | :white_check_mark: | :white_check_mark: |
+| v22.0.0   | :white_check_mark: | :white_check_mark: |
