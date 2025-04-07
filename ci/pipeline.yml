@@ -4,6 +4,7 @@ groups:
   - detect-new-versions
   - create-base-infra
   - deploy-director
+  - run-perf-tests-postgres-15
   - run-perf-tests-postgres
   - run-perf-tests-mysql
   - teardown
@@ -319,8 +320,6 @@ jobs:
         params:
           repository: cf-performance-tests-pipeline
           rebase: true
-
-
 
   - name: run-perf-tests-postgres
     serial: true
