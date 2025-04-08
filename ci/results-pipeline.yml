@@ -99,7 +99,7 @@ jobs:
   - task: generate-coverage-table
     file: cf-performance-tests-pipeline/ci/tasks/generate-coverage-table/task.yml
     params:
-      COVERAGE_TABLE_FILE: results/coverage.md
+      COVERAGE_TABLE_FILE: coverage.md
       GIT_COMMIT_EMAIL: ((ari-wg-gitbot-email))
       GIT_COMMIT_USERNAME: ((ari-wg-gitbot-username))
       GIT_COMMIT_MESSAGE: Update test coverage table
