@@ -6,6 +6,7 @@ image_resource:
     repository: python
 
 inputs:
+- name: cf-performance-tests-pipeline
 - name: results
 
 outputs:
