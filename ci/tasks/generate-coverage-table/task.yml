@@ -6,10 +6,10 @@ image_resource:
     repository: python
 
 inputs:
-- name: cf-performance-tests-pipeline
+- name: results
 
 outputs:
-- name: cf-performance-tests-pipeline
+- name: results
 
 run:
   path: cf-performance-tests-pipeline/ci/tasks/generate-coverage-table/task.sh

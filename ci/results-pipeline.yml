@@ -8,7 +8,7 @@ resources:
     password: ((ari-wg-gitbot-token))
     branch: ((results-branch))
     paths: [ci/results-pipeline.yml, ci/tasks/generate-charts/*, ci/tasks/generate-coverage-table/*, variables/common.yml]
-    ignore_paths: [results/**/*.json, results/coverage.md]
+
 - name: results
   type: git
   icon: github
@@ -87,6 +87,7 @@ jobs:
     params:
       repository: results-with-all-charts
       rebase: true
+
 - name: generate-coverage-table
   serial: true
   plan:
@@ -96,8 +97,6 @@ jobs:
   - get: results
     trigger: true
   - task: generate-coverage-table
-    input_mapping:
-      cf-performance-tests-pipeline: results
     file: cf-performance-tests-pipeline/ci/tasks/generate-coverage-table/task.yml
     params:
       COVERAGE_TABLE_FILE: results/coverage.md
@@ -106,5 +105,5 @@ jobs:
       GIT_COMMIT_MESSAGE: Update test coverage table
   - put: cf-performance-tests-pipeline-push
     params:
-      repository: cf-performance-tests-pipeline
+      repository: results
       rebase: true
